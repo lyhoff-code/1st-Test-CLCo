@@ -12,7 +12,8 @@ import {
   Eye,
   Package,
   Film,
-  MessageSquare
+  MessageSquare,
+  BookOpen
 } from 'lucide-react'
 import { ProductSelector } from '@/components/ProductSelector'
 import { ContentTypeSelector } from '@/components/ContentTypeSelector'
@@ -20,7 +21,16 @@ import { ToneSelector } from '@/components/ToneSelector'
 import { GenerationPanel } from '@/components/GenerationPanel'
 import { VideoPreview } from '@/components/VideoPreview'
 import { HistoryPanel } from '@/components/HistoryPanel'
-import { ShopifyProduct, ContentType, ToneType, GeneratedContent, GenerationState, HistoryItem } from '@/types'
+import { StorytellingEditor } from '@/components/StorytellingEditor'
+import {
+  ShopifyProduct,
+  ContentType,
+  ToneType,
+  GeneratedContent,
+  GenerationState,
+  HistoryItem,
+  StorytellingContent
+} from '@/types'
 
 export default function Home() {
   const [selectedProduct, setSelectedProduct] = useState<ShopifyProduct | null>(null)
@@ -34,6 +44,7 @@ export default function Home() {
   })
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [showHistory, setShowHistory] = useState(false)
+  const [showStorytellingEditor, setShowStorytellingEditor] = useState(false)
 
   // Load history from localStorage
   useEffect(() => {
@@ -42,6 +53,13 @@ export default function Home() {
       setHistory(JSON.parse(savedHistory))
     }
   }, [])
+
+  // Reset storytelling editor when content type changes
+  useEffect(() => {
+    if (contentType !== 'storytelling') {
+      setShowStorytellingEditor(false)
+    }
+  }, [contentType])
 
   // Save history to localStorage
   const saveToHistory = (content: GeneratedContent, product: ShopifyProduct) => {
@@ -60,6 +78,12 @@ export default function Home() {
 
   const handleGenerate = async () => {
     if (!selectedProduct) return
+
+    // If storytelling mode, show the editor instead of auto-generating
+    if (contentType === 'storytelling') {
+      setShowStorytellingEditor(true)
+      return
+    }
 
     setGenerationState({ step: 'generating-script', progress: 0, message: 'Analyzing product...' })
 
@@ -112,9 +136,32 @@ export default function Home() {
     }
   }
 
+  const handleStorytellingComplete = (storytellingContent: StorytellingContent) => {
+    if (!selectedProduct) return
+
+    const fullScript = storytellingContent.scenes.map(s => s.script).join('\n\n')
+
+    const newContent: GeneratedContent = {
+      script: fullScript,
+      audioUrl: undefined,
+      scenes: storytellingContent.scenes.map(s => ({
+        text: s.script,
+        duration: 5,
+        imageUrl: s.imageUrl
+      })),
+      storytelling: storytellingContent,
+      videoUrl: undefined
+    }
+
+    setGeneratedContent(newContent)
+    saveToHistory(newContent, selectedProduct)
+    setGenerationState({ step: 'complete', progress: 100, message: 'Storytelling content saved!' })
+  }
+
   const handleReset = () => {
     setGeneratedContent(null)
     setGenerationState({ step: 'idle', progress: 0, message: '' })
+    setShowStorytellingEditor(false)
   }
 
   const loadFromHistory = (item: HistoryItem) => {
@@ -124,10 +171,12 @@ export default function Home() {
     setGeneratedContent(item.content)
     setGenerationState({ step: 'complete', progress: 100, message: 'Loaded from history' })
     setShowHistory(false)
+    setShowStorytellingEditor(false)
   }
 
-  const canGenerate = selectedProduct && generationState.step === 'idle'
+  const canGenerate = selectedProduct && generationState.step === 'idle' && !showStorytellingEditor
   const isGenerating = ['generating-script', 'generating-audio', 'generating-video'].includes(generationState.step)
+  const isStorytellingMode = contentType === 'storytelling'
 
   return (
     <main className="min-h-screen aurora-bg">
@@ -222,138 +271,200 @@ export default function Home() {
           </p>
         </motion.section>
 
-        <div className="grid lg:grid-cols-2 gap-6 md:gap-8 items-start">
-          {/* Left Column - Configuration */}
-          <div className="space-y-5">
-            {/* Step 1: Product Selection */}
-            <motion.section
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="glass p-6 card-lift"
-            >
-              <h3 className="section-title mb-5">
-                <span className="step-badge bg-gradient-to-br from-tada-turquoise to-tada-turquoise-dark text-white">
-                  <Package className="w-4 h-4" />
-                </span>
-                Select Your Product
-              </h3>
-              <ProductSelector
-                selectedProduct={selectedProduct}
-                onSelect={setSelectedProduct}
-              />
-            </motion.section>
-
-            {/* Step 2: Content Type */}
-            <motion.section
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="glass p-6 card-lift"
-            >
-              <h3 className="section-title mb-5">
-                <span className="step-badge bg-gradient-to-br from-tada-pink to-tada-pink-dark text-white">
-                  <Film className="w-4 h-4" />
-                </span>
-                Content Type
-              </h3>
-              <ContentTypeSelector
-                selected={contentType}
-                onSelect={setContentType}
-              />
-            </motion.section>
-
-            {/* Step 3: Tone */}
-            <motion.section
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="glass p-6 card-lift"
-            >
-              <h3 className="section-title mb-5">
-                <span className="step-badge bg-gradient-to-r from-tada-turquoise to-tada-pink text-white">
-                  <MessageSquare className="w-4 h-4" />
-                </span>
-                Content Tone
-              </h3>
-              <ToneSelector
-                selected={tone}
-                onSelect={setTone}
-              />
-            </motion.section>
-
-            {/* Generate Button */}
+        {/* Storytelling Editor Full Screen Mode */}
+        <AnimatePresence>
+          {showStorytellingEditor && selectedProduct && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="flex gap-3"
+              exit={{ opacity: 0, y: -20 }}
+              className="mb-8"
             >
-              <button
-                onClick={handleGenerate}
-                disabled={!canGenerate || isGenerating}
-                className="flex-1 btn-primary py-4 text-lg flex items-center justify-center gap-3"
-              >
-                {isGenerating ? (
-                  <>
-                    <div className="w-5 h-5 rounded-full spinner" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Zap className="w-5 h-5" />
-                    Generate Content
-                  </>
-                )}
-              </button>
-              {generatedContent && (
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="icon-pink">
+                    <BookOpen className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-tada-text">Storytelling Mode</h2>
+                    <p className="text-sm text-tada-text-light">Create a story-driven 30-second reel</p>
+                  </div>
+                </div>
                 <button
                   onClick={handleReset}
-                  className="btn-secondary px-4"
-                  title="Start over"
+                  className="btn-secondary px-4 py-2 flex items-center gap-2"
                 >
-                  <RotateCcw className="w-5 h-5" />
+                  <RotateCcw className="w-4 h-4" />
+                  Exit Storytelling
                 </button>
-              )}
-            </motion.div>
-
-            {/* Generation Progress */}
-            <AnimatePresence>
-              {isGenerating && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                >
-                  <GenerationPanel state={generationState} />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Right Column - Preview */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-            className="lg:sticky lg:top-24 lg:self-start"
-          >
-            <div className="glass p-6">
-              <h3 className="section-title mb-5">
-                <span className="icon-turquoise">
-                  <Eye className="w-5 h-5" />
-                </span>
-                Preview
-              </h3>
-              <VideoPreview
+              </div>
+              <StorytellingEditor
                 product={selectedProduct}
-                contentType={contentType}
-                generatedContent={generatedContent}
-                generationState={generationState}
+                tone={tone}
+                onSave={handleStorytellingComplete}
               />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Main Content - Hidden when storytelling editor is open */}
+        {!showStorytellingEditor && (
+          <div className="grid lg:grid-cols-2 gap-6 md:gap-8 items-start">
+            {/* Left Column - Configuration */}
+            <div className="space-y-5">
+              {/* Step 1: Product Selection */}
+              <motion.section
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="glass p-6 card-lift"
+              >
+                <h3 className="section-title mb-5">
+                  <span className="step-badge bg-gradient-to-br from-tada-turquoise to-tada-turquoise-dark text-white">
+                    <Package className="w-4 h-4" />
+                  </span>
+                  Select Your Product
+                </h3>
+                <ProductSelector
+                  selectedProduct={selectedProduct}
+                  onSelect={setSelectedProduct}
+                />
+              </motion.section>
+
+              {/* Step 2: Content Type */}
+              <motion.section
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="glass p-6 card-lift"
+              >
+                <h3 className="section-title mb-5">
+                  <span className="step-badge bg-gradient-to-br from-tada-pink to-tada-pink-dark text-white">
+                    <Film className="w-4 h-4" />
+                  </span>
+                  Content Type
+                </h3>
+                <ContentTypeSelector
+                  selected={contentType}
+                  onSelect={setContentType}
+                />
+                {isStorytellingMode && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="mt-4 p-4 rounded-2xl bg-gradient-to-r from-tada-turquoise/10 to-tada-pink/10 border border-tada-pink/20"
+                  >
+                    <div className="flex items-start gap-3">
+                      <BookOpen className="w-5 h-5 text-tada-pink-dark mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium text-tada-text">Storytelling Mode Selected</p>
+                        <p className="text-xs text-tada-text-light mt-1">
+                          Create a 6-scene story: Hook → Problem → Agitation → Solution → Result → CTA.
+                          Each scene gets its own script, voice, and AI-generated image.
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </motion.section>
+
+              {/* Step 3: Tone */}
+              <motion.section
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="glass p-6 card-lift"
+              >
+                <h3 className="section-title mb-5">
+                  <span className="step-badge bg-gradient-to-r from-tada-turquoise to-tada-pink text-white">
+                    <MessageSquare className="w-4 h-4" />
+                  </span>
+                  Content Tone
+                </h3>
+                <ToneSelector
+                  selected={tone}
+                  onSelect={setTone}
+                />
+              </motion.section>
+
+              {/* Generate Button */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="flex gap-3"
+              >
+                <button
+                  onClick={handleGenerate}
+                  disabled={!canGenerate || isGenerating}
+                  className="flex-1 btn-primary py-4 text-lg flex items-center justify-center gap-3"
+                >
+                  {isGenerating ? (
+                    <>
+                      <div className="w-5 h-5 rounded-full spinner" />
+                      Generating...
+                    </>
+                  ) : isStorytellingMode ? (
+                    <>
+                      <BookOpen className="w-5 h-5" />
+                      Start Storytelling Mode
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="w-5 h-5" />
+                      Generate Content
+                    </>
+                  )}
+                </button>
+                {generatedContent && (
+                  <button
+                    onClick={handleReset}
+                    className="btn-secondary px-4"
+                    title="Start over"
+                  >
+                    <RotateCcw className="w-5 h-5" />
+                  </button>
+                )}
+              </motion.div>
+
+              {/* Generation Progress */}
+              <AnimatePresence>
+                {isGenerating && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                  >
+                    <GenerationPanel state={generationState} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-          </motion.div>
-        </div>
+
+            {/* Right Column - Preview */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              className="lg:sticky lg:top-24 lg:self-start"
+            >
+              <div className="glass p-6">
+                <h3 className="section-title mb-5">
+                  <span className="icon-turquoise">
+                    <Eye className="w-5 h-5" />
+                  </span>
+                  Preview
+                </h3>
+                <VideoPreview
+                  product={selectedProduct}
+                  contentType={contentType}
+                  generatedContent={generatedContent}
+                  generationState={generationState}
+                />
+              </div>
+            </motion.div>
+          </div>
+        )}
       </div>
 
       {/* Footer */}
