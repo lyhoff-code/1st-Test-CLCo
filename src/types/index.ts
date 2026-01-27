@@ -38,7 +38,7 @@ export type ToneType = 'divertido' | 'profesional' | 'educativo';
 export interface ContentConfig {
   type: ContentType;
   tone: ToneType;
-  duration: number; // en segundos
+  duration: number;
 }
 
 export interface GeneratedContent {
@@ -60,44 +60,59 @@ export interface GenerationState {
   message: string;
 }
 
-export const CONTENT_TYPES: { value: ContentType; label: string; icon: string; description: string }[] = [
+export interface HistoryItem {
+  id: string;
+  timestamp: string;
+  product: ShopifyProduct;
+  contentType: ContentType;
+  tone: ToneType;
+  content: GeneratedContent;
+}
+
+export const CONTENT_TYPES: { value: ContentType; label: string; icon: string; description: string; color: string }[] = [
   {
     value: 'reel',
     label: 'Reel',
     icon: '🎬',
-    description: 'Video vertical de 15-60 segundos'
+    description: 'Vertical video 15-60 seconds',
+    color: 'turquoise'
   },
   {
     value: 'story',
     label: 'Story',
     icon: '📱',
-    description: 'Contenido efímero de 15 segundos'
+    description: 'Ephemeral 15-second content',
+    color: 'pink'
   },
   {
     value: 'post',
     label: 'Post',
     icon: '📸',
-    description: 'Publicación cuadrada para feed'
+    description: 'Square feed publication',
+    color: 'turquoise'
   },
 ];
 
-export const TONE_TYPES: { value: ToneType; label: string; icon: string; description: string }[] = [
+export const TONE_TYPES: { value: ToneType; label: string; icon: string; description: string; color: string }[] = [
   {
     value: 'divertido',
-    label: 'Divertido',
+    label: 'Fun',
     icon: '😄',
-    description: 'Tono casual y entretenido'
+    description: 'Casual and entertaining tone',
+    color: 'pink'
   },
   {
     value: 'profesional',
-    label: 'Profesional',
+    label: 'Professional',
     icon: '💼',
-    description: 'Tono serio y corporativo'
+    description: 'Serious and corporate tone',
+    color: 'turquoise'
   },
   {
     value: 'educativo',
-    label: 'Educativo',
+    label: 'Educational',
     icon: '📚',
-    description: 'Tono informativo y didáctico'
+    description: 'Informative and didactic tone',
+    color: 'pink'
   },
 ];
