@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { FileText, Mic, Video, CheckCircle2, XCircle } from 'lucide-react'
 import { GenerationState } from '@/types'
 
 interface GenerationPanelProps {
@@ -8,21 +9,21 @@ interface GenerationPanelProps {
 }
 
 const STEPS = [
-  { key: 'generating-script', label: 'Creating Script', icon: '📝' },
-  { key: 'generating-audio', label: 'Generating Voice', icon: '🎙️' },
-  { key: 'generating-video', label: 'Composing Video', icon: '🎬' },
-  { key: 'complete', label: 'Complete', icon: '✅' },
+  { key: 'generating-script', label: 'Creating Script', Icon: FileText },
+  { key: 'generating-audio', label: 'Generating Voice', Icon: Mic },
+  { key: 'generating-video', label: 'Composing Video', Icon: Video },
+  { key: 'complete', label: 'Complete', Icon: CheckCircle2 },
 ]
 
 export function GenerationPanel({ state }: GenerationPanelProps) {
   const currentStepIndex = STEPS.findIndex(s => s.key === state.step)
 
   return (
-    <div className="card p-6">
+    <div className="glass p-6">
       {/* Progress Bar */}
-      <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden mb-6">
+      <div className="relative h-2 bg-white/50 rounded-full overflow-hidden mb-6">
         <motion.div
-          className="absolute inset-y-0 left-0 bg-gradient-to-r from-clickboom-turquoise to-clickboom-pink rounded-full"
+          className="absolute inset-y-0 left-0 bg-gradient-to-r from-tada-turquoise to-tada-pink rounded-full"
           initial={{ width: 0 }}
           animate={{ width: `${state.progress}%` }}
           transition={{ duration: 0.5 }}
@@ -35,6 +36,7 @@ export function GenerationPanel({ state }: GenerationPanelProps) {
           const isActive = index === currentStepIndex
           const isCompleted = index < currentStepIndex
           const isPending = index > currentStepIndex
+          const Icon = step.Icon
 
           return (
             <div
@@ -44,25 +46,25 @@ export function GenerationPanel({ state }: GenerationPanelProps) {
               }`}
             >
               <motion.div
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-lg mb-2 ${
+                className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg mb-2 ${
                   isActive
-                    ? 'bg-gradient-to-r from-clickboom-turquoise to-clickboom-pink text-white'
+                    ? 'bg-gradient-to-br from-tada-turquoise to-tada-pink text-white shadow-glass glow-turquoise'
                     : isCompleted
-                    ? 'bg-clickboom-turquoise/20 border-2 border-clickboom-turquoise'
-                    : 'bg-gray-100'
+                    ? 'bg-tada-turquoise/20 border-2 border-tada-turquoise'
+                    : 'bg-white/50'
                 }`}
-                animate={isActive ? { scale: [1, 1.1, 1] } : {}}
+                animate={isActive ? { scale: [1, 1.05, 1] } : {}}
                 transition={{ repeat: Infinity, duration: 1.5 }}
               >
                 {isCompleted ? (
-                  <svg className="w-5 h-5 text-clickboom-turquoise" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
+                  <CheckCircle2 className="w-5 h-5 text-tada-turquoise-dark" />
                 ) : (
-                  step.icon
+                  <Icon className={`w-5 h-5 ${
+                    isActive ? 'text-white' : 'text-tada-text-light'
+                  }`} />
                 )}
               </motion.div>
-              <span className="text-xs text-center text-clickboom-text-light">{step.label}</span>
+              <span className="text-xs text-center text-tada-text-light font-medium">{step.label}</span>
             </div>
           )
         })}
@@ -74,7 +76,7 @@ export function GenerationPanel({ state }: GenerationPanelProps) {
           key={state.message}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-clickboom-text-light"
+          className="text-tada-text-light"
         >
           {state.message}
         </motion.p>
@@ -82,10 +84,8 @@ export function GenerationPanel({ state }: GenerationPanelProps) {
 
       {/* Error State */}
       {state.step === 'error' && (
-        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm flex items-start gap-2">
-          <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-          </svg>
+        <div className="mt-4 p-4 glass-subtle border-2 border-red-300 text-red-600 text-sm flex items-start gap-3 rounded-2xl">
+          <XCircle className="w-5 h-5 flex-shrink-0" />
           {state.message}
         </div>
       )}

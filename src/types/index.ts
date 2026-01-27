@@ -69,49 +69,49 @@ export interface HistoryItem {
   content: GeneratedContent;
 }
 
-export const CONTENT_TYPES: { value: ContentType; label: string; icon: string; description: string; color: string }[] = [
+export const CONTENT_TYPES: { value: ContentType; label: string; iconName: string; description: string; color: string }[] = [
   {
     value: 'reel',
     label: 'Reel',
-    icon: '🎬',
+    iconName: 'Clapperboard',
     description: 'Vertical video 15-60 seconds',
     color: 'turquoise'
   },
   {
     value: 'story',
     label: 'Story',
-    icon: '📱',
+    iconName: 'Smartphone',
     description: 'Ephemeral 15-second content',
     color: 'pink'
   },
   {
     value: 'post',
     label: 'Post',
-    icon: '📸',
+    iconName: 'Image',
     description: 'Square feed publication',
     color: 'turquoise'
   },
 ];
 
-export const TONE_TYPES: { value: ToneType; label: string; icon: string; description: string; color: string }[] = [
+export const TONE_TYPES: { value: ToneType; label: string; iconName: string; description: string; color: string }[] = [
   {
     value: 'divertido',
     label: 'Fun',
-    icon: '😄',
+    iconName: 'Smile',
     description: 'Casual and entertaining tone',
     color: 'pink'
   },
   {
     value: 'profesional',
     label: 'Professional',
-    icon: '💼',
+    iconName: 'Briefcase',
     description: 'Serious and corporate tone',
     color: 'turquoise'
   },
   {
     value: 'educativo',
     label: 'Educational',
-    icon: '📚',
+    iconName: 'GraduationCap',
     description: 'Informative and didactic tone',
     color: 'pink'
   },

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { Package, Search, Info, CheckCircle2, RefreshCw } from 'lucide-react'
 import { ShopifyProduct } from '@/types'
 
 interface ProductSelectorProps {
@@ -150,44 +151,49 @@ export function ProductSelector({ selectedProduct, onSelect }: ProductSelectorPr
   return (
     <div>
       {useDemo && (
-        <div className="mb-4 p-3 bg-clickboom-turquoise/10 border border-clickboom-turquoise/30 rounded-xl text-sm text-clickboom-text flex items-start gap-2">
-          <svg className="w-5 h-5 text-clickboom-turquoise flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span><strong>Demo Mode:</strong> Connect your Shopify store in settings to see your real products.</span>
+        <div className="mb-4 p-4 glass-subtle flex items-start gap-3">
+          <div className="icon-turquoise flex-shrink-0">
+            <Info className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-sm text-tada-text">
+              <strong>Demo Mode:</strong> Connect your Shopify store in settings to see your real products.
+            </p>
+          </div>
         </div>
       )}
 
       {/* Selected Product Display */}
       {selectedProduct ? (
-        <div className="flex items-center gap-4 p-4 bg-clickboom-turquoise/10 border border-clickboom-turquoise/30 rounded-xl mb-4">
+        <div className="flex items-center gap-4 p-4 glass-subtle border-2 border-tada-turquoise/30 mb-4">
           <img
             src={getImageUrl(selectedProduct)}
             alt={selectedProduct.title}
-            className="w-16 h-16 rounded-xl object-cover shadow-soft"
+            className="w-16 h-16 rounded-xl object-cover shadow-glass-sm"
           />
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-clickboom-text truncate">{selectedProduct.title}</h3>
-            <p className="text-sm text-clickboom-text-light">
+            <h3 className="font-semibold text-tada-text truncate">{selectedProduct.title}</h3>
+            <p className="text-sm text-tada-text-light">
               ${selectedProduct.priceRange.minVariantPrice.amount} {selectedProduct.priceRange.minVariantPrice.currencyCode}
             </p>
           </div>
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="px-4 py-2 text-sm bg-white border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors text-clickboom-text font-medium"
+            className="btn-ghost flex items-center gap-2"
           >
+            <RefreshCw className="w-4 h-4" />
             Change
           </button>
         </div>
       ) : (
         <button
           onClick={() => setIsOpen(true)}
-          className="w-full p-6 border-2 border-dashed border-gray-300 rounded-xl hover:border-clickboom-turquoise hover:bg-clickboom-turquoise/5 transition-all text-clickboom-text-light group"
+          className="w-full p-8 border-2 border-dashed border-tada-turquoise/30 rounded-2xl hover:border-tada-turquoise hover:bg-tada-turquoise/5 transition-all text-tada-text-light group"
         >
-          <svg className="w-10 h-10 mx-auto mb-2 text-gray-400 group-hover:text-clickboom-turquoise transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-          </svg>
-          <span className="font-medium">Click to select a product</span>
+          <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-tada-turquoise/10 flex items-center justify-center group-hover:bg-tada-turquoise/20 transition-colors">
+            <Package className="w-7 h-7 text-tada-turquoise-dark" />
+          </div>
+          <span className="font-medium text-tada-text">Click to select a product</span>
         </button>
       )}
 
@@ -202,9 +208,7 @@ export function ProductSelector({ selectedProduct, onSelect }: ProductSelectorPr
           >
             {/* Search Input */}
             <div className="relative mb-4">
-              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-tada-text-muted" />
               <input
                 type="text"
                 placeholder="Search products..."
@@ -221,7 +225,7 @@ export function ProductSelector({ selectedProduct, onSelect }: ProductSelectorPr
                   <div className="w-8 h-8 rounded-full spinner" />
                 </div>
               ) : filteredProducts.length === 0 ? (
-                <div className="text-center py-8 text-clickboom-text-light">
+                <div className="text-center py-8 text-tada-text-light">
                   No products found
                 </div>
               ) : (
@@ -233,10 +237,10 @@ export function ProductSelector({ selectedProduct, onSelect }: ProductSelectorPr
                       setIsOpen(false)
                       setSearchTerm('')
                     }}
-                    className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${
+                    className={`w-full flex items-center gap-3 p-3 rounded-2xl transition-all ${
                       selectedProduct?.id === product.id
-                        ? 'bg-clickboom-turquoise/20 border-2 border-clickboom-turquoise'
-                        : 'bg-gray-50 hover:bg-clickboom-turquoise/10 border-2 border-transparent hover:border-clickboom-turquoise/30'
+                        ? 'glass-subtle border-2 border-tada-turquoise glow-turquoise'
+                        : 'bg-white/40 hover:bg-white/60 border-2 border-transparent hover:border-tada-turquoise/20'
                     }`}
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
@@ -244,18 +248,16 @@ export function ProductSelector({ selectedProduct, onSelect }: ProductSelectorPr
                     <img
                       src={getImageUrl(product)}
                       alt={product.title}
-                      className="w-12 h-12 rounded-lg object-cover"
+                      className="w-12 h-12 rounded-xl object-cover"
                     />
                     <div className="flex-1 text-left min-w-0">
-                      <h4 className="font-medium text-clickboom-text truncate">{product.title}</h4>
-                      <p className="text-sm text-clickboom-text-light">
+                      <h4 className="font-medium text-tada-text truncate">{product.title}</h4>
+                      <p className="text-sm text-tada-text-light">
                         ${product.priceRange.minVariantPrice.amount}
                       </p>
                     </div>
                     {selectedProduct?.id === product.id && (
-                      <svg className="w-5 h-5 text-clickboom-turquoise" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
+                      <CheckCircle2 className="w-5 h-5 text-tada-turquoise-dark" />
                     )}
                   </motion.button>
                 ))

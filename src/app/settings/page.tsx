@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import { ArrowLeft, ShoppingBag, Cpu, Mic, Save, CheckCircle2, Info, Sparkles } from 'lucide-react'
 
 export default function SettingsPage() {
   const [shopifyUrl, setShopifyUrl] = useState('')
@@ -19,22 +20,25 @@ export default function SettingsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-clickboom-background">
+    <main className="min-h-screen aurora-bg">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100">
+      <header className="sticky top-0 z-50 glass-subtle border-b border-white/20">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+              className="p-2 hover:bg-white/50 rounded-xl transition-colors"
             >
-              <svg className="w-5 h-5 text-clickboom-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
+              <ArrowLeft className="w-5 h-5 text-tada-text" />
             </Link>
-            <div>
-              <h1 className="text-xl font-bold text-clickboom-text">Settings</h1>
-              <p className="text-xs text-clickboom-text-light">Configure your integrations</p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-tada-turquoise via-tada-turquoise-dark to-tada-pink flex items-center justify-center shadow-glass glow-turquoise">
+                <Sparkles className="w-5 h-5 text-white" strokeWidth={2.5} />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-tada-text">Settings</h1>
+                <p className="text-xs text-tada-text-light">Configure your integrations</p>
+              </div>
             </div>
           </div>
         </div>
@@ -47,23 +51,21 @@ export default function SettingsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="card p-6"
+            className="glass p-6"
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-clickboom-turquoise/20 rounded-xl flex items-center justify-center">
-                <svg className="w-5 h-5 text-clickboom-turquoise-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
+              <div className="icon-turquoise">
+                <ShoppingBag className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="font-semibold text-clickboom-text">Shopify</h2>
-                <p className="text-sm text-clickboom-text-light">Connect your store to import products</p>
+                <h2 className="font-semibold text-tada-text">Shopify</h2>
+                <p className="text-sm text-tada-text-light">Connect your store to import products</p>
               </div>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-clickboom-text mb-2">Store URL</label>
+                <label className="block text-sm font-medium text-tada-text mb-2">Store URL</label>
                 <input
                   type="text"
                   value={shopifyUrl}
@@ -73,7 +75,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-clickboom-text mb-2">Storefront Access Token</label>
+                <label className="block text-sm font-medium text-tada-text mb-2">Storefront Access Token</label>
                 <input
                   type="password"
                   value={shopifyToken}
@@ -81,7 +83,7 @@ export default function SettingsPage() {
                   placeholder="shpat_xxxxxxxxxxxx"
                   className="input-field"
                 />
-                <p className="text-xs text-clickboom-text-light mt-2">
+                <p className="text-xs text-tada-text-light mt-2">
                   Get this token from Shopify Admin &rarr; Settings &rarr; Apps &rarr; Develop apps
                 </p>
               </div>
@@ -93,22 +95,20 @@ export default function SettingsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="card p-6"
+            className="glass p-6"
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-clickboom-pink/20 rounded-xl flex items-center justify-center">
-                <svg className="w-5 h-5 text-clickboom-pink-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
+              <div className="icon-pink">
+                <Cpu className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="font-semibold text-clickboom-text">OpenAI</h2>
-                <p className="text-sm text-clickboom-text-light">For AI-powered script generation</p>
+                <h2 className="font-semibold text-tada-text">OpenAI</h2>
+                <p className="text-sm text-tada-text-light">For AI-powered script generation</p>
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-clickboom-text mb-2">API Key</label>
+              <label className="block text-sm font-medium text-tada-text mb-2">API Key</label>
               <input
                 type="password"
                 value={openaiKey}
@@ -116,9 +116,9 @@ export default function SettingsPage() {
                 placeholder="sk-xxxxxxxxxxxx"
                 className="input-field"
               />
-              <p className="text-xs text-clickboom-text-light mt-2">
+              <p className="text-xs text-tada-text-light mt-2">
                 Get your API key at{' '}
-                <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-clickboom-turquoise-dark hover:underline">
+                <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-tada-turquoise-dark hover:underline">
                   platform.openai.com
                 </a>
               </p>
@@ -130,23 +130,21 @@ export default function SettingsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="card p-6"
+            className="glass p-6"
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-clickboom-turquoise/20 rounded-xl flex items-center justify-center">
-                <svg className="w-5 h-5 text-clickboom-turquoise-dark" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                </svg>
+              <div className="icon-turquoise">
+                <Mic className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="font-semibold text-clickboom-text">ElevenLabs</h2>
-                <p className="text-sm text-clickboom-text-light">For premium voice generation</p>
+                <h2 className="font-semibold text-tada-text">ElevenLabs</h2>
+                <p className="text-sm text-tada-text-light">For premium voice generation</p>
               </div>
-              <span className="ml-auto px-3 py-1 bg-gray-100 text-clickboom-text-light rounded-full text-xs font-medium">Optional</span>
+              <span className="ml-auto px-3 py-1 glass-subtle text-tada-text-light text-xs font-medium">Optional</span>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-clickboom-text mb-2">API Key</label>
+              <label className="block text-sm font-medium text-tada-text mb-2">API Key</label>
               <input
                 type="password"
                 value={elevenlabsKey}
@@ -154,7 +152,7 @@ export default function SettingsPage() {
                 placeholder="xxxxxxxxxxxx"
                 className="input-field"
               />
-              <p className="text-xs text-clickboom-text-light mt-2">
+              <p className="text-xs text-tada-text-light mt-2">
                 Without this key, browser Text-to-Speech will be used
               </p>
             </div>
@@ -172,16 +170,17 @@ export default function SettingsPage() {
             >
               {saved ? (
                 <>
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
+                  <CheckCircle2 className="w-5 h-5" />
                   Saved!
                 </>
               ) : (
-                'Save Settings'
+                <>
+                  <Save className="w-5 h-5" />
+                  Save Settings
+                </>
               )}
             </button>
-            <p className="text-center text-xs text-clickboom-text-light mt-3">
+            <p className="text-center text-xs text-tada-text-light mt-3">
               API keys are stored securely and never shared
             </p>
           </motion.div>
@@ -191,19 +190,19 @@ export default function SettingsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="card p-6"
+            className="glass p-6"
           >
-            <h3 className="font-semibold text-clickboom-text mb-3 flex items-center gap-2">
-              <svg className="w-5 h-5 text-clickboom-turquoise" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+            <h3 className="font-semibold text-tada-text mb-3 flex items-center gap-2">
+              <span className="icon-turquoise">
+                <Info className="w-5 h-5" />
+              </span>
               Environment Variables Configuration
             </h3>
-            <p className="text-sm text-clickboom-text-light mb-4">
+            <p className="text-sm text-tada-text-light mb-4">
               For a more secure production setup, use environment variables:
             </p>
-            <div className="bg-gray-900 rounded-xl p-4 font-mono text-sm overflow-x-auto">
-              <pre className="text-clickboom-turquoise">
+            <div className="bg-gray-900 rounded-2xl p-4 font-mono text-sm overflow-x-auto shadow-glass">
+              <pre className="text-tada-turquoise">
 {`# .env.local
 SHOPIFY_STORE_URL=your-store.myshopify.com
 SHOPIFY_ACCESS_TOKEN=shpat_xxx
