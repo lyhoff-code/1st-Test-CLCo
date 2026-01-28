@@ -13,7 +13,10 @@ import {
   Package,
   Film,
   MessageSquare,
-  BookOpen
+  BookOpen,
+  Sliders,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react'
 import { ProductSelector } from '@/components/ProductSelector'
 import { ContentTypeSelector } from '@/components/ContentTypeSelector'
@@ -22,6 +25,7 @@ import { GenerationPanel } from '@/components/GenerationPanel'
 import { VideoPreview } from '@/components/VideoPreview'
 import { HistoryPanel } from '@/components/HistoryPanel'
 import { StorytellingEditor } from '@/components/StorytellingEditor'
+import { VideoSettingsPanel } from '@/components/VideoSettingsPanel'
 import {
   ShopifyProduct,
   ContentType,
@@ -29,7 +33,9 @@ import {
   GeneratedContent,
   GenerationState,
   HistoryItem,
-  StorytellingContent
+  StorytellingContent,
+  VideoSettings,
+  DEFAULT_VIDEO_SETTINGS
 } from '@/types'
 
 export default function Home() {
@@ -45,6 +51,8 @@ export default function Home() {
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [showHistory, setShowHistory] = useState(false)
   const [showStorytellingEditor, setShowStorytellingEditor] = useState(false)
+  const [videoSettings, setVideoSettings] = useState<VideoSettings>(DEFAULT_VIDEO_SETTINGS)
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false)
 
   // Load history from localStorage
   useEffect(() => {
@@ -52,7 +60,17 @@ export default function Home() {
     if (savedHistory) {
       setHistory(JSON.parse(savedHistory))
     }
+    // Load saved video settings
+    const savedSettings = localStorage.getItem('tada-video-settings')
+    if (savedSettings) {
+      setVideoSettings(JSON.parse(savedSettings))
+    }
   }, [])
+
+  // Save video settings when they change
+  useEffect(() => {
+    localStorage.setItem('tada-video-settings', JSON.stringify(videoSettings))
+  }, [videoSettings])
 
   // Reset storytelling editor when content type changes
   useEffect(() => {
@@ -69,7 +87,8 @@ export default function Home() {
       product: product,
       contentType,
       tone,
-      content
+      content,
+      videoSettings
     }
     const updatedHistory = [newItem, ...history].slice(0, 20)
     setHistory(updatedHistory)
@@ -94,7 +113,8 @@ export default function Home() {
         body: JSON.stringify({
           product: selectedProduct,
           contentType,
-          tone
+          tone,
+          videoSettings
         })
       })
 
@@ -106,7 +126,11 @@ export default function Home() {
       const audioResponse = await fetch('/api/generate-audio', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ script, tone })
+        body: JSON.stringify({
+          script,
+          tone,
+          voiceSettings: videoSettings.voice
+        })
       })
 
       if (!audioResponse.ok) throw new Error('Error generating audio')
@@ -169,6 +193,9 @@ export default function Home() {
     setContentType(item.contentType)
     setTone(item.tone)
     setGeneratedContent(item.content)
+    if (item.videoSettings) {
+      setVideoSettings(item.videoSettings)
+    }
     setGenerationState({ step: 'complete', progress: 100, message: 'Loaded from history' })
     setShowHistory(false)
     setShowStorytellingEditor(false)
@@ -387,6 +414,56 @@ export default function Home() {
                 />
               </motion.section>
 
+              {/* Step 4: Advanced Settings (Collapsible) */}
+              <motion.section
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35 }}
+                className="glass overflow-hidden card-lift"
+              >
+                <button
+                  onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
+                  className="w-full p-6 flex items-center justify-between hover:bg-white/10 transition-colors"
+                >
+                  <h3 className="section-title mb-0">
+                    <span className="step-badge bg-gradient-to-br from-purple-400 to-purple-600 text-white">
+                      <Sliders className="w-4 h-4" />
+                    </span>
+                    Advanced Settings
+                    <span className="ml-2 text-xs font-normal text-tada-text-light">(7 categories)</span>
+                  </h3>
+                  {showAdvancedSettings ? (
+                    <ChevronUp className="w-5 h-5 text-tada-text-light" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5 text-tada-text-light" />
+                  )}
+                </button>
+
+                <AnimatePresence>
+                  {showAdvancedSettings && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="px-6 pb-6">
+                        <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 mb-4">
+                          <p className="text-xs text-tada-text-light">
+                            Customize voice, audience targeting, visual style, music, script options, branding, and export quality for professional results.
+                          </p>
+                        </div>
+                        <VideoSettingsPanel
+                          settings={videoSettings}
+                          onChange={setVideoSettings}
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.section>
+
               {/* Generate Button */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -461,6 +538,46 @@ export default function Home() {
                   generatedContent={generatedContent}
                   generationState={generationState}
                 />
+
+                {/* Quick Settings Summary */}
+                {selectedProduct && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="mt-4 p-4 glass-subtle rounded-2xl"
+                  >
+                    <h4 className="text-sm font-medium text-tada-text mb-3 flex items-center gap-2">
+                      <Sliders className="w-4 h-4 text-tada-turquoise-dark" />
+                      Current Settings
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-tada-text-light">Voice:</span>
+                        <span className="text-tada-text capitalize">{videoSettings.voice.gender}, {videoSettings.voice.emotion}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-tada-text-light">Platform:</span>
+                        <span className="text-tada-text capitalize">{videoSettings.audience.platform}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-tada-text-light">Style:</span>
+                        <span className="text-tada-text capitalize">{videoSettings.visual.visualStyle}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-tada-text-light">Music:</span>
+                        <span className="text-tada-text capitalize">{videoSettings.music.mood}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-tada-text-light">Duration:</span>
+                        <span className="text-tada-text">{videoSettings.script.length}s</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-tada-text-light">Quality:</span>
+                        <span className="text-tada-text">{videoSettings.export.resolution}</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
               </div>
             </motion.div>
           </div>
