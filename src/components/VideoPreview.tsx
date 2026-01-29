@@ -12,10 +12,11 @@ interface VideoPreviewProps {
   generationState: GenerationState
 }
 
-const ASPECT_RATIOS = {
+const ASPECT_RATIOS: Record<ContentType, string> = {
   reel: 'aspect-[9/16]',
   story: 'aspect-[9/16]',
   post: 'aspect-square',
+  storytelling: 'aspect-[9/16]',
 }
 
 export function VideoPreview({ product, contentType, generatedContent, generationState }: VideoPreviewProps) {
