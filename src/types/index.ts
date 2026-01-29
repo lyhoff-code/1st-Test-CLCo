@@ -542,34 +542,58 @@ export interface HistoryItem {
   videoSettings?: VideoSettings;
 }
 
-export const CONTENT_TYPES: { value: ContentType; label: string; iconName: string; description: string; color: string }[] = [
+export const CONTENT_TYPES: { value: ContentType; label: string; iconName: string; description: string; color: string; scenes: { name: string; time: string; purpose: string }[] }[] = [
   {
     value: 'reel',
     label: 'Reel',
     iconName: 'Clapperboard',
     description: 'Vertical video 15-60 seconds',
-    color: 'turquoise'
+    color: 'turquoise',
+    scenes: [
+      { name: 'Hook', time: '0-3s', purpose: 'Grab attention instantly' },
+      { name: 'Value', time: '3-12s', purpose: 'Show the main benefit' },
+      { name: 'Demo', time: '12-20s', purpose: 'Product in action' },
+      { name: 'CTA', time: '20-30s', purpose: 'Soft call to action' },
+    ]
   },
   {
     value: 'story',
     label: 'Story',
     iconName: 'Smartphone',
     description: 'Ephemeral 15-second content',
-    color: 'pink'
+    color: 'pink',
+    scenes: [
+      { name: 'Attention', time: '0-3s', purpose: 'Eye-catching opener' },
+      { name: 'Message', time: '3-10s', purpose: 'Key message delivery' },
+      { name: 'Action', time: '10-15s', purpose: 'Swipe up / Link' },
+    ]
   },
   {
     value: 'post',
     label: 'Post',
     iconName: 'Image',
     description: 'Square feed publication',
-    color: 'turquoise'
+    color: 'turquoise',
+    scenes: [
+      { name: 'Visual', time: 'Main', purpose: 'Striking product image' },
+      { name: 'Caption', time: 'Text', purpose: 'Engaging description' },
+      { name: 'Hashtags', time: 'Tags', purpose: 'Discoverability' },
+    ]
   },
   {
     value: 'storytelling',
     label: 'Storytelling Reel',
     iconName: 'BookOpen',
     description: '30-second story-driven content',
-    color: 'pink'
+    color: 'pink',
+    scenes: [
+      { name: 'Hook', time: '0-3s', purpose: 'Stop the scroll' },
+      { name: 'Problem', time: '3-8s', purpose: 'Relatable pain point' },
+      { name: 'Agitation', time: '8-12s', purpose: 'Intensify the need' },
+      { name: 'Solution', time: '12-20s', purpose: 'Present product' },
+      { name: 'Result', time: '20-25s', purpose: 'Transformation' },
+      { name: 'CTA', time: '25-30s', purpose: 'Soft invitation' },
+    ]
   },
 ];
 
