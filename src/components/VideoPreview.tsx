@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Play, Pause, Download, Copy, FileText, Video } from 'lucide-react'
+import { Play, Pause, Download, Copy, FileText, Video, Share2, CheckCircle2 } from 'lucide-react'
 import { ShopifyProduct, ContentType, GeneratedContent, GenerationState } from '@/types'
+import { ExportModal } from './ExportModal'
 
 interface VideoPreviewProps {
   product: ShopifyProduct | null
@@ -22,6 +23,9 @@ const ASPECT_RATIOS: Record<ContentType, string> = {
 export function VideoPreview({ product, contentType, generatedContent, generationState }: VideoPreviewProps) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentSceneIndex, setCurrentSceneIndex] = useState(0)
+  const [showExportModal, setShowExportModal] = useState(false)
+  const [downloadSuccess, setDownloadSuccess] = useState(false)
+  const [copySuccess, setCopySuccess] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
 
   const aspectRatio = ASPECT_RATIOS[contentType]
@@ -65,7 +69,54 @@ export function VideoPreview({ product, contentType, generatedContent, generatio
   }
 
   const handleDownload = () => {
-    alert('In a full implementation, the generated video would be downloaded here.')
+    if (!generatedContent || !product) return
+
+    // Create content package
+    const contentPackage = {
+      title: product.title,
+      script: generatedContent.script,
+      scenes: generatedContent.scenes.map((scene, index) => ({
+        number: index + 1,
+        text: scene.text,
+        duration: scene.duration,
+        imageUrl: scene.imageUrl || null,
+      })),
+      audioUrl: generatedContent.audioUrl || null,
+      createdAt: new Date().toISOString(),
+    }
+
+    // Create and download as JSON file
+    const blob = new Blob([JSON.stringify(contentPackage, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `tada-content-${product.title.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+
+    // Also download the script as a text file
+    const scriptBlob = new Blob([generatedContent.script], { type: 'text/plain' })
+    const scriptUrl = URL.createObjectURL(scriptBlob)
+    const scriptLink = document.createElement('a')
+    scriptLink.href = scriptUrl
+    scriptLink.download = `tada-script-${product.title.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.txt`
+    document.body.appendChild(scriptLink)
+    scriptLink.click()
+    document.body.removeChild(scriptLink)
+    URL.revokeObjectURL(scriptUrl)
+
+    // Show success feedback
+    setDownloadSuccess(true)
+    setTimeout(() => setDownloadSuccess(false), 2000)
+  }
+
+  const handleCopyScript = () => {
+    if (!generatedContent) return
+    navigator.clipboard.writeText(generatedContent.script)
+    setCopySuccess(true)
+    setTimeout(() => setCopySuccess(false), 2000)
   }
 
   return (
@@ -190,21 +241,51 @@ export function VideoPreview({ product, contentType, generatedContent, generatio
               onClick={handleDownload}
               className="flex-1 btn-primary py-3 text-sm flex items-center justify-center gap-2"
             >
-              <Download className="w-4 h-4" />
-              Download Video
+              {downloadSuccess ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4" />
+                  Downloaded!
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4" />
+                  Download
+                </>
+              )}
             </button>
             <button
-              onClick={() => {
-                navigator.clipboard.writeText(generatedContent.script)
-                alert('Script copied to clipboard!')
-              }}
-              className="btn-secondary py-3 text-sm flex items-center justify-center gap-2"
+              onClick={() => setShowExportModal(true)}
+              className="flex-1 btn-secondary py-3 text-sm flex items-center justify-center gap-2"
             >
-              <Copy className="w-4 h-4" />
-              Copy
+              <Share2 className="w-4 h-4" />
+              Export
+            </button>
+            <button
+              onClick={handleCopyScript}
+              className="btn-ghost py-3 text-sm flex items-center justify-center gap-2"
+            >
+              {copySuccess ? (
+                <>
+                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4" />
+                </>
+              )}
             </button>
           </div>
         </motion.div>
+      )}
+
+      {/* Export Modal */}
+      {generatedContent && product && (
+        <ExportModal
+          isOpen={showExportModal}
+          onClose={() => setShowExportModal(false)}
+          title={product.title}
+          scenes={generatedContent.scenes}
+        />
       )}
     </div>
   )

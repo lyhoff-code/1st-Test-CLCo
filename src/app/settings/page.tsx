@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import {
@@ -16,10 +16,22 @@ import {
   ExternalLink,
   Moon,
   Sun,
-  Globe
+  Globe,
+  AlertCircle
 } from 'lucide-react'
 import { useTheme } from '@/lib/ThemeContext'
 import { useLanguage } from '@/lib/LanguageContext'
+
+const STORAGE_KEY = 'tada-settings'
+
+interface Settings {
+  shopifyUrl: string
+  shopifyToken: string
+  geminiKey: string
+  elevenlabsKey: string
+  capcutAppId: string
+  canvaClientId: string
+}
 
 export default function SettingsPage() {
   const { theme, toggleTheme } = useTheme()
@@ -29,11 +41,62 @@ export default function SettingsPage() {
   const [shopifyToken, setShopifyToken] = useState('')
   const [geminiKey, setGeminiKey] = useState('')
   const [elevenlabsKey, setElevenlabsKey] = useState('')
+  const [capcutAppId, setCapcutAppId] = useState('')
+  const [canvaClientId, setCanvaClientId] = useState('')
   const [saved, setSaved] = useState(false)
+  const [loaded, setLoaded] = useState(false)
+
+  // Load settings from localStorage on mount
+  useEffect(() => {
+    const savedSettings = localStorage.getItem(STORAGE_KEY)
+    if (savedSettings) {
+      try {
+        const settings: Settings = JSON.parse(savedSettings)
+        setShopifyUrl(settings.shopifyUrl || '')
+        setShopifyToken(settings.shopifyToken || '')
+        setGeminiKey(settings.geminiKey || '')
+        setElevenlabsKey(settings.elevenlabsKey || '')
+        setCapcutAppId(settings.capcutAppId || '')
+        setCanvaClientId(settings.canvaClientId || '')
+      } catch (e) {
+        console.error('Error loading settings:', e)
+      }
+    }
+    setLoaded(true)
+  }, [])
 
   const handleSave = () => {
+    const settings: Settings = {
+      shopifyUrl,
+      shopifyToken,
+      geminiKey,
+      elevenlabsKey,
+      capcutAppId,
+      canvaClientId,
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
     setSaved(true)
     setTimeout(() => setSaved(false), 3000)
+  }
+
+  const hasUnsavedChanges = () => {
+    const savedSettings = localStorage.getItem(STORAGE_KEY)
+    if (!savedSettings) {
+      return shopifyUrl || shopifyToken || geminiKey || elevenlabsKey || capcutAppId || canvaClientId
+    }
+    try {
+      const settings: Settings = JSON.parse(savedSettings)
+      return (
+        settings.shopifyUrl !== shopifyUrl ||
+        settings.shopifyToken !== shopifyToken ||
+        settings.geminiKey !== geminiKey ||
+        settings.elevenlabsKey !== elevenlabsKey ||
+        settings.capcutAppId !== capcutAppId ||
+        settings.canvaClientId !== canvaClientId
+      )
+    } catch {
+      return false
+    }
   }
 
   return (
@@ -271,52 +334,64 @@ export default function SettingsPage() {
                 <h2 className="font-semibold text-tada-text dark:text-gray-100">Video Export</h2>
                 <p className="text-sm text-tada-text-light dark:text-gray-400">Professional video editing integrations</p>
               </div>
-              <span className="ml-auto px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-medium rounded-full">
-                Coming Soon
-              </span>
+              <span className="ml-auto px-3 py-1 glass-subtle text-tada-text-light dark:text-gray-400 text-xs font-medium">Optional</span>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               {/* CapCut */}
-              <div className="flex items-center justify-between p-4 rounded-2xl bg-white/50 dark:bg-gray-800/50 border border-white/30 dark:border-gray-700/30">
-                <div className="flex items-center gap-3">
+              <div className="p-4 rounded-2xl bg-white/50 dark:bg-gray-800/50 border border-white/30 dark:border-gray-700/30">
+                <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center">
                     <span className="text-white font-bold text-sm">CC</span>
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <p className="font-medium text-tada-text dark:text-gray-200">CapCut</p>
                     <p className="text-xs text-tada-text-light dark:text-gray-400">Export to CapCut templates</p>
                   </div>
+                  <a
+                    href="https://open.capcut.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-tada-turquoise-dark hover:underline inline-flex items-center gap-1"
+                  >
+                    Get API <ExternalLink className="w-3 h-3" />
+                  </a>
                 </div>
-                <a
-                  href="https://open.capcut.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2 rounded-xl bg-white/50 dark:bg-gray-700/50 text-sm font-medium text-tada-text dark:text-gray-200 hover:bg-white/70 dark:hover:bg-gray-600/50 transition-colors inline-flex items-center gap-2"
-                >
-                  Learn More <ExternalLink className="w-4 h-4" />
-                </a>
+                <input
+                  type="password"
+                  value={capcutAppId}
+                  onChange={(e) => setCapcutAppId(e.target.value)}
+                  placeholder="CapCut App ID"
+                  className="input-field dark:bg-gray-800/50 dark:text-gray-200 dark:placeholder-gray-500"
+                />
               </div>
 
               {/* Canva */}
-              <div className="flex items-center justify-between p-4 rounded-2xl bg-white/50 dark:bg-gray-800/50 border border-white/30 dark:border-gray-700/30">
-                <div className="flex items-center gap-3">
+              <div className="p-4 rounded-2xl bg-white/50 dark:bg-gray-800/50 border border-white/30 dark:border-gray-700/30">
+                <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center">
                     <span className="text-white font-bold text-sm">C</span>
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <p className="font-medium text-tada-text dark:text-gray-200">Canva</p>
                     <p className="text-xs text-tada-text-light dark:text-gray-400">Export to Canva designs</p>
                   </div>
+                  <a
+                    href="https://www.canva.com/developers/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-tada-turquoise-dark hover:underline inline-flex items-center gap-1"
+                  >
+                    Get API <ExternalLink className="w-3 h-3" />
+                  </a>
                 </div>
-                <a
-                  href="https://www.canva.com/developers/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2 rounded-xl bg-white/50 dark:bg-gray-700/50 text-sm font-medium text-tada-text dark:text-gray-200 hover:bg-white/70 dark:hover:bg-gray-600/50 transition-colors inline-flex items-center gap-2"
-                >
-                  Learn More <ExternalLink className="w-4 h-4" />
-                </a>
+                <input
+                  type="password"
+                  value={canvaClientId}
+                  onChange={(e) => setCanvaClientId(e.target.value)}
+                  placeholder="Canva Client ID"
+                  className="input-field dark:bg-gray-800/50 dark:text-gray-200 dark:placeholder-gray-500"
+                />
               </div>
             </div>
           </motion.section>
@@ -327,6 +402,12 @@ export default function SettingsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
+            {loaded && hasUnsavedChanges() && !saved && (
+              <div className="mb-3 p-3 rounded-xl bg-amber-100 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800/30 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                <span className="text-sm text-amber-700 dark:text-amber-300">You have unsaved changes</span>
+              </div>
+            )}
             <button
               onClick={handleSave}
               className="w-full btn-primary py-4 flex items-center justify-center gap-2"
@@ -344,7 +425,7 @@ export default function SettingsPage() {
               )}
             </button>
             <p className="text-center text-xs text-tada-text-light dark:text-gray-400 mt-3">
-              API keys are stored securely and never shared
+              Settings are stored locally in your browser
             </p>
           </motion.div>
 
