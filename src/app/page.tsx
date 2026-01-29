@@ -27,6 +27,8 @@ import { HistoryPanel } from '@/components/HistoryPanel'
 import { StorytellingEditor } from '@/components/StorytellingEditor'
 import { VideoSettingsPanel } from '@/components/VideoSettingsPanel'
 import { ContentAssistant, AssistantHeaderButton } from '@/components/ContentAssistant'
+import { ThemeToggle, LanguageSwitcher } from '@/components/HeaderControls'
+import { useLanguage } from '@/lib/LanguageContext'
 import {
   ShopifyProduct,
   ContentType,
@@ -210,7 +212,7 @@ export default function Home() {
   return (
     <main className="min-h-screen aurora-bg">
       {/* Header */}
-      <header className="sticky top-0 z-50 glass-subtle border-b border-white/20">
+      <header className="sticky top-0 z-50 glass-subtle border-b border-white/20 dark:border-gray-700/30">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
@@ -223,10 +225,10 @@ export default function Home() {
                 <Sparkles className="w-6 h-6 text-white" strokeWidth={2.5} />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-tada-text">
+                <h1 className="text-xl font-bold text-tada-text dark:text-gray-100">
                   Tada<span className="text-tada-pink">.media</span>
                 </h1>
-                <p className="text-xs text-tada-text-light">AI Content Studio</p>
+                <p className="text-xs text-tada-text-light dark:text-gray-400">AI Content Studio</p>
               </div>
             </motion.div>
 
@@ -241,7 +243,7 @@ export default function Home() {
 
               <button
                 onClick={() => setShowHistory(!showHistory)}
-                className={`btn-ghost flex items-center gap-2 ${showHistory ? 'bg-tada-turquoise/20 text-tada-text' : ''}`}
+                className={`btn-ghost flex items-center gap-2 ${showHistory ? 'bg-tada-turquoise/20 text-tada-text dark:text-gray-200' : ''}`}
               >
                 <Clock className="w-5 h-5" />
                 <span className="hidden sm:inline">History</span>
@@ -258,6 +260,12 @@ export default function Home() {
                 <Settings className="w-5 h-5" />
                 <span className="hidden sm:inline">Settings</span>
               </Link>
+
+              {/* Language & Theme */}
+              <div className="hidden md:flex items-center gap-2 ml-2 pl-2 border-l border-white/20 dark:border-gray-700/30">
+                <LanguageSwitcher />
+                <ThemeToggle />
+              </div>
             </motion.nav>
           </div>
         </div>

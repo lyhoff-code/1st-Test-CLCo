@@ -15,6 +15,13 @@
   --tada-white: #FFFFFF;
 }
 
+.dark {
+  --tada-background: #111827;
+  --tada-text: #F3F4F6;
+  --tada-text-light: #9CA3AF;
+  --tada-white: #1F2937;
+}
+
 body {
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: var(--tada-text);
@@ -32,6 +39,14 @@ body {
     linear-gradient(180deg, var(--tada-background) 0%, #F5F7FA 100%);
   background-size: 200% 200%;
   animation: aurora-shift 20s ease infinite;
+}
+
+.dark .aurora-bg {
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(168, 230, 225, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 0%, rgba(249, 180, 196, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 100%, rgba(168, 230, 225, 0.08) 0%, transparent 50%),
+    linear-gradient(180deg, #111827 0%, #0F172A 100%);
 }
 
 @keyframes aurora-shift {
@@ -241,4 +256,46 @@ body {
 .divider-gradient {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--tada-turquoise), var(--tada-pink), transparent);
+}
+
+/* Dark Mode Overrides */
+.dark .glass {
+  @apply bg-gray-800/70 border-gray-700/50;
+  background: linear-gradient(135deg, rgba(31, 41, 55, 0.8) 0%, rgba(31, 41, 55, 0.6) 100%);
+}
+
+.dark .glass-subtle {
+  @apply bg-gray-800/50 border-gray-700/30;
+}
+
+.dark .glass-strong {
+  @apply bg-gray-800/80 border-gray-700/60;
+}
+
+.dark .btn-ghost {
+  @apply text-gray-400 hover:bg-gray-700/60 hover:text-gray-200;
+}
+
+.dark .btn-secondary {
+  @apply bg-gray-800/60 border-gray-600/30 text-gray-200 hover:bg-gray-700/60;
+}
+
+.dark .input-field {
+  @apply bg-gray-800/60 border-gray-700/50 text-gray-200 placeholder-gray-500;
+}
+
+.dark .section-title {
+  @apply text-gray-200;
+}
+
+.dark .card-lift:hover {
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.4);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: var(--tada-turquoise-dark);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--tada-turquoise);
 }
