@@ -26,7 +26,7 @@ import { VideoPreview } from '@/components/VideoPreview'
 import { HistoryPanel } from '@/components/HistoryPanel'
 import { StorytellingEditor } from '@/components/StorytellingEditor'
 import { VideoSettingsPanel } from '@/components/VideoSettingsPanel'
-import { ContentAssistant } from '@/components/ContentAssistant'
+import { ContentAssistant, AssistantHeaderButton } from '@/components/ContentAssistant'
 import {
   ShopifyProduct,
   ContentType,
@@ -54,6 +54,7 @@ export default function Home() {
   const [showStorytellingEditor, setShowStorytellingEditor] = useState(false)
   const [videoSettings, setVideoSettings] = useState<VideoSettings>(DEFAULT_VIDEO_SETTINGS)
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false)
+  const [assistantOpen, setAssistantOpen] = useState(false)
 
   // Load history from localStorage
   useEffect(() => {
@@ -235,6 +236,9 @@ export default function Home() {
               animate={{ opacity: 1, x: 0 }}
               className="flex items-center gap-2"
             >
+              {/* AI Assistant Button */}
+              <AssistantHeaderButton onClick={() => setAssistantOpen(true)} />
+
               <button
                 onClick={() => setShowHistory(!showHistory)}
                 className={`btn-ghost flex items-center gap-2 ${showHistory ? 'bg-tada-turquoise/20 text-tada-text' : ''}`}
@@ -601,6 +605,8 @@ export default function Home() {
       <ContentAssistant
         productName={selectedProduct?.title}
         productDescription={selectedProduct?.description}
+        externalOpen={assistantOpen}
+        onOpenChange={setAssistantOpen}
       />
     </main>
   )

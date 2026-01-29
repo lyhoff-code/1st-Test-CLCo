@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Sparkles,
@@ -11,11 +11,11 @@ import {
   Lightbulb,
   TrendingUp,
   Hash,
-  MessageCircle,
   Loader2,
   Wand2,
   Target,
   Zap,
+  Command,
 } from 'lucide-react'
 
 interface Message {
@@ -34,6 +34,8 @@ interface QuickAction {
 interface ContentAssistantProps {
   productName?: string
   productDescription?: string
+  externalOpen?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
 const QUICK_ACTIONS: QuickAction[] = [
@@ -69,9 +71,10 @@ const QUICK_ACTIONS: QuickAction[] = [
   },
 ]
 
-export function ContentAssistant({ productName, productDescription }: ContentAssistantProps) {
-  const [isOpen, setIsOpen] = useState(false)
+export function ContentAssistant({ productName, productDescription, externalOpen, onOpenChange }: ContentAssistantProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
+  const [showTooltip, setShowTooltip] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -92,10 +95,60 @@ What would you like help with today?`,
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
+
+  // Determine if open based on external or internal state
+  const isOpen = externalOpen !== undefined ? externalOpen : internalOpen
+
+  const setIsOpen = useCallback((open: boolean) => {
+    if (onOpenChange) {
+      onOpenChange(open)
+    } else {
+      setInternalOpen(open)
+    }
+  }, [onOpenChange])
+
+  // Keyboard shortcut: Ctrl/Cmd + K
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setIsOpen(!isOpen)
+      }
+      // Escape to close
+      if (e.key === 'Escape' && isOpen) {
+        setIsOpen(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isOpen, setIsOpen])
+
+  // Focus input when opening
+  useEffect(() => {
+    if (isOpen && !isMinimized) {
+      setTimeout(() => inputRef.current?.focus(), 100)
+    }
+  }, [isOpen, isMinimized])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  // Show tooltip hint periodically
+  useEffect(() => {
+    const showHint = () => {
+      if (!isOpen) {
+        setShowTooltip(true)
+        setTimeout(() => setShowTooltip(false), 3000)
+      }
+    }
+
+    // Show hint after 5 seconds
+    const timer = setTimeout(showHint, 5000)
+    return () => clearTimeout(timer)
+  }, [isOpen])
 
   const handleSend = async (customPrompt?: string) => {
     const messageText = customPrompt || input.trim()
@@ -120,7 +173,7 @@ What would you like help with today?`,
           message: messageText,
           productName,
           productDescription,
-          conversationHistory: messages.slice(-6), // Last 6 messages for context
+          conversationHistory: messages.slice(-6),
         }),
       })
 
@@ -155,21 +208,67 @@ What would you like help with today?`,
     }
   }
 
+  const isMac = typeof navigator !== 'undefined' && navigator.platform.toUpperCase().indexOf('MAC') >= 0
+
   return (
     <>
-      {/* Floating Button */}
+      {/* Floating Button with Tooltip */}
       <AnimatePresence>
         {!isOpen && (
-          <motion.button
+          <motion.div
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 w-14 h-14 rounded-2xl bg-gradient-to-br from-tada-turquoise to-tada-pink shadow-lg flex items-center justify-center hover:scale-110 transition-transform z-50"
+            className="fixed bottom-6 right-6 z-50"
           >
-            <Sparkles className="w-6 h-6 text-white" />
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse" />
-          </motion.button>
+            {/* Tooltip */}
+            <AnimatePresence>
+              {showTooltip && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, x: 10 }}
+                  animate={{ opacity: 1, y: 0, x: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="absolute bottom-full right-0 mb-3 whitespace-nowrap"
+                >
+                  <div className="glass-strong px-4 py-2 rounded-xl shadow-lg">
+                    <p className="text-sm text-tada-text flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-tada-turquoise-dark" />
+                      Need help? Press
+                      <kbd className="px-2 py-0.5 rounded bg-tada-turquoise/20 text-xs font-mono">
+                        {isMac ? '⌘' : 'Ctrl'} + K
+                      </kbd>
+                    </p>
+                  </div>
+                  <div className="absolute bottom-0 right-6 w-3 h-3 bg-white/80 transform rotate-45 translate-y-1.5" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Button */}
+            <motion.button
+              onClick={() => setIsOpen(true)}
+              onMouseEnter={() => setShowTooltip(true)}
+              onMouseLeave={() => setShowTooltip(false)}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-tada-turquoise to-tada-pink shadow-lg flex items-center justify-center group"
+            >
+              <Sparkles className="w-6 h-6 text-white" />
+
+              {/* Pulse ring */}
+              <span className="absolute inset-0 rounded-2xl animate-ping bg-tada-turquoise/30" style={{ animationDuration: '2s' }} />
+
+              {/* Online indicator */}
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white" />
+
+              {/* Keyboard hint on hover */}
+              <div className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                <div className="glass-subtle px-2 py-1 rounded-lg text-xs text-tada-text-light whitespace-nowrap">
+                  {isMac ? '⌘' : 'Ctrl'} + K
+                </div>
+              </div>
+            </motion.button>
+          </motion.div>
         )}
       </AnimatePresence>
 
@@ -185,7 +284,8 @@ What would you like help with today?`,
               height: isMinimized ? 'auto' : '600px',
             }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-6 right-6 w-96 glass-strong shadow-2xl flex flex-col z-50 overflow-hidden"
+            className="fixed bottom-6 right-6 w-96 max-w-[calc(100vw-3rem)] glass-strong shadow-2xl flex flex-col z-50 overflow-hidden"
+            style={{ maxHeight: 'calc(100vh - 6rem)' }}
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-white/20 bg-gradient-to-r from-tada-turquoise/20 to-tada-pink/20">
@@ -196,15 +296,21 @@ What would you like help with today?`,
                 <div>
                   <h3 className="font-semibold text-tada-text">Content Assistant</h3>
                   <p className="text-xs text-tada-text-light flex items-center gap-1">
-                    <span className="w-2 h-2 bg-green-500 rounded-full" />
+                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                     Powered by Gemini AI
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
+                {/* Keyboard shortcut hint */}
+                <div className="hidden sm:flex items-center gap-1 px-2 py-1 rounded-lg bg-white/20 mr-2">
+                  <Command className="w-3 h-3 text-tada-text-light" />
+                  <span className="text-xs text-tada-text-light">K</span>
+                </div>
                 <button
                   onClick={() => setIsMinimized(!isMinimized)}
                   className="p-2 hover:bg-white/30 rounded-lg transition-colors"
+                  title={isMinimized ? 'Expand' : 'Minimize'}
                 >
                   {isMinimized ? (
                     <Maximize2 className="w-4 h-4 text-tada-text-light" />
@@ -215,6 +321,7 @@ What would you like help with today?`,
                 <button
                   onClick={() => setIsOpen(false)}
                   className="p-2 hover:bg-white/30 rounded-lg transition-colors"
+                  title="Close (Esc)"
                 >
                   <X className="w-4 h-4 text-tada-text-light" />
                 </button>
@@ -278,6 +385,7 @@ What would you like help with today?`,
                   <div className="flex items-end gap-2">
                     <div className="flex-1 relative">
                       <textarea
+                        ref={inputRef}
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyPress={handleKeyPress}
@@ -302,5 +410,26 @@ What would you like help with today?`,
         )}
       </AnimatePresence>
     </>
+  )
+}
+
+// Export a header button component for quick access
+export function AssistantHeaderButton({ onClick }: { onClick: () => void }) {
+  const isMac = typeof navigator !== 'undefined' && navigator.platform.toUpperCase().indexOf('MAC') >= 0
+
+  return (
+    <button
+      onClick={onClick}
+      className="btn-ghost flex items-center gap-2 group relative"
+    >
+      <div className="relative">
+        <Sparkles className="w-5 h-5 text-tada-turquoise-dark" />
+        <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full" />
+      </div>
+      <span className="hidden sm:inline">AI Assistant</span>
+      <kbd className="hidden md:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-tada-turquoise/10 text-[10px] font-mono text-tada-text-light">
+        {isMac ? '⌘' : 'Ctrl'}K
+      </kbd>
+    </button>
   )
 }
