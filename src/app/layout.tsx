@@ -1,12 +1,9 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
-
 export const metadata: Metadata = {
-  title: 'Shopify Content Generator | Crea Videos para tus Productos',
-  description: 'Genera contenido de video automático para tus productos de Shopify con IA',
+  title: 'Tada.media | AI-Powered Video Content Generator',
+  description: 'Generate stunning video content for your products with AI storytelling',
 }
 
 export default function RootLayout({
@@ -15,8 +12,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es">
-      <body className={inter.className}>
+    <html lang="en">
+      <body className="font-sans antialiased">
         <div className="min-h-screen">
           {/* Background decoration */}
           <div className="fixed inset-0 -z-10 overflow-hidden">
