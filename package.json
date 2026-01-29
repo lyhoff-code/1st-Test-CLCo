@@ -9,16 +9,20 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.11.1",
     "@google/generative-ai": "^0.24.1",
     "@shopify/shopify-api": "^9.0.0",
+    "bcryptjs": "^3.0.3",
     "framer-motion": "^10.16.16",
     "lucide-react": "^0.303.0",
     "next": "14.0.4",
+    "next-auth": "^4.24.13",
     "openai": "^4.24.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.10.5",
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",

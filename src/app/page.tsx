@@ -28,6 +28,7 @@ import { StorytellingEditor } from '@/components/StorytellingEditor'
 import { VideoSettingsPanel } from '@/components/VideoSettingsPanel'
 import { ContentAssistant, AssistantHeaderButton } from '@/components/ContentAssistant'
 import { ThemeToggle, LanguageSwitcher } from '@/components/HeaderControls'
+import { UserMenu } from '@/components/UserMenu'
 import { useLanguage } from '@/lib/LanguageContext'
 import {
   ShopifyProduct,
@@ -265,6 +266,11 @@ export default function Home() {
               <div className="hidden md:flex items-center gap-2 ml-2 pl-2 border-l border-white/20 dark:border-gray-700/30">
                 <LanguageSwitcher />
                 <ThemeToggle />
+              </div>
+
+              {/* User Menu */}
+              <div className="ml-2 pl-2 border-l border-white/20 dark:border-gray-700/30">
+                <UserMenu />
               </div>
             </motion.nav>
           </div>
