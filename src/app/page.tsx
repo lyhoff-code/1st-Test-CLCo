@@ -26,6 +26,7 @@ import { VideoPreview } from '@/components/VideoPreview'
 import { HistoryPanel } from '@/components/HistoryPanel'
 import { StorytellingEditor } from '@/components/StorytellingEditor'
 import { VideoSettingsPanel } from '@/components/VideoSettingsPanel'
+import { ContentAssistant } from '@/components/ContentAssistant'
 import {
   ShopifyProduct,
   ContentType,
@@ -595,6 +596,12 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* AI Content Assistant */}
+      <ContentAssistant
+        productName={selectedProduct?.title}
+        productDescription={selectedProduct?.description}
+      />
     </main>
   )
 }

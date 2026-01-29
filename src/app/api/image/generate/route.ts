@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 import { StorytellingSceneType } from '@/types'
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY
 
 interface ImageGenerateRequest {
   prompt: string
@@ -30,8 +31,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // If OpenAI is not configured, return placeholder image
-    if (!OPENAI_API_KEY) {
+    // If Gemini is not configured, return placeholder image
+    if (!GEMINI_API_KEY) {
       const placeholderUrl = getPlaceholderImage(sceneType)
       return NextResponse.json({ imageUrl: placeholderUrl })
     }
@@ -39,38 +40,43 @@ export async function POST(request: NextRequest) {
     const styleModifier = SCENE_STYLE_MODIFIERS[sceneType]
     const enhancedPrompt = `${prompt}. Style: ${styleModifier}. Product featured: ${productName}. Professional photography, high quality, suitable for social media content.`
 
-    const response = await fetch('https://api.openai.com/v1/images/generations', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'dall-e-3',
-        prompt: enhancedPrompt,
-        n: 1,
-        size: '1024x1792', // Vertical format for reels
-        quality: 'standard',
-        style: 'vivid',
-      }),
-    })
+    try {
+      // Initialize Gemini with Imagen 3
+      const genAI = new GoogleGenerativeAI(GEMINI_API_KEY)
 
-    if (!response.ok) {
-      const error = await response.json()
-      console.error('OpenAI DALL-E error:', error)
+      // Use Imagen 3 for image generation
+      const model = genAI.getGenerativeModel({ model: 'imagen-3.0-generate-002' })
+
+      const result = await model.generateContent({
+        contents: [{
+          role: 'user',
+          parts: [{ text: enhancedPrompt }]
+        }],
+        generationConfig: {
+          responseMimeType: 'image/png',
+        } as any,
+      })
+
+      // Get the image from response
+      const response = result.response
+      const imagePart = response.candidates?.[0]?.content?.parts?.[0]
+
+      if (imagePart && 'inlineData' in imagePart && imagePart.inlineData) {
+        // Return base64 image as data URL
+        const imageUrl = `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`
+        return NextResponse.json({ imageUrl })
+      }
+
+      // Fallback to placeholder if no image generated
+      const placeholderUrl = getPlaceholderImage(sceneType)
+      return NextResponse.json({ imageUrl: placeholderUrl })
+
+    } catch (geminiError) {
+      console.error('Gemini Imagen error:', geminiError)
+      // Fallback to placeholder on error
       const placeholderUrl = getPlaceholderImage(sceneType)
       return NextResponse.json({ imageUrl: placeholderUrl })
     }
-
-    const data = await response.json()
-    const imageUrl = data.data[0]?.url
-
-    if (!imageUrl) {
-      const placeholderUrl = getPlaceholderImage(sceneType)
-      return NextResponse.json({ imageUrl: placeholderUrl })
-    }
-
-    return NextResponse.json({ imageUrl })
 
   } catch (error) {
     console.error('Error generating image:', error)
