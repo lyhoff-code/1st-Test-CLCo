@@ -394,24 +394,85 @@ export default function Home() {
                   selected={contentType}
                   onSelect={setContentType}
                 />
-                {isStorytellingMode && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    className="mt-4 p-4 rounded-2xl bg-gradient-to-r from-tada-turquoise/10 to-tada-pink/10 border border-tada-pink/20"
-                  >
-                    <div className="flex items-start gap-3">
-                      <BookOpen className="w-5 h-5 text-tada-pink-dark mt-0.5" />
-                      <div>
-                        <p className="text-sm font-medium text-tada-text">Storytelling Mode Selected</p>
-                        <p className="text-xs text-tada-text-light mt-1">
-                          Create a 6-scene story: Hook → Problem → Agitation → Solution → Result → CTA.
-                          Each scene gets its own script, voice, and AI-generated image.
-                        </p>
+
+                {/* Content Structure Info - Shows for ALL content types */}
+                <motion.div
+                  key={contentType}
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className={`mt-4 p-4 rounded-2xl border ${
+                    contentType === 'reel' || contentType === 'post'
+                      ? 'bg-gradient-to-r from-tada-turquoise/10 to-tada-turquoise/5 border-tada-turquoise/20'
+                      : 'bg-gradient-to-r from-tada-pink/10 to-tada-pink/5 border-tada-pink/20'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    {contentType === 'reel' && <Film className="w-5 h-5 text-tada-turquoise-dark mt-0.5 shrink-0" />}
+                    {contentType === 'story' && <Eye className="w-5 h-5 text-tada-pink-dark mt-0.5 shrink-0" />}
+                    {contentType === 'post' && <Package className="w-5 h-5 text-tada-turquoise-dark mt-0.5 shrink-0" />}
+                    {contentType === 'storytelling' && <BookOpen className="w-5 h-5 text-tada-pink-dark mt-0.5 shrink-0" />}
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-tada-text dark:text-gray-100">
+                        {contentType === 'reel' && 'Reel Structure (15-60s)'}
+                        {contentType === 'story' && 'Story Structure (15s)'}
+                        {contentType === 'post' && 'Post Structure'}
+                        {contentType === 'storytelling' && 'Storytelling Structure (30s)'}
+                      </p>
+                      <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                        {contentType === 'reel' && (
+                          <>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Hook</span>
+                            <span className="text-tada-text-light">→</span>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Value</span>
+                            <span className="text-tada-text-light">→</span>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Demo</span>
+                            <span className="text-tada-text-light">→</span>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">CTA</span>
+                          </>
+                        )}
+                        {contentType === 'story' && (
+                          <>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">Attention</span>
+                            <span className="text-tada-text-light">→</span>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">Message</span>
+                            <span className="text-tada-text-light">→</span>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">Action</span>
+                          </>
+                        )}
+                        {contentType === 'post' && (
+                          <>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Visual</span>
+                            <span className="text-tada-text-light">+</span>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Caption</span>
+                            <span className="text-tada-text-light">+</span>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Hashtags</span>
+                          </>
+                        )}
+                        {contentType === 'storytelling' && (
+                          <>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">Hook</span>
+                            <span className="text-tada-text-light">→</span>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">Problem</span>
+                            <span className="text-tada-text-light">→</span>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">Agitation</span>
+                            <span className="text-tada-text-light">→</span>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">Solution</span>
+                            <span className="text-tada-text-light">→</span>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">Result</span>
+                            <span className="text-tada-text-light">→</span>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">CTA</span>
+                          </>
+                        )}
                       </div>
+                      <p className="text-xs text-tada-text-light dark:text-gray-400 mt-2">
+                        {contentType === 'reel' && 'Perfect for Instagram Reels, TikTok, and YouTube Shorts. Each scene with script and voiceover.'}
+                        {contentType === 'story' && 'Quick ephemeral content for Instagram/Facebook Stories. Optimized for swipe-up engagement.'}
+                        {contentType === 'post' && 'Static feed content with engaging caption and optimized hashtags for discovery.'}
+                        {contentType === 'storytelling' && 'Advanced 6-scene narrative. Each scene gets its own script, voice, and AI-generated image.'}
+                      </p>
                     </div>
-                  </motion.div>
-                )}
+                  </div>
+                </motion.div>
               </motion.section>
 
               {/* Step 3: Tone */}

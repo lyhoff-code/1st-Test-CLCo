@@ -87,7 +87,8 @@ body {
            text-tada-text shadow-glow-turquoise
            hover:shadow-lg hover:shadow-tada-turquoise/30 hover:scale-[1.02]
            active:scale-[0.98]
-           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100;
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
+           text-center inline-flex items-center justify-center;
   }
 
   .btn-secondary {
@@ -95,19 +96,22 @@ body {
            bg-white/60 backdrop-blur-sm border-2 border-tada-pink/30
            text-tada-text
            hover:bg-tada-pink/10 hover:border-tada-pink/50 hover:scale-[1.02]
-           active:scale-[0.98];
+           active:scale-[0.98]
+           text-center inline-flex items-center justify-center;
   }
 
   .btn-ghost {
     @apply px-4 py-2.5 font-medium rounded-xl transition-all duration-300
            text-tada-text-light
-           hover:bg-white/60 hover:backdrop-blur-sm hover:text-tada-text;
+           hover:bg-white/60 hover:backdrop-blur-sm hover:text-tada-text
+           text-center inline-flex items-center justify-center;
   }
 
   .btn-icon {
     @apply p-2.5 rounded-xl transition-all duration-300
            text-tada-text-light hover:text-tada-text
-           hover:bg-white/60 hover:backdrop-blur-sm;
+           hover:bg-white/60 hover:backdrop-blur-sm
+           inline-flex items-center justify-center;
   }
 
   /* Input Fields */
