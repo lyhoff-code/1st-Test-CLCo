@@ -31,7 +31,7 @@ export interface ShopifyProduct {
   };
 }
 
-export type ContentType = 'reel' | 'story' | 'post' | 'storytelling' | 'carousel';
+export type ContentType = 'reel' | 'story' | 'post' | 'storytelling' | 'carousel' | 'video-to-shorts';
 
 export type ToneType = 'divertido' | 'profesional' | 'educativo' | 'emocional' | 'urgente';
 
@@ -611,7 +611,61 @@ export const CONTENT_TYPES: { value: ContentType; label: string; iconName: strin
       { name: 'CTA', time: 'Slide 7', purpose: 'Save & follow' },
     ]
   },
+  {
+    value: 'video-to-shorts',
+    label: 'Video to Shorts',
+    iconName: 'Scissors',
+    description: 'Convert long videos into viral shorts',
+    color: 'pink',
+    scenes: [
+      { name: 'Analysis', time: 'Step 1', purpose: 'AI analyzes your video' },
+      { name: 'Highlights', time: 'Step 2', purpose: 'Detect viral moments' },
+      { name: 'Clips', time: 'Step 3', purpose: 'Extract best segments' },
+      { name: 'Enhance', time: 'Step 4', purpose: 'Add captions & effects' },
+      { name: 'Export', time: 'Step 5', purpose: 'Multiple shorts ready' },
+    ]
+  },
 ];
+
+// Video to Shorts conversion
+export interface VideoToShortsInput {
+  videoUrl?: string;
+  videoFile?: File;
+  videoDuration: number;
+  numberOfShorts: number;
+  shortsDuration: '15' | '30' | '60';
+  focusKeywords: string[];
+  highlightMoments: 'auto' | 'manual';
+  addCaptions: boolean;
+  addMusic: boolean;
+  aspectRatio: '9:16' | '1:1' | '16:9';
+}
+
+export interface DetectedHighlight {
+  id: string;
+  startTime: number;
+  endTime: number;
+  duration: number;
+  confidence: number;
+  reason: string;
+  transcript?: string;
+  thumbnail?: string;
+  selected: boolean;
+}
+
+export interface GeneratedShort {
+  id: string;
+  title: string;
+  description: string;
+  startTime: number;
+  endTime: number;
+  duration: number;
+  videoUrl?: string;
+  thumbnail?: string;
+  captions?: string;
+  suggestedHashtags: string[];
+  viralScore: number;
+}
 
 // Research data from Perplexity
 export interface ProductResearch {

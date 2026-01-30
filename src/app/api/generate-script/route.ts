@@ -15,6 +15,7 @@ const DURATION_MAP: Record<ContentType, number> = {
   post: 20,
   storytelling: 30,
   carousel: 0, // Carousel doesn't have duration, it's slides
+  'video-to-shorts': 0, // Video-to-shorts is a conversion tool, not script generation
 }
 
 const TONE_INSTRUCTIONS: Record<ToneType, string> = {
@@ -31,6 +32,7 @@ const CONTENT_INSTRUCTIONS: Record<ContentType, string> = {
   post: 'Create a script for a 20-second square video. Balance information with entertainment.',
   storytelling: 'Create a 30-second storytelling script following the Hook → Problem → Agitation → Solution → Result → CTA framework.',
   carousel: 'Create content for a 7-slide carousel: 1) Eye-catching cover title, 2) Problem statement, 3) Shocking stat or fact, 4) Product solution, 5) Key benefits, 6) Social proof/testimonial, 7) Call-to-action. Each slide needs a short impactful headline (max 10 words) and brief supporting text.',
+  'video-to-shorts': 'This is a video conversion tool. Suggest captions, hashtags, and titles for extracted short clips.',
 }
 
 export async function POST(request: NextRequest) {

@@ -18,7 +18,8 @@ import {
   Sliders,
   ChevronDown,
   ChevronUp,
-  Search
+  Search,
+  Scissors
 } from 'lucide-react'
 import { ProductSelector } from '@/components/ProductSelector'
 import { ContentTypeSelector } from '@/components/ContentTypeSelector'
@@ -32,6 +33,7 @@ import { ContentAssistant, AssistantHeaderButton } from '@/components/ContentAss
 import { ThemeToggle, LanguageSwitcher } from '@/components/HeaderControls'
 import { UserMenu } from '@/components/UserMenu'
 import { ResearchPanel } from '@/components/ResearchPanel'
+import { VideoToShortsPanel } from '@/components/VideoToShortsPanel'
 import { useLanguage } from '@/lib/LanguageContext'
 import {
   ShopifyProduct,
@@ -395,8 +397,42 @@ export default function Home() {
           )}
         </AnimatePresence>
 
-        {/* Main Content - Hidden when storytelling editor is open */}
-        {!showStorytellingEditor && (
+        {/* Video to Shorts Mode - Full Width Panel */}
+        <AnimatePresence>
+          {contentType === 'video-to-shorts' && !showStorytellingEditor && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="mb-8"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center shadow-lg">
+                    <Scissors className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Video to Shorts</h2>
+                    <p className="text-sm text-slate-600 dark:text-slate-300 font-medium">Convert long videos into viral shorts with AI</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setContentType('reel')}
+                  className="btn-secondary px-4 py-2 flex items-center gap-2"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  Back to Content Types
+                </button>
+              </div>
+              <div className="glass p-6">
+                <VideoToShortsPanel />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Main Content - Hidden when storytelling editor or video-to-shorts is open */}
+        {!showStorytellingEditor && contentType !== 'video-to-shorts' && (
           <div className="grid lg:grid-cols-2 gap-6 md:gap-8 items-start">
             {/* Left Column - Configuration */}
             <div className="space-y-5">

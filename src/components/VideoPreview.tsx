@@ -35,6 +35,7 @@ const ASPECT_RATIOS: Record<ContentType, string> = {
   post: 'aspect-square',
   storytelling: 'aspect-[9/16]',
   carousel: 'aspect-square',
+  'video-to-shorts': 'aspect-[9/16]',
 }
 
 const ASPECT_LABELS: Record<ContentType, string> = {
@@ -43,6 +44,7 @@ const ASPECT_LABELS: Record<ContentType, string> = {
   post: '1:1',
   storytelling: '9:16',
   carousel: '1:1',
+  'video-to-shorts': '9:16',
 }
 
 export function VideoPreview({ product, contentType, generatedContent, generationState }: VideoPreviewProps) {

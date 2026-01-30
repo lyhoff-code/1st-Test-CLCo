@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Clapperboard, Smartphone, Image, BookOpen, LayoutGrid, Check } from 'lucide-react'
+import { Clapperboard, Smartphone, Image, BookOpen, LayoutGrid, Scissors, Check } from 'lucide-react'
 import { ContentType, CONTENT_TYPES } from '@/types'
 
 interface ContentTypeSelectorProps {
@@ -15,16 +15,17 @@ const ICONS = {
   Image,
   BookOpen,
   LayoutGrid,
+  Scissors,
 }
 
 export function ContentTypeSelector({ selected, onSelect }: ContentTypeSelectorProps) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
       {CONTENT_TYPES.map((type) => {
         const Icon = ICONS[type.iconName as keyof typeof ICONS]
         const isSelected = selected === type.value
         const isTurquoise = type.color === 'turquoise'
-        const isNew = type.value === 'storytelling' || type.value === 'carousel'
+        const isNew = type.value === 'storytelling' || type.value === 'carousel' || type.value === 'video-to-shorts'
 
         return (
           <motion.button
@@ -41,8 +42,12 @@ export function ContentTypeSelector({ selected, onSelect }: ContentTypeSelectorP
             whileTap={{ scale: 0.98 }}
           >
             {isNew && (
-              <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-gradient-to-r from-tada-turquoise to-tada-pink rounded-full text-[10px] font-bold text-white shadow-glass-sm">
-                NEW
+              <div className={`absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow-glass-sm ${
+                type.value === 'video-to-shorts'
+                  ? 'bg-gradient-to-r from-rose-500 to-pink-500'
+                  : 'bg-gradient-to-r from-tada-turquoise to-tada-pink'
+              }`}>
+                {type.value === 'video-to-shorts' ? 'HOT' : 'NEW'}
               </div>
             )}
             <div className={`w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 rounded-xl flex items-center justify-center ${
