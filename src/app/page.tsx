@@ -19,7 +19,8 @@ import {
   ChevronDown,
   ChevronUp,
   Search,
-  Scissors
+  Scissors,
+  Wand2
 } from 'lucide-react'
 import { ProductSelector } from '@/components/ProductSelector'
 import { ContentTypeSelector } from '@/components/ContentTypeSelector'
@@ -285,6 +286,18 @@ export default function Home() {
             >
               {/* AI Assistant Button */}
               <AssistantHeaderButton onClick={() => setAssistantOpen(true)} />
+
+              {/* Creator Studio Link */}
+              <Link
+                href="/studio"
+                className="btn-ghost flex items-center gap-2 bg-gradient-to-r from-databake-turquoise/10 to-databake-pink/10 border border-databake-turquoise/30"
+              >
+                <Wand2 className="w-5 h-5 text-databake-turquoise-dark" />
+                <span className="hidden sm:inline font-semibold">Studio</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+                  NEW
+                </span>
+              </Link>
 
               <button
                 onClick={() => setShowHistory(!showHistory)}
