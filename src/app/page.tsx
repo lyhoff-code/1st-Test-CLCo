@@ -14,9 +14,11 @@ import {
   Film,
   MessageSquare,
   BookOpen,
+  LayoutGrid,
   Sliders,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Search
 } from 'lucide-react'
 import { ProductSelector } from '@/components/ProductSelector'
 import { ContentTypeSelector } from '@/components/ContentTypeSelector'
@@ -29,6 +31,7 @@ import { VideoSettingsPanel } from '@/components/VideoSettingsPanel'
 import { ContentAssistant, AssistantHeaderButton } from '@/components/ContentAssistant'
 import { ThemeToggle, LanguageSwitcher } from '@/components/HeaderControls'
 import { UserMenu } from '@/components/UserMenu'
+import { ResearchPanel } from '@/components/ResearchPanel'
 import { useLanguage } from '@/lib/LanguageContext'
 import {
   ShopifyProduct,
@@ -39,6 +42,7 @@ import {
   HistoryItem,
   StorytellingContent,
   VideoSettings,
+  ProductResearch,
   DEFAULT_VIDEO_SETTINGS
 } from '@/types'
 
@@ -58,6 +62,9 @@ export default function Home() {
   const [videoSettings, setVideoSettings] = useState<VideoSettings>(DEFAULT_VIDEO_SETTINGS)
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false)
   const [assistantOpen, setAssistantOpen] = useState(false)
+  const [research, setResearch] = useState<ProductResearch | null>(null)
+  const [isResearching, setIsResearching] = useState(false)
+  const [selectedHook, setSelectedHook] = useState<string | null>(null)
 
   // Load history from localStorage
   useEffect(() => {
@@ -83,6 +90,39 @@ export default function Home() {
       setShowStorytellingEditor(false)
     }
   }, [contentType])
+
+  // Reset research when product changes
+  useEffect(() => {
+    setResearch(null)
+    setSelectedHook(null)
+  }, [selectedProduct])
+
+  // Research product with AI
+  const handleResearch = async () => {
+    if (!selectedProduct) return
+
+    setIsResearching(true)
+    try {
+      const response = await fetch('/api/research', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productName: selectedProduct.title,
+          productDescription: selectedProduct.description,
+          productPrice: selectedProduct.priceRange.minVariantPrice.amount,
+        }),
+      })
+
+      if (!response.ok) throw new Error('Research failed')
+
+      const data = await response.json()
+      setResearch(data.research)
+    } catch (error) {
+      console.error('Research error:', error)
+    } finally {
+      setIsResearching(false)
+    }
+  }
 
   // Save history to localStorage
   const saveToHistory = (content: GeneratedContent, product: ShopifyProduct) => {
@@ -119,7 +159,9 @@ export default function Home() {
           product: selectedProduct,
           contentType,
           tone,
-          videoSettings
+          videoSettings,
+          research,
+          selectedHook
         })
       })
 
@@ -377,6 +419,28 @@ export default function Home() {
                 />
               </motion.section>
 
+              {/* Step 1.5: AI Research (appears after product selection) */}
+              <AnimatePresence>
+                {selectedProduct && (
+                  <motion.section
+                    initial={{ opacity: 0, y: 20, height: 0 }}
+                    animate={{ opacity: 1, y: 0, height: 'auto' }}
+                    exit={{ opacity: 0, y: -20, height: 0 }}
+                    transition={{ delay: 0.15 }}
+                    className="card-lift"
+                  >
+                    <ResearchPanel
+                      product={selectedProduct}
+                      research={research}
+                      isLoading={isResearching}
+                      onResearch={handleResearch}
+                      onSelectHook={setSelectedHook}
+                      selectedHook={selectedHook}
+                    />
+                  </motion.section>
+                )}
+              </AnimatePresence>
+
               {/* Step 2: Content Type */}
               <motion.section
                 initial={{ opacity: 0, y: 20 }}
@@ -401,7 +465,7 @@ export default function Home() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   className={`mt-4 p-4 rounded-2xl border ${
-                    contentType === 'reel' || contentType === 'post'
+                    contentType === 'reel' || contentType === 'post' || contentType === 'carousel'
                       ? 'bg-gradient-to-r from-tada-turquoise/10 to-tada-turquoise/5 border-tada-turquoise/20'
                       : 'bg-gradient-to-r from-tada-pink/10 to-tada-pink/5 border-tada-pink/20'
                   }`}
@@ -411,12 +475,14 @@ export default function Home() {
                     {contentType === 'story' && <Eye className="w-5 h-5 text-tada-pink-dark mt-0.5 shrink-0" />}
                     {contentType === 'post' && <Package className="w-5 h-5 text-tada-turquoise-dark mt-0.5 shrink-0" />}
                     {contentType === 'storytelling' && <BookOpen className="w-5 h-5 text-tada-pink-dark mt-0.5 shrink-0" />}
+                    {contentType === 'carousel' && <LayoutGrid className="w-5 h-5 text-tada-turquoise-dark mt-0.5 shrink-0" />}
                     <div className="flex-1">
                       <p className="text-sm font-semibold text-tada-text dark:text-gray-100">
                         {contentType === 'reel' && 'Reel Structure (15-60s)'}
                         {contentType === 'story' && 'Story Structure (15s)'}
                         {contentType === 'post' && 'Post Structure'}
                         {contentType === 'storytelling' && 'Storytelling Structure (30s)'}
+                        {contentType === 'carousel' && 'Carousel Structure (7 slides)'}
                       </p>
                       <div className="flex flex-wrap items-center gap-1.5 mt-2">
                         {contentType === 'reel' && (
@@ -463,12 +529,30 @@ export default function Home() {
                             <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">CTA</span>
                           </>
                         )}
+                        {contentType === 'carousel' && (
+                          <>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Cover</span>
+                            <span className="text-tada-text-light">→</span>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Problem</span>
+                            <span className="text-tada-text-light">→</span>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Stats</span>
+                            <span className="text-tada-text-light">→</span>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Solution</span>
+                            <span className="text-tada-text-light">→</span>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Benefits</span>
+                            <span className="text-tada-text-light">→</span>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Proof</span>
+                            <span className="text-tada-text-light">→</span>
+                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">CTA</span>
+                          </>
+                        )}
                       </div>
                       <p className="text-xs text-tada-text-light dark:text-gray-400 mt-2">
                         {contentType === 'reel' && 'Perfect for Instagram Reels, TikTok, and YouTube Shorts. Each scene with script and voiceover.'}
                         {contentType === 'story' && 'Quick ephemeral content for Instagram/Facebook Stories. Optimized for swipe-up engagement.'}
                         {contentType === 'post' && 'Static feed content with engaging caption and optimized hashtags for discovery.'}
                         {contentType === 'storytelling' && 'Advanced 6-scene narrative. Each scene gets its own script, voice, and AI-generated image.'}
+                        {contentType === 'carousel' && 'Swipeable multi-slide format. 7 slides with impactful text and AI images. High save rate.'}
                       </p>
                     </div>
                   </div>

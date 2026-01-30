@@ -9,6 +9,7 @@ import {
   Smartphone,
   Image,
   BookOpen,
+  LayoutGrid,
   ChevronRight
 } from 'lucide-react'
 import { ContentType, CONTENT_TYPES } from '@/types'
@@ -24,6 +25,7 @@ const ICONS = {
   Smartphone,
   Image,
   BookOpen,
+  LayoutGrid,
 }
 
 export function ContentStructurePanel({

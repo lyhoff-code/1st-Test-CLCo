@@ -31,9 +31,9 @@ export interface ShopifyProduct {
   };
 }
 
-export type ContentType = 'reel' | 'story' | 'post' | 'storytelling';
+export type ContentType = 'reel' | 'story' | 'post' | 'storytelling' | 'carousel';
 
-export type ToneType = 'divertido' | 'profesional' | 'educativo';
+export type ToneType = 'divertido' | 'profesional' | 'educativo' | 'emocional' | 'urgente';
 
 export type StorytellingSceneType = 'hook' | 'problem' | 'agitation' | 'solution' | 'result' | 'cta';
 
@@ -595,7 +595,36 @@ export const CONTENT_TYPES: { value: ContentType; label: string; iconName: strin
       { name: 'CTA', time: '25-30s', purpose: 'Soft invitation' },
     ]
   },
+  {
+    value: 'carousel',
+    label: 'Carousel',
+    iconName: 'LayoutGrid',
+    description: 'Multi-slide swipeable content',
+    color: 'turquoise',
+    scenes: [
+      { name: 'Cover', time: 'Slide 1', purpose: 'Eye-catching title slide' },
+      { name: 'Problem', time: 'Slide 2', purpose: 'Define the pain point' },
+      { name: 'Stats', time: 'Slide 3', purpose: 'Shocking data or facts' },
+      { name: 'Solution', time: 'Slide 4', purpose: 'Present the product' },
+      { name: 'Benefits', time: 'Slide 5', purpose: 'Key advantages' },
+      { name: 'Proof', time: 'Slide 6', purpose: 'Testimonials or results' },
+      { name: 'CTA', time: 'Slide 7', purpose: 'Save & follow' },
+    ]
+  },
 ];
+
+// Research data from Perplexity
+export interface ProductResearch {
+  trends: string[];
+  competitors: string[];
+  painPoints: string[];
+  benefits: string[];
+  targetAudience: string;
+  marketInsights: string;
+  viralAngles: string[];
+  hashtags: string[];
+  hooks: string[];
+}
 
 export const TONE_TYPES: { value: ToneType; label: string; iconName: string; description: string; color: string }[] = [
   {
@@ -611,6 +640,20 @@ export const TONE_TYPES: { value: ToneType; label: string; iconName: string; des
     iconName: 'Briefcase',
     description: 'Serious and corporate tone',
     color: 'turquoise'
+  },
+  {
+    value: 'emocional',
+    label: 'Emotional',
+    iconName: 'Heart',
+    description: 'Touching and relatable tone',
+    color: 'pink'
+  },
+  {
+    value: 'urgente',
+    label: 'Urgent',
+    iconName: 'Zap',
+    description: 'FOMO and scarcity driven',
+    color: 'pink'
   },
   {
     value: 'educativo',

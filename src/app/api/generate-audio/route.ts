@@ -13,6 +13,8 @@ const VOICE_MAP: Record<ToneType, string> = {
   divertido: 'pNInz6obpgDQGcFmaJgB', // Adam - energetic
   profesional: 'ErXwobaYiN019PkySvjV', // Antoni - professional
   educativo: 'VR6AewLTigWG4xSOukaG', // Arnold - clear and educational
+  emocional: 'EXAVITQu4vr4xnSDxMaL', // Bella - emotional
+  urgente: 'onwK4e9ZLuTAKqWW03F9', // Daniel - urgent
 }
 
 export async function POST(request: NextRequest) {

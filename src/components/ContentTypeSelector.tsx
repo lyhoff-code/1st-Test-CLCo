@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Clapperboard, Smartphone, Image, BookOpen, Check } from 'lucide-react'
+import { Clapperboard, Smartphone, Image, BookOpen, LayoutGrid, Check } from 'lucide-react'
 import { ContentType, CONTENT_TYPES } from '@/types'
 
 interface ContentTypeSelectorProps {
@@ -14,32 +14,33 @@ const ICONS = {
   Smartphone,
   Image,
   BookOpen,
+  LayoutGrid,
 }
 
 export function ContentTypeSelector({ selected, onSelect }: ContentTypeSelectorProps) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
       {CONTENT_TYPES.map((type) => {
         const Icon = ICONS[type.iconName as keyof typeof ICONS]
         const isSelected = selected === type.value
         const isTurquoise = type.color === 'turquoise'
-        const isStorytelling = type.value === 'storytelling'
+        const isNew = type.value === 'storytelling' || type.value === 'carousel'
 
         return (
           <motion.button
             key={type.value}
             onClick={() => onSelect(type.value)}
-            className={`relative p-4 sm:p-5 rounded-2xl text-center transition-all ${
+            className={`relative p-3 sm:p-4 rounded-2xl text-center transition-all ${
               isSelected
                 ? isTurquoise
                   ? 'glass-subtle border-2 border-tada-turquoise glow-turquoise'
                   : 'glass-subtle border-2 border-tada-pink glow-pink'
-                : 'bg-white/40 border-2 border-transparent hover:bg-white/60 hover:border-white/50'
-            } ${isStorytelling ? 'ring-2 ring-tada-pink/20 ring-offset-2 ring-offset-transparent' : ''}`}
+                : 'bg-white/40 dark:bg-gray-800/40 border-2 border-transparent hover:bg-white/60 dark:hover:bg-gray-700/60 hover:border-white/50'
+            }`}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            {isStorytelling && (
+            {isNew && (
               <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-gradient-to-r from-tada-turquoise to-tada-pink rounded-full text-[10px] font-bold text-white shadow-glass-sm">
                 NEW
               </div>

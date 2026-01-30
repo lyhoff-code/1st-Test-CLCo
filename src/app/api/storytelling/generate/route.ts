@@ -16,6 +16,8 @@ const TONE_INSTRUCTIONS: Record<ToneType, string> = {
   divertido: 'Use a casual, fun, and entertaining tone. Keep the energy high. Speak like an excited friend sharing a discovery.',
   profesional: 'Use a serious, professional, and polished tone. Focus on benefits and value. Maintain a formal but approachable style.',
   educativo: 'Use an informative and educational tone. Explain benefits clearly, include interesting insights, and educate the viewer.',
+  emocional: 'Use an emotional, touching, and relatable tone. Tell stories that connect with feelings. Make the viewer feel understood and seen.',
+  urgente: 'Use an urgent, FOMO-driven tone. Create scarcity and urgency. Make them feel they need to act now or miss out.',
 }
 
 export async function POST(request: NextRequest) {

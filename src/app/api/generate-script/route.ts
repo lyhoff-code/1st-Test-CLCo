@@ -14,12 +14,15 @@ const DURATION_MAP: Record<ContentType, number> = {
   story: 15,
   post: 20,
   storytelling: 30,
+  carousel: 0, // Carousel doesn't have duration, it's slides
 }
 
 const TONE_INSTRUCTIONS: Record<ToneType, string> = {
   divertido: 'Use a casual, fun, and entertaining tone. Include wordplay and keep the energy high. Speak like an excited friend sharing a discovery.',
   profesional: 'Use a serious, professional, and corporate tone. Focus on benefits and technical features. Maintain a formal but accessible style.',
   educativo: 'Use an informative and educational tone. Explain benefits clearly, include interesting facts, and educate the viewer about the product.',
+  emocional: 'Use an emotional, touching, and relatable tone. Tell stories that connect with feelings. Make the viewer feel understood.',
+  urgente: 'Use an urgent, FOMO-driven tone. Create scarcity and urgency. Make them feel they need to act now or miss out.',
 }
 
 const CONTENT_INSTRUCTIONS: Record<ContentType, string> = {
@@ -27,6 +30,7 @@ const CONTENT_INSTRUCTIONS: Record<ContentType, string> = {
   story: 'Create a brief, direct script for a 15-second story. Must be impactful and get to the point quickly.',
   post: 'Create a script for a 20-second square video. Balance information with entertainment.',
   storytelling: 'Create a 30-second storytelling script following the Hook → Problem → Agitation → Solution → Result → CTA framework.',
+  carousel: 'Create content for a 7-slide carousel: 1) Eye-catching cover title, 2) Problem statement, 3) Shocking stat or fact, 4) Product solution, 5) Key benefits, 6) Social proof/testimonial, 7) Call-to-action. Each slide needs a short impactful headline (max 10 words) and brief supporting text.',
 }
 
 export async function POST(request: NextRequest) {
@@ -158,6 +162,24 @@ function generateDemoScript(
         { text: p.description?.slice(0, 40) || 'Innovation and functionality', duration: duration * 0.25 },
         { text: `Smart investment: $${p.priceRange.minVariantPrice.amount}`, duration: duration * 0.25 },
         { text: 'Learn more at our store!', duration: duration * 0.25 },
+      ]
+    }),
+    emocional: (p) => ({
+      script: `I still remember the day I found ${p.title}. It changed everything for me. ${p.description?.slice(0, 60) || 'Sometimes the smallest things make the biggest difference'}. For $${p.priceRange.minVariantPrice.amount}, it's not a purchase, it's a gift to yourself.`,
+      scenes: [
+        { text: `I still remember the day I found ${p.title}`, duration: duration * 0.25 },
+        { text: 'It changed everything for me', duration: duration * 0.25 },
+        { text: p.description?.slice(0, 40) || 'Small things, big differences', duration: duration * 0.25 },
+        { text: `A gift to yourself: $${p.priceRange.minVariantPrice.amount}`, duration: duration * 0.25 },
+      ]
+    }),
+    urgente: (p) => ({
+      script: `STOP! You need to see this. ${p.title} is selling out FAST. ${p.description?.slice(0, 50) || 'Everyone is talking about it'}. Only $${p.priceRange.minVariantPrice.amount} - but not for long. Don't miss out!`,
+      scenes: [
+        { text: 'STOP! You need to see this', duration: duration * 0.25 },
+        { text: `${p.title} is selling out FAST`, duration: duration * 0.25 },
+        { text: `Only $${p.priceRange.minVariantPrice.amount} - but not for long`, duration: duration * 0.25 },
+        { text: "Don't miss out! Link in bio", duration: duration * 0.25 },
       ]
     }),
   }
