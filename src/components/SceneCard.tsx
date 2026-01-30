@@ -40,11 +40,11 @@ const SCENE_ICONS: Record<StorytellingSceneType, typeof Zap> = {
 }
 
 const SCENE_COLORS: Record<StorytellingSceneType, { bg: string; border: string; icon: string; glow: string }> = {
-  hook: { bg: 'bg-tada-turquoise/20', border: 'border-tada-turquoise', icon: 'text-tada-turquoise-dark', glow: 'glow-turquoise' },
-  problem: { bg: 'bg-tada-pink/20', border: 'border-tada-pink', icon: 'text-tada-pink-dark', glow: 'glow-pink' },
+  hook: { bg: 'bg-databake-turquoise/20', border: 'border-databake-turquoise', icon: 'text-databake-turquoise-dark', glow: 'glow-turquoise' },
+  problem: { bg: 'bg-databake-pink/20', border: 'border-databake-pink', icon: 'text-databake-pink-dark', glow: 'glow-pink' },
   agitation: { bg: 'bg-orange-100', border: 'border-orange-300', icon: 'text-orange-500', glow: 'shadow-orange-200/50' },
-  solution: { bg: 'bg-tada-turquoise/20', border: 'border-tada-turquoise', icon: 'text-tada-turquoise-dark', glow: 'glow-turquoise' },
-  result: { bg: 'bg-tada-pink/20', border: 'border-tada-pink', icon: 'text-tada-pink-dark', glow: 'glow-pink' },
+  solution: { bg: 'bg-databake-turquoise/20', border: 'border-databake-turquoise', icon: 'text-databake-turquoise-dark', glow: 'glow-turquoise' },
+  result: { bg: 'bg-databake-pink/20', border: 'border-databake-pink', icon: 'text-databake-pink-dark', glow: 'glow-pink' },
   cta: { bg: 'bg-purple-100', border: 'border-purple-300', icon: 'text-purple-500', glow: 'shadow-purple-200/50' },
 }
 
@@ -96,11 +96,11 @@ export function SceneCard({ scene, index, onUpdateScript, onGenerateAudio, onGen
             <Icon className={`w-5 h-5 ${colors.icon}`} />
           </div>
           <div>
-            <h3 className="font-semibold text-tada-text flex items-center gap-2">
-              <span className="text-tada-text-light text-sm">{index + 1}.</span>
+            <h3 className="font-semibold text-databake-text flex items-center gap-2">
+              <span className="text-databake-text-light text-sm">{index + 1}.</span>
               {scene.title}
             </h3>
-            <div className="flex items-center gap-1 text-xs text-tada-text-light">
+            <div className="flex items-center gap-1 text-xs text-databake-text-light">
               <Clock className="w-3 h-3" />
               {scene.timeRange}
             </div>
@@ -156,9 +156,9 @@ export function SceneCard({ scene, index, onUpdateScript, onGenerateAudio, onGen
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="glass-subtle p-4 text-sm text-tada-text leading-relaxed"
+              className="glass-subtle p-4 text-sm text-databake-text leading-relaxed"
             >
-              {scene.script || <span className="text-tada-text-light italic">No script generated yet</span>}
+              {scene.script || <span className="text-databake-text-light italic">No script generated yet</span>}
             </motion.div>
           )}
         </AnimatePresence>
@@ -173,8 +173,8 @@ export function SceneCard({ scene, index, onUpdateScript, onGenerateAudio, onGen
                 onClick={toggleAudioPlayback}
                 className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
                   isPlaying
-                    ? 'bg-tada-pink text-white'
-                    : 'bg-tada-turquoise/20 text-tada-turquoise-dark hover:bg-tada-turquoise/30'
+                    ? 'bg-databake-pink text-white'
+                    : 'bg-databake-turquoise/20 text-databake-turquoise-dark hover:bg-databake-turquoise/30'
                 }`}
               >
                 {isPlaying ? (
@@ -186,11 +186,11 @@ export function SceneCard({ scene, index, onUpdateScript, onGenerateAudio, onGen
               <div className="flex-1">
                 <div className="h-2 bg-white/50 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-tada-turquoise to-tada-pink rounded-full"
+                    className="h-full bg-gradient-to-r from-databake-turquoise to-databake-pink rounded-full"
                     style={{ width: isPlaying ? '100%' : '0%', transition: 'width 3s linear' }}
                   />
                 </div>
-                <p className="text-xs text-tada-text-light mt-1 flex items-center gap-1">
+                <p className="text-xs text-databake-text-light mt-1 flex items-center gap-1">
                   <Volume2 className="w-3 h-3" />
                   Audio ready
                 </p>
@@ -256,8 +256,8 @@ export function SceneCard({ scene, index, onUpdateScript, onGenerateAudio, onGen
             {scene.isGeneratingImage && (
               <div className="absolute inset-0 bg-white/80 backdrop-blur-sm rounded-2xl flex items-center justify-center">
                 <div className="flex flex-col items-center gap-2">
-                  <Loader2 className="w-8 h-8 animate-spin text-tada-turquoise" />
-                  <span className="text-sm text-tada-text">Generating image...</span>
+                  <Loader2 className="w-8 h-8 animate-spin text-databake-turquoise" />
+                  <span className="text-sm text-databake-text">Generating image...</span>
                 </div>
               </div>
             )}
@@ -266,17 +266,17 @@ export function SceneCard({ scene, index, onUpdateScript, onGenerateAudio, onGen
           <button
             onClick={onGenerateImage}
             disabled={!scene.script || scene.isGeneratingImage}
-            className="w-full h-32 border-2 border-dashed border-tada-text-light/30 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-tada-turquoise hover:bg-tada-turquoise/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full h-32 border-2 border-dashed border-databake-text-light/30 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-databake-turquoise hover:bg-databake-turquoise/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {scene.isGeneratingImage ? (
               <>
-                <Loader2 className="w-6 h-6 animate-spin text-tada-turquoise" />
-                <span className="text-sm text-tada-text-light">Generating AI image...</span>
+                <Loader2 className="w-6 h-6 animate-spin text-databake-turquoise" />
+                <span className="text-sm text-databake-text-light">Generating AI image...</span>
               </>
             ) : (
               <>
-                <ImagePlus className="w-6 h-6 text-tada-text-light" />
-                <span className="text-sm text-tada-text-light">Generate AI Image</span>
+                <ImagePlus className="w-6 h-6 text-databake-text-light" />
+                <span className="text-sm text-databake-text-light">Generate AI Image</span>
               </>
             )}
           </button>

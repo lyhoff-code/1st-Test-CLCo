@@ -17,7 +17,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Load saved theme from localStorage
-    const savedTheme = localStorage.getItem('tada-theme') as Theme
+    const savedTheme = localStorage.getItem('databake-theme') as Theme
     if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
       setThemeState(savedTheme)
       document.documentElement.classList.toggle('dark', savedTheme === 'dark')
@@ -33,7 +33,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme)
-    localStorage.setItem('tada-theme', newTheme)
+    localStorage.setItem('databake-theme', newTheme)
     document.documentElement.classList.toggle('dark', newTheme === 'dark')
   }
 

@@ -50,11 +50,11 @@ export function ContentStructurePanel({
       <div className="flex items-center gap-3 mb-4">
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
           isTurquoise
-            ? 'bg-tada-turquoise/20'
-            : 'bg-tada-pink/20'
+            ? 'bg-databake-turquoise/20'
+            : 'bg-databake-pink/20'
         }`}>
           <Icon className={`w-5 h-5 ${
-            isTurquoise ? 'text-tada-turquoise-dark' : 'text-tada-pink-dark'
+            isTurquoise ? 'text-databake-turquoise-dark' : 'text-databake-pink-dark'
           }`} />
         </div>
         <div>
@@ -82,8 +82,8 @@ export function ContentStructurePanel({
               className={`relative flex items-center gap-3 p-3 rounded-xl transition-all ${
                 isActive
                   ? isTurquoise
-                    ? 'bg-tada-turquoise/20 border border-tada-turquoise/30'
-                    : 'bg-tada-pink/20 border border-tada-pink/30'
+                    ? 'bg-databake-turquoise/20 border border-databake-turquoise/30'
+                    : 'bg-databake-pink/20 border border-databake-pink/30'
                   : isPast
                     ? 'bg-green-50 dark:bg-green-900/20 border border-green-200/50 dark:border-green-800/30'
                     : 'bg-white/30 dark:bg-gray-800/30 border border-transparent'
@@ -93,11 +93,11 @@ export function ContentStructurePanel({
               <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 ${
                 isActive
                   ? isTurquoise
-                    ? 'bg-tada-turquoise text-white'
-                    : 'bg-tada-pink text-white'
+                    ? 'bg-databake-turquoise text-white'
+                    : 'bg-databake-pink text-white'
                   : isPast
                     ? 'bg-green-500 text-white'
-                    : 'bg-white/50 dark:bg-gray-700/50 text-tada-text-light dark:text-gray-400'
+                    : 'bg-white/50 dark:bg-gray-700/50 text-databake-text-light dark:text-gray-400'
               }`}>
                 {isPast ? '✓' : index + 1}
               </div>
@@ -129,7 +129,7 @@ export function ContentStructurePanel({
 
               {/* Active Indicator */}
               {isActive && isGenerating && (
-                <div className="w-2 h-2 rounded-full bg-tada-turquoise animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-databake-turquoise animate-pulse" />
               )}
             </motion.div>
           )
@@ -153,8 +153,8 @@ export function ContentStructurePanel({
               animate={{ width: `${((currentScene + 1) / config.scenes.length) * 100}%` }}
               className={`h-full rounded-full ${
                 isTurquoise
-                  ? 'bg-gradient-to-r from-tada-turquoise to-tada-turquoise-dark'
-                  : 'bg-gradient-to-r from-tada-pink to-tada-pink-dark'
+                  ? 'bg-gradient-to-r from-databake-turquoise to-databake-turquoise-dark'
+                  : 'bg-gradient-to-r from-databake-pink to-databake-pink-dark'
               }`}
             />
           </div>

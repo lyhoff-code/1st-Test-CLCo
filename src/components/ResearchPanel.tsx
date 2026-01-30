@@ -55,13 +55,13 @@ export function ResearchPanel({
         className="glass p-6"
       >
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-tada-turquoise/20 to-tada-pink/20 flex items-center justify-center">
-            <Search className="w-8 h-8 text-tada-turquoise-dark" />
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-databake-turquoise/20 to-databake-pink/20 flex items-center justify-center">
+            <Search className="w-8 h-8 text-databake-turquoise-dark" />
           </div>
-          <h3 className="font-semibold text-tada-text dark:text-gray-100 mb-2">
+          <h3 className="font-semibold text-databake-text dark:text-gray-100 mb-2">
             AI Product Research
           </h3>
-          <p className="text-sm text-tada-text-light dark:text-gray-400 mb-4">
+          <p className="text-sm text-databake-text-light dark:text-gray-400 mb-4">
             Get real-time insights, trends, and viral angles for <strong>{product.title}</strong>
           </p>
           <button
@@ -84,20 +84,20 @@ export function ResearchPanel({
         className="glass p-6"
       >
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-tada-turquoise/20 to-tada-pink/20 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 text-tada-turquoise-dark animate-spin" />
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-databake-turquoise/20 to-databake-pink/20 flex items-center justify-center">
+            <Loader2 className="w-8 h-8 text-databake-turquoise-dark animate-spin" />
           </div>
-          <h3 className="font-semibold text-tada-text dark:text-gray-100 mb-2">
+          <h3 className="font-semibold text-databake-text dark:text-gray-100 mb-2">
             Researching {product.title}...
           </h3>
-          <p className="text-sm text-tada-text-light dark:text-gray-400">
+          <p className="text-sm text-databake-text-light dark:text-gray-400">
             Analyzing trends, competitors, and viral angles
           </p>
           <div className="mt-4 flex justify-center gap-1">
             {[0, 1, 2].map(i => (
               <motion.div
                 key={i}
-                className="w-2 h-2 rounded-full bg-tada-turquoise"
+                className="w-2 h-2 rounded-full bg-databake-turquoise"
                 animate={{ scale: [1, 1.5, 1] }}
                 transition={{ duration: 0.6, delay: i * 0.2, repeat: Infinity }}
               />
@@ -117,12 +117,12 @@ export function ResearchPanel({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-tada-turquoise to-tada-pink flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-databake-turquoise to-databake-pink flex items-center justify-center">
             <CheckCircle2 className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className="font-semibold text-tada-text dark:text-gray-100">Research Complete</h3>
-            <p className="text-xs text-tada-text-light dark:text-gray-400">Select a hook to use</p>
+            <h3 className="font-semibold text-databake-text dark:text-gray-100">Research Complete</h3>
+            <p className="text-xs text-databake-text-light dark:text-gray-400">Select a hook to use</p>
           </div>
         </div>
         <button
@@ -135,11 +135,11 @@ export function ResearchPanel({
       </div>
 
       {/* Hooks Section - Primary */}
-      <div className="p-4 rounded-2xl bg-gradient-to-r from-tada-pink/10 to-tada-pink/5 border border-tada-pink/20">
+      <div className="p-4 rounded-2xl bg-gradient-to-r from-databake-pink/10 to-databake-pink/5 border border-databake-pink/20">
         <div className="flex items-center gap-2 mb-3">
-          <Zap className="w-4 h-4 text-tada-pink-dark" />
-          <span className="font-medium text-sm text-tada-text dark:text-gray-100">Viral Hooks</span>
-          <span className="text-[10px] px-2 py-0.5 bg-tada-pink/20 text-tada-pink-dark rounded-full">
+          <Zap className="w-4 h-4 text-databake-pink-dark" />
+          <span className="font-medium text-sm text-databake-text dark:text-gray-100">Viral Hooks</span>
+          <span className="text-[10px] px-2 py-0.5 bg-databake-pink/20 text-databake-pink-dark rounded-full">
             Select one
           </span>
         </div>
@@ -150,15 +150,15 @@ export function ResearchPanel({
               onClick={() => onSelectHook(hook)}
               className={`w-full text-left p-3 rounded-xl text-sm transition-all ${
                 selectedHook === hook
-                  ? 'bg-tada-pink/20 border-2 border-tada-pink text-tada-text dark:text-gray-100'
-                  : 'bg-white/50 dark:bg-gray-800/50 border-2 border-transparent hover:border-tada-pink/30 text-tada-text-light dark:text-gray-300'
+                  ? 'bg-databake-pink/20 border-2 border-databake-pink text-databake-text dark:text-gray-100'
+                  : 'bg-white/50 dark:bg-gray-800/50 border-2 border-transparent hover:border-databake-pink/30 text-databake-text-light dark:text-gray-300'
               }`}
             >
               <div className="flex items-start gap-2">
                 <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5 ${
                   selectedHook === hook
-                    ? 'bg-tada-pink text-white'
-                    : 'bg-white/70 dark:bg-gray-700/70 text-tada-text-light'
+                    ? 'bg-databake-pink text-white'
+                    : 'bg-white/70 dark:bg-gray-700/70 text-databake-text-light'
                 }`}>
                   {idx + 1}
                 </span>
@@ -181,7 +181,7 @@ export function ResearchPanel({
           {research?.viralAngles.map((angle, idx) => (
             <span
               key={idx}
-              className="px-3 py-1.5 text-xs rounded-lg bg-tada-turquoise/10 text-tada-turquoise-dark border border-tada-turquoise/20"
+              className="px-3 py-1.5 text-xs rounded-lg bg-databake-turquoise/10 text-databake-turquoise-dark border border-databake-turquoise/20"
             >
               {angle}
             </span>
@@ -199,8 +199,8 @@ export function ResearchPanel({
       >
         <ul className="space-y-1.5">
           {research?.trends.map((trend, idx) => (
-            <li key={idx} className="flex items-start gap-2 text-sm text-tada-text-light dark:text-gray-300">
-              <TrendingUp className="w-3 h-3 text-tada-pink-dark mt-1 shrink-0" />
+            <li key={idx} className="flex items-start gap-2 text-sm text-databake-text-light dark:text-gray-300">
+              <TrendingUp className="w-3 h-3 text-databake-pink-dark mt-1 shrink-0" />
               {trend}
             </li>
           ))}
@@ -217,7 +217,7 @@ export function ResearchPanel({
       >
         <ul className="space-y-1.5">
           {research?.painPoints.map((point, idx) => (
-            <li key={idx} className="flex items-start gap-2 text-sm text-tada-text-light dark:text-gray-300">
+            <li key={idx} className="flex items-start gap-2 text-sm text-databake-text-light dark:text-gray-300">
               <AlertCircle className="w-3 h-3 text-amber-500 mt-1 shrink-0" />
               {point}
             </li>
@@ -233,7 +233,7 @@ export function ResearchPanel({
         isExpanded={expandedSections.includes('audience')}
         onToggle={() => toggleSection('audience')}
       >
-        <p className="text-sm text-tada-text-light dark:text-gray-300 leading-relaxed">
+        <p className="text-sm text-databake-text-light dark:text-gray-300 leading-relaxed">
           {research?.targetAudience}
         </p>
       </CollapsibleSection>
@@ -283,15 +283,15 @@ function CollapsibleSection({
         className="w-full flex items-center justify-between p-3 hover:bg-white/30 dark:hover:bg-gray-800/30 transition-colors"
       >
         <div className="flex items-center gap-2">
-          <span className={color === 'turquoise' ? 'text-tada-turquoise-dark' : 'text-tada-pink-dark'}>
+          <span className={color === 'turquoise' ? 'text-databake-turquoise-dark' : 'text-databake-pink-dark'}>
             {icon}
           </span>
-          <span className="font-medium text-sm text-tada-text dark:text-gray-200">{title}</span>
+          <span className="font-medium text-sm text-databake-text dark:text-gray-200">{title}</span>
         </div>
         {isExpanded ? (
-          <ChevronUp className="w-4 h-4 text-tada-text-light" />
+          <ChevronUp className="w-4 h-4 text-databake-text-light" />
         ) : (
-          <ChevronDown className="w-4 h-4 text-tada-text-light" />
+          <ChevronDown className="w-4 h-4 text-databake-text-light" />
         )}
       </button>
       <AnimatePresence>

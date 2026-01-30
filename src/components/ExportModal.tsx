@@ -95,10 +95,10 @@ export function ExportModal({ isOpen, onClose, title, scenes }: ExportModalProps
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-xl font-bold text-tada-text dark:text-gray-100">
+                <h2 className="text-xl font-bold text-databake-text dark:text-gray-100">
                   Export Content
                 </h2>
-                <p className="text-sm text-tada-text-light dark:text-gray-400">
+                <p className="text-sm text-databake-text-light dark:text-gray-400">
                   Choose a platform to edit your video
                 </p>
               </div>
@@ -106,7 +106,7 @@ export function ExportModal({ isOpen, onClose, title, scenes }: ExportModalProps
                 onClick={handleClose}
                 className="p-2 hover:bg-white/50 dark:hover:bg-gray-700/50 rounded-xl transition-colors"
               >
-                <X className="w-5 h-5 text-tada-text-light" />
+                <X className="w-5 h-5 text-databake-text-light" />
               </button>
             </div>
 
@@ -146,7 +146,7 @@ export function ExportModal({ isOpen, onClose, title, scenes }: ExportModalProps
                       href={exportResult.editUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-700 text-sm font-medium text-tada-text dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-gray-700 text-sm font-medium text-databake-text dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                     >
                       Open Editor
                       <ExternalLink className="w-4 h-4" />
@@ -163,8 +163,8 @@ export function ExportModal({ isOpen, onClose, title, scenes }: ExportModalProps
                 onClick={() => setSelectedPlatform('capcut')}
                 className={`w-full p-4 rounded-2xl border-2 transition-all ${
                   selectedPlatform === 'capcut'
-                    ? 'border-tada-turquoise bg-tada-turquoise/10 dark:bg-tada-turquoise/5'
-                    : 'border-white/30 dark:border-gray-700/30 hover:border-tada-turquoise/50'
+                    ? 'border-databake-turquoise bg-databake-turquoise/10 dark:bg-databake-turquoise/5'
+                    : 'border-white/30 dark:border-gray-700/30 hover:border-databake-turquoise/50'
                 }`}
               >
                 <div className="flex items-center gap-4">
@@ -172,13 +172,13 @@ export function ExportModal({ isOpen, onClose, title, scenes }: ExportModalProps
                     <span className="text-white font-bold">CC</span>
                   </div>
                   <div className="flex-1 text-left">
-                    <p className="font-semibold text-tada-text dark:text-gray-100">CapCut</p>
-                    <p className="text-sm text-tada-text-light dark:text-gray-400">
+                    <p className="font-semibold text-databake-text dark:text-gray-100">CapCut</p>
+                    <p className="text-sm text-databake-text-light dark:text-gray-400">
                       Professional video editing with templates
                     </p>
                   </div>
                   {selectedPlatform === 'capcut' && (
-                    <CheckCircle2 className="w-6 h-6 text-tada-turquoise" />
+                    <CheckCircle2 className="w-6 h-6 text-databake-turquoise" />
                   )}
                 </div>
               </button>
@@ -188,8 +188,8 @@ export function ExportModal({ isOpen, onClose, title, scenes }: ExportModalProps
                 onClick={() => setSelectedPlatform('canva')}
                 className={`w-full p-4 rounded-2xl border-2 transition-all ${
                   selectedPlatform === 'canva'
-                    ? 'border-tada-pink bg-tada-pink/10 dark:bg-tada-pink/5'
-                    : 'border-white/30 dark:border-gray-700/30 hover:border-tada-pink/50'
+                    ? 'border-databake-pink bg-databake-pink/10 dark:bg-databake-pink/5'
+                    : 'border-white/30 dark:border-gray-700/30 hover:border-databake-pink/50'
                 }`}
               >
                 <div className="flex items-center gap-4">
@@ -197,13 +197,13 @@ export function ExportModal({ isOpen, onClose, title, scenes }: ExportModalProps
                     <span className="text-white font-bold">C</span>
                   </div>
                   <div className="flex-1 text-left">
-                    <p className="font-semibold text-tada-text dark:text-gray-100">Canva</p>
-                    <p className="text-sm text-tada-text-light dark:text-gray-400">
+                    <p className="font-semibold text-databake-text dark:text-gray-100">Canva</p>
+                    <p className="text-sm text-databake-text-light dark:text-gray-400">
                       Design customization and visual editing
                     </p>
                   </div>
                   {selectedPlatform === 'canva' && (
-                    <CheckCircle2 className="w-6 h-6 text-tada-pink" />
+                    <CheckCircle2 className="w-6 h-6 text-databake-pink" />
                   )}
                 </div>
               </button>
@@ -211,10 +211,10 @@ export function ExportModal({ isOpen, onClose, title, scenes }: ExportModalProps
 
             {/* Content Summary */}
             <div className="mb-6 p-4 rounded-2xl bg-white/50 dark:bg-gray-700/50 border border-white/30 dark:border-gray-600/30">
-              <p className="text-sm font-medium text-tada-text dark:text-gray-200 mb-2">
+              <p className="text-sm font-medium text-databake-text dark:text-gray-200 mb-2">
                 Content to export:
               </p>
-              <div className="flex items-center gap-4 text-sm text-tada-text-light dark:text-gray-400">
+              <div className="flex items-center gap-4 text-sm text-databake-text-light dark:text-gray-400">
                 <span className="flex items-center gap-1">
                   <FileText className="w-4 h-4" />
                   {scenes.length} scenes
@@ -251,7 +251,7 @@ export function ExportModal({ isOpen, onClose, title, scenes }: ExportModalProps
             </div>
 
             {/* Note */}
-            <p className="mt-4 text-center text-xs text-tada-text-light dark:text-gray-500">
+            <p className="mt-4 text-center text-xs text-databake-text-light dark:text-gray-500">
               Demo mode: Configure API keys in Settings for full functionality
             </p>
           </motion.div>

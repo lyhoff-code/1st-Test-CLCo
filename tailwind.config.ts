@@ -10,8 +10,8 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Tada.media Brand Colors - High Contrast
-        tada: {
+        // DataBake.media Brand Colors - High Contrast
+        databake: {
           turquoise: '#A8E6E1',
           'turquoise-dark': '#4FB3A9',
           'turquoise-darker': '#2D8A82',

@@ -40,7 +40,7 @@ export function HistoryPanel({ history, onSelect, onClose, onClear }: HistoryPan
     >
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-tada-text flex items-center gap-2">
+          <h3 className="font-semibold text-databake-text flex items-center gap-2">
             <span className="icon-turquoise">
               <Clock className="w-5 h-5" />
             </span>
@@ -50,7 +50,7 @@ export function HistoryPanel({ history, onSelect, onClose, onClear }: HistoryPan
             {history.length > 0 && (
               <button
                 onClick={onClear}
-                className="text-sm text-tada-text-light hover:text-tada-pink transition-colors"
+                className="text-sm text-databake-text-light hover:text-databake-pink transition-colors"
               >
                 Clear all
               </button>
@@ -59,13 +59,13 @@ export function HistoryPanel({ history, onSelect, onClose, onClear }: HistoryPan
               onClick={onClose}
               className="p-2 hover:bg-white/50 rounded-xl transition-colors"
             >
-              <X className="w-5 h-5 text-tada-text-light" />
+              <X className="w-5 h-5 text-databake-text-light" />
             </button>
           </div>
         </div>
 
         {history.length === 0 ? (
-          <div className="text-center py-8 text-tada-text-light">
+          <div className="text-center py-8 text-databake-text-light">
             <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-white/30 flex items-center justify-center">
               <Archive className="w-7 h-7 opacity-50" />
             </div>
@@ -80,7 +80,7 @@ export function HistoryPanel({ history, onSelect, onClose, onClear }: HistoryPan
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => onSelect(item)}
-                className="flex-shrink-0 w-64 glass-subtle p-3 text-left hover:bg-white/60 transition-colors border-2 border-transparent hover:border-tada-turquoise/30"
+                className="flex-shrink-0 w-64 glass-subtle p-3 text-left hover:bg-white/60 transition-colors border-2 border-transparent hover:border-databake-turquoise/30"
               >
                 <div className="flex gap-3">
                   {item.product.images.edges[0]?.node.url && (
@@ -91,7 +91,7 @@ export function HistoryPanel({ history, onSelect, onClose, onClear }: HistoryPan
                     />
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-tada-text truncate text-sm">
+                    <p className="font-medium text-databake-text truncate text-sm">
                       {item.product.title}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
@@ -102,7 +102,7 @@ export function HistoryPanel({ history, onSelect, onClose, onClear }: HistoryPan
                         {getToneLabel(item.tone)}
                       </span>
                     </div>
-                    <p className="text-xs text-tada-text-light mt-1">
+                    <p className="text-xs text-databake-text-light mt-1">
                       {formatDate(item.timestamp)}
                     </p>
                   </div>

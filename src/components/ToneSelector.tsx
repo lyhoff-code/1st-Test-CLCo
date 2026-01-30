@@ -32,8 +32,8 @@ export function ToneSelector({ selected, onSelect }: ToneSelectorProps) {
             className={`relative p-3 sm:p-4 rounded-2xl text-center transition-all ${
               isSelected
                 ? isTurquoise
-                  ? 'glass-subtle border-2 border-tada-turquoise glow-turquoise'
-                  : 'glass-subtle border-2 border-tada-pink glow-pink'
+                  ? 'glass-subtle border-2 border-databake-turquoise glow-turquoise'
+                  : 'glass-subtle border-2 border-databake-pink glow-pink'
                 : 'bg-white/40 dark:bg-gray-800/40 border-2 border-transparent hover:bg-white/60 dark:hover:bg-gray-700/60 hover:border-white/50'
             }`}
             whileHover={{ scale: 1.02 }}
@@ -42,16 +42,16 @@ export function ToneSelector({ selected, onSelect }: ToneSelectorProps) {
             <div className={`w-10 h-10 mx-auto mb-2 rounded-xl flex items-center justify-center ${
               isSelected
                 ? isTurquoise
-                  ? 'bg-tada-turquoise/30'
-                  : 'bg-tada-pink/30'
+                  ? 'bg-databake-turquoise/30'
+                  : 'bg-databake-pink/30'
                 : 'bg-white/50 dark:bg-gray-700/50'
             }`}>
               <Icon className={`w-5 h-5 ${
                 isSelected
                   ? isTurquoise
-                    ? 'text-tada-turquoise-dark'
-                    : 'text-tada-pink-dark'
-                  : 'text-tada-text-light dark:text-gray-400'
+                    ? 'text-databake-turquoise-dark'
+                    : 'text-databake-pink-dark'
+                  : 'text-databake-text-light dark:text-gray-400'
               }`} />
             </div>
             <span className="font-bold block text-slate-800 dark:text-white text-sm">
@@ -64,7 +64,7 @@ export function ToneSelector({ selected, onSelect }: ToneSelectorProps) {
               <motion.div
                 layoutId="tone-indicator"
                 className={`absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full flex items-center justify-center shadow-glass-sm ${
-                  isTurquoise ? 'bg-gradient-to-br from-tada-turquoise to-tada-turquoise-dark' : 'bg-gradient-to-br from-tada-pink to-tada-pink-dark'
+                  isTurquoise ? 'bg-gradient-to-br from-databake-turquoise to-databake-turquoise-dark' : 'bg-gradient-to-br from-databake-pink to-databake-pink-dark'
                 }`}
                 initial={false}
               >

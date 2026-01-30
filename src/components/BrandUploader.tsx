@@ -47,7 +47,7 @@ export function BrandUploader({ onBrandUpdate, initialBrand }: BrandUploaderProp
 
   // Load brand from localStorage on mount
   useEffect(() => {
-    const savedBrand = localStorage.getItem('tada-brand')
+    const savedBrand = localStorage.getItem('databake-brand')
     if (savedBrand) {
       const parsed = JSON.parse(savedBrand)
       setBrand(parsed)
@@ -60,9 +60,9 @@ export function BrandUploader({ onBrandUpdate, initialBrand }: BrandUploaderProp
   const saveBrand = useCallback((newBrand: BrandData | null) => {
     setBrand(newBrand)
     if (newBrand) {
-      localStorage.setItem('tada-brand', JSON.stringify(newBrand))
+      localStorage.setItem('databake-brand', JSON.stringify(newBrand))
     } else {
-      localStorage.removeItem('tada-brand')
+      localStorage.removeItem('databake-brand')
     }
     onBrandUpdate?.(newBrand)
   }, [onBrandUpdate])

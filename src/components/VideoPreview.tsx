@@ -131,7 +131,7 @@ export function VideoPreview({ product, contentType, generatedContent, generatio
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
-    link.download = `tada-${contentType}-${product.title.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.json`
+    link.download = `databake-${contentType}-${product.title.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.json`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -141,7 +141,7 @@ export function VideoPreview({ product, contentType, generatedContent, generatio
     const scriptUrl = URL.createObjectURL(scriptBlob)
     const scriptLink = document.createElement('a')
     scriptLink.href = scriptUrl
-    scriptLink.download = `tada-script-${contentType}-${Date.now()}.txt`
+    scriptLink.download = `databake-script-${contentType}-${Date.now()}.txt`
     document.body.appendChild(scriptLink)
     scriptLink.click()
     document.body.removeChild(scriptLink)
@@ -164,12 +164,12 @@ export function VideoPreview({ product, contentType, generatedContent, generatio
       <div className="flex items-center justify-center gap-3">
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-full glass-subtle">
           <div className={`w-2 h-2 rounded-full ${
-            contentConfig?.color === 'turquoise' ? 'bg-tada-turquoise' : 'bg-tada-pink'
+            contentConfig?.color === 'turquoise' ? 'bg-databake-turquoise' : 'bg-databake-pink'
           }`} />
-          <span className="text-xs font-medium text-tada-text dark:text-gray-200">
+          <span className="text-xs font-medium text-databake-text dark:text-gray-200">
             {contentConfig?.label}
           </span>
-          <span className="text-[10px] text-tada-text-light dark:text-gray-400 px-1.5 py-0.5 bg-white/50 dark:bg-gray-700/50 rounded">
+          <span className="text-[10px] text-databake-text-light dark:text-gray-400 px-1.5 py-0.5 bg-white/50 dark:bg-gray-700/50 rounded">
             {aspectLabel}
           </span>
         </div>
@@ -251,8 +251,8 @@ export function VideoPreview({ product, contentType, generatedContent, generatio
                   >
                     <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                       contentConfig.color === 'turquoise'
-                        ? 'bg-tada-turquoise/90 text-white'
-                        : 'bg-tada-pink/90 text-white'
+                        ? 'bg-databake-turquoise/90 text-white'
+                        : 'bg-databake-pink/90 text-white'
                     }`}>
                       {contentConfig.scenes[currentSceneIndex]?.name}
                     </span>
@@ -359,13 +359,13 @@ export function VideoPreview({ product, contentType, generatedContent, generatio
                     className="absolute inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-30"
                   >
                     <div className="text-center px-6">
-                      <div className="w-16 h-16 rounded-full border-4 border-tada-turquoise/30 border-t-tada-turquoise animate-spin mx-auto mb-4" />
+                      <div className="w-16 h-16 rounded-full border-4 border-databake-turquoise/30 border-t-databake-turquoise animate-spin mx-auto mb-4" />
                       <p className="text-white font-medium">{generationState.message}</p>
                       <div className="mt-4 w-48 h-1.5 bg-white/20 rounded-full mx-auto overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${generationState.progress}%` }}
-                          className="h-full bg-gradient-to-r from-tada-turquoise to-tada-pink rounded-full"
+                          className="h-full bg-gradient-to-r from-databake-turquoise to-databake-pink rounded-full"
                         />
                       </div>
                     </div>
@@ -408,12 +408,12 @@ export function VideoPreview({ product, contentType, generatedContent, generatio
 
           {/* Script Preview */}
           <div className="glass-subtle p-4 rounded-2xl">
-            <h4 className="font-semibold text-tada-text dark:text-gray-100 mb-3 flex items-center gap-2 text-sm">
-              <FileText className="w-4 h-4 text-tada-turquoise-dark" />
+            <h4 className="font-semibold text-databake-text dark:text-gray-100 mb-3 flex items-center gap-2 text-sm">
+              <FileText className="w-4 h-4 text-databake-turquoise-dark" />
               Generated Script
             </h4>
             <div className="max-h-32 overflow-y-auto">
-              <p className="text-tada-text dark:text-gray-300 text-sm whitespace-pre-wrap leading-relaxed">
+              <p className="text-databake-text dark:text-gray-300 text-sm whitespace-pre-wrap leading-relaxed">
                 {generatedContent.script}
               </p>
             </div>

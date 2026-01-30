@@ -3,32 +3,32 @@
 @tailwind utilities;
 
 :root {
-  --tada-turquoise: #A8E6E1;
-  --tada-turquoise-dark: #4FB3A9;
-  --tada-turquoise-darker: #2D8A82;
-  --tada-turquoise-light: #C5F0EC;
-  --tada-pink: #F9B4C4;
-  --tada-pink-dark: #E87A94;
-  --tada-pink-darker: #D45A78;
-  --tada-pink-light: #FCDCE4;
-  --tada-background: #F8FAFC;
-  --tada-text: #1E293B;
-  --tada-text-light: #475569;
-  --tada-text-muted: #64748B;
-  --tada-white: #FFFFFF;
+  --databake-turquoise: #A8E6E1;
+  --databake-turquoise-dark: #4FB3A9;
+  --databake-turquoise-darker: #2D8A82;
+  --databake-turquoise-light: #C5F0EC;
+  --databake-pink: #F9B4C4;
+  --databake-pink-dark: #E87A94;
+  --databake-pink-darker: #D45A78;
+  --databake-pink-light: #FCDCE4;
+  --databake-background: #F8FAFC;
+  --databake-text: #1E293B;
+  --databake-text-light: #475569;
+  --databake-text-muted: #64748B;
+  --databake-white: #FFFFFF;
 }
 
 .dark {
-  --tada-background: #0F172A;
-  --tada-text: #F8FAFC;
-  --tada-text-light: #CBD5E1;
-  --tada-text-muted: #94A3B8;
-  --tada-white: #1E293B;
+  --databake-background: #0F172A;
+  --databake-text: #F8FAFC;
+  --databake-text-light: #CBD5E1;
+  --databake-text-muted: #94A3B8;
+  --databake-white: #1E293B;
 }
 
 body {
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  color: var(--tada-text);
+  color: var(--databake-text);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -40,7 +40,7 @@ body {
     radial-gradient(ellipse at 0% 0%, rgba(168, 230, 225, 0.4) 0%, transparent 50%),
     radial-gradient(ellipse at 100% 0%, rgba(249, 180, 196, 0.3) 0%, transparent 50%),
     radial-gradient(ellipse at 50% 100%, rgba(168, 230, 225, 0.2) 0%, transparent 50%),
-    linear-gradient(180deg, var(--tada-background) 0%, #F5F7FA 100%);
+    linear-gradient(180deg, var(--databake-background) 0%, #F5F7FA 100%);
   background-size: 200% 200%;
   animation: aurora-shift 20s ease infinite;
 }
@@ -62,7 +62,7 @@ body {
 
 @layer utilities {
   .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-tada-turquoise-dark via-tada-pink to-tada-turquoise-dark;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-databake-turquoise-dark via-databake-pink to-databake-turquoise-dark;
     background-size: 200% auto;
   }
 
@@ -92,9 +92,9 @@ body {
   /* Buttons */
   .btn-primary {
     @apply px-6 py-3.5 font-semibold rounded-2xl transition-all duration-300
-           bg-gradient-to-r from-tada-turquoise to-tada-turquoise-dark
-           text-tada-text shadow-glow-turquoise
-           hover:shadow-lg hover:shadow-tada-turquoise/30 hover:scale-[1.02]
+           bg-gradient-to-r from-databake-turquoise to-databake-turquoise-dark
+           text-databake-text shadow-glow-turquoise
+           hover:shadow-lg hover:shadow-databake-turquoise/30 hover:scale-[1.02]
            active:scale-[0.98]
            disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
            text-center inline-flex items-center justify-center;
@@ -102,23 +102,23 @@ body {
 
   .btn-secondary {
     @apply px-6 py-3.5 font-semibold rounded-2xl transition-all duration-300
-           bg-white/60 backdrop-blur-sm border-2 border-tada-pink/30
-           text-tada-text
-           hover:bg-tada-pink/10 hover:border-tada-pink/50 hover:scale-[1.02]
+           bg-white/60 backdrop-blur-sm border-2 border-databake-pink/30
+           text-databake-text
+           hover:bg-databake-pink/10 hover:border-databake-pink/50 hover:scale-[1.02]
            active:scale-[0.98]
            text-center inline-flex items-center justify-center;
   }
 
   .btn-ghost {
     @apply px-4 py-2.5 font-medium rounded-xl transition-all duration-300
-           text-tada-text-light
-           hover:bg-white/60 hover:backdrop-blur-sm hover:text-tada-text
+           text-databake-text-light
+           hover:bg-white/60 hover:backdrop-blur-sm hover:text-databake-text
            text-center inline-flex items-center justify-center;
   }
 
   .btn-icon {
     @apply p-2.5 rounded-xl transition-all duration-300
-           text-tada-text-light hover:text-tada-text
+           text-databake-text-light hover:text-databake-text
            hover:bg-white/60 hover:backdrop-blur-sm
            inline-flex items-center justify-center;
   }
@@ -127,9 +127,9 @@ body {
   .input-field {
     @apply w-full px-4 py-3.5 rounded-2xl transition-all duration-300
            bg-white/60 backdrop-blur-sm border-2 border-white/50
-           focus:outline-none focus:border-tada-turquoise/50 focus:ring-4 focus:ring-tada-turquoise/10
+           focus:outline-none focus:border-databake-turquoise/50 focus:ring-4 focus:ring-databake-turquoise/10
            focus:bg-white/80
-           placeholder-tada-text-muted;
+           placeholder-databake-text-muted;
   }
 
   /* Section Title */
@@ -165,11 +165,11 @@ body {
   }
 
   .icon-turquoise {
-    @apply icon-wrapper bg-tada-turquoise/20 text-tada-turquoise-dark;
+    @apply icon-wrapper bg-databake-turquoise/20 text-databake-turquoise-dark;
   }
 
   .icon-pink {
-    @apply icon-wrapper bg-tada-pink/20 text-tada-pink-dark;
+    @apply icon-wrapper bg-databake-pink/20 text-databake-pink-dark;
   }
 }
 
@@ -184,23 +184,23 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--tada-turquoise);
+  background: var(--databake-turquoise);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--tada-turquoise-dark);
+  background: var(--databake-turquoise-dark);
 }
 
 /* Selection */
 ::selection {
-  background: var(--tada-turquoise);
-  color: var(--tada-text);
+  background: var(--databake-turquoise);
+  color: var(--databake-text);
 }
 
 /* Focus outline */
 *:focus-visible {
-  outline: 2px solid var(--tada-turquoise);
+  outline: 2px solid var(--databake-turquoise);
   outline-offset: 2px;
 }
 
@@ -222,8 +222,8 @@ body {
 
 /* Loading spinner */
 .spinner {
-  border: 3px solid var(--tada-turquoise-light);
-  border-top-color: var(--tada-turquoise-dark);
+  border: 3px solid var(--databake-turquoise-light);
+  border-top-color: var(--databake-turquoise-dark);
   animation: spin 0.8s linear infinite;
 }
 
@@ -275,17 +275,17 @@ body {
 }
 
 .pill-turquoise {
-  @apply pill bg-tada-turquoise/20 text-tada-turquoise-dark;
+  @apply pill bg-databake-turquoise/20 text-databake-turquoise-dark;
 }
 
 .pill-pink {
-  @apply pill bg-tada-pink/20 text-tada-pink-dark;
+  @apply pill bg-databake-pink/20 text-databake-pink-dark;
 }
 
 /* Divider with gradient */
 .divider-gradient {
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--tada-turquoise), var(--tada-pink), transparent);
+  background: linear-gradient(90deg, transparent, var(--databake-turquoise), var(--databake-pink), transparent);
 }
 
 /* Dark Mode Overrides - High Contrast */
@@ -321,11 +321,11 @@ body {
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: var(--tada-turquoise-dark);
+  background: var(--databake-turquoise-dark);
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: var(--tada-turquoise);
+  background: var(--databake-turquoise);
 }
 
 /* Extra high contrast text utilities */

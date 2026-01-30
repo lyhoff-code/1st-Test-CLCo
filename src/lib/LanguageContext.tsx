@@ -16,7 +16,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Load saved language from localStorage
-    const savedLang = localStorage.getItem('tada-language') as Language
+    const savedLang = localStorage.getItem('databake-language') as Language
     if (savedLang && (savedLang === 'en' || savedLang === 'es')) {
       setLanguageState(savedLang)
     } else {
@@ -30,7 +30,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang)
-    localStorage.setItem('tada-language', lang)
+    localStorage.setItem('databake-language', lang)
   }
 
   const t = (key: TranslationKey): string => {

@@ -231,10 +231,10 @@ What would you like help with today?`,
                   className="absolute bottom-full right-0 mb-3 whitespace-nowrap"
                 >
                   <div className="glass-strong px-4 py-2 rounded-xl shadow-lg">
-                    <p className="text-sm text-tada-text flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-tada-turquoise-dark" />
+                    <p className="text-sm text-databake-text flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-databake-turquoise-dark" />
                       Need help? Press
-                      <kbd className="px-2 py-0.5 rounded bg-tada-turquoise/20 text-xs font-mono">
+                      <kbd className="px-2 py-0.5 rounded bg-databake-turquoise/20 text-xs font-mono">
                         {isMac ? '⌘' : 'Ctrl'} + K
                       </kbd>
                     </p>
@@ -251,19 +251,19 @@ What would you like help with today?`,
               onMouseLeave={() => setShowTooltip(false)}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-tada-turquoise to-tada-pink shadow-lg flex items-center justify-center group"
+              className="relative w-14 h-14 rounded-2xl bg-gradient-to-br from-databake-turquoise to-databake-pink shadow-lg flex items-center justify-center group"
             >
               <Sparkles className="w-6 h-6 text-white" />
 
               {/* Pulse ring */}
-              <span className="absolute inset-0 rounded-2xl animate-ping bg-tada-turquoise/30" style={{ animationDuration: '2s' }} />
+              <span className="absolute inset-0 rounded-2xl animate-ping bg-databake-turquoise/30" style={{ animationDuration: '2s' }} />
 
               {/* Online indicator */}
               <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white" />
 
               {/* Keyboard hint on hover */}
               <div className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                <div className="glass-subtle px-2 py-1 rounded-lg text-xs text-tada-text-light whitespace-nowrap">
+                <div className="glass-subtle px-2 py-1 rounded-lg text-xs text-databake-text-light whitespace-nowrap">
                   {isMac ? '⌘' : 'Ctrl'} + K
                 </div>
               </div>
@@ -288,14 +288,14 @@ What would you like help with today?`,
             style={{ maxHeight: 'calc(100vh - 6rem)' }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-white/20 bg-gradient-to-r from-tada-turquoise/20 to-tada-pink/20">
+            <div className="flex items-center justify-between p-4 border-b border-white/20 bg-gradient-to-r from-databake-turquoise/20 to-databake-pink/20">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-tada-turquoise to-tada-pink flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-databake-turquoise to-databake-pink flex items-center justify-center">
                   <Sparkles className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-tada-text">Content Assistant</h3>
-                  <p className="text-xs text-tada-text-light flex items-center gap-1">
+                  <h3 className="font-semibold text-databake-text">Content Assistant</h3>
+                  <p className="text-xs text-databake-text-light flex items-center gap-1">
                     <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                     Powered by Gemini AI
                   </p>
@@ -304,8 +304,8 @@ What would you like help with today?`,
               <div className="flex items-center gap-1">
                 {/* Keyboard shortcut hint */}
                 <div className="hidden sm:flex items-center gap-1 px-2 py-1 rounded-lg bg-white/20 mr-2">
-                  <Command className="w-3 h-3 text-tada-text-light" />
-                  <span className="text-xs text-tada-text-light">K</span>
+                  <Command className="w-3 h-3 text-databake-text-light" />
+                  <span className="text-xs text-databake-text-light">K</span>
                 </div>
                 <button
                   onClick={() => setIsMinimized(!isMinimized)}
@@ -313,9 +313,9 @@ What would you like help with today?`,
                   title={isMinimized ? 'Expand' : 'Minimize'}
                 >
                   {isMinimized ? (
-                    <Maximize2 className="w-4 h-4 text-tada-text-light" />
+                    <Maximize2 className="w-4 h-4 text-databake-text-light" />
                   ) : (
-                    <Minimize2 className="w-4 h-4 text-tada-text-light" />
+                    <Minimize2 className="w-4 h-4 text-databake-text-light" />
                   )}
                 </button>
                 <button
@@ -323,7 +323,7 @@ What would you like help with today?`,
                   className="p-2 hover:bg-white/30 rounded-lg transition-colors"
                   title="Close (Esc)"
                 >
-                  <X className="w-4 h-4 text-tada-text-light" />
+                  <X className="w-4 h-4 text-databake-text-light" />
                 </button>
               </div>
             </div>
@@ -340,8 +340,8 @@ What would you like help with today?`,
                       <div
                         className={`max-w-[85%] rounded-2xl px-4 py-3 ${
                           message.role === 'user'
-                            ? 'bg-gradient-to-r from-tada-turquoise to-tada-turquoise-dark text-tada-text'
-                            : 'bg-white/60 text-tada-text border border-white/30'
+                            ? 'bg-gradient-to-r from-databake-turquoise to-databake-turquoise-dark text-databake-text'
+                            : 'bg-white/60 text-databake-text border border-white/30'
                         }`}
                       >
                         <p className="text-sm whitespace-pre-wrap">{message.content}</p>
@@ -352,7 +352,7 @@ What would you like help with today?`,
                   {isLoading && (
                     <div className="flex justify-start">
                       <div className="bg-white/60 rounded-2xl px-4 py-3 border border-white/30">
-                        <Loader2 className="w-5 h-5 animate-spin text-tada-turquoise-dark" />
+                        <Loader2 className="w-5 h-5 animate-spin text-databake-turquoise-dark" />
                       </div>
                     </div>
                   )}
@@ -363,14 +363,14 @@ What would you like help with today?`,
                 {/* Quick Actions */}
                 {messages.length <= 2 && (
                   <div className="px-4 pb-2">
-                    <p className="text-xs text-tada-text-light mb-2">Quick actions:</p>
+                    <p className="text-xs text-databake-text-light mb-2">Quick actions:</p>
                     <div className="flex flex-wrap gap-2">
                       {QUICK_ACTIONS.slice(0, 4).map((action, index) => (
                         <button
                           key={index}
                           onClick={() => handleSend(action.prompt)}
                           disabled={isLoading}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/50 hover:bg-white/70 border border-white/30 text-xs text-tada-text transition-colors disabled:opacity-50"
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/50 hover:bg-white/70 border border-white/30 text-xs text-databake-text transition-colors disabled:opacity-50"
                         >
                           {action.icon}
                           {action.label}
@@ -391,14 +391,14 @@ What would you like help with today?`,
                         onKeyPress={handleKeyPress}
                         placeholder="Ask me anything about content..."
                         rows={1}
-                        className="w-full px-4 py-3 rounded-2xl bg-white/60 border border-white/30 resize-none focus:outline-none focus:border-tada-turquoise/50 text-sm placeholder-tada-text-light"
+                        className="w-full px-4 py-3 rounded-2xl bg-white/60 border border-white/30 resize-none focus:outline-none focus:border-databake-turquoise/50 text-sm placeholder-databake-text-light"
                         style={{ maxHeight: '120px' }}
                       />
                     </div>
                     <button
                       onClick={() => handleSend()}
                       disabled={!input.trim() || isLoading}
-                      className="p-3 rounded-xl bg-gradient-to-r from-tada-turquoise to-tada-turquoise-dark text-tada-text disabled:opacity-50 hover:shadow-lg transition-all"
+                      className="p-3 rounded-xl bg-gradient-to-r from-databake-turquoise to-databake-turquoise-dark text-databake-text disabled:opacity-50 hover:shadow-lg transition-all"
                     >
                       <Send className="w-5 h-5" />
                     </button>
@@ -423,11 +423,11 @@ export function AssistantHeaderButton({ onClick }: { onClick: () => void }) {
       className="btn-ghost flex items-center gap-2 group relative"
     >
       <div className="relative">
-        <Sparkles className="w-5 h-5 text-tada-turquoise-dark" />
+        <Sparkles className="w-5 h-5 text-databake-turquoise-dark" />
         <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full" />
       </div>
       <span className="hidden sm:inline">AI Assistant</span>
-      <kbd className="hidden md:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-tada-turquoise/10 text-[10px] font-mono text-tada-text-light">
+      <kbd className="hidden md:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-databake-turquoise/10 text-[10px] font-mono text-databake-text-light">
         {isMac ? '⌘' : 'Ctrl'}K
       </kbd>
     </button>

@@ -61,24 +61,24 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-tada-turquoise via-tada-turquoise-dark to-tada-pink flex items-center justify-center shadow-glass glow-turquoise">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-databake-turquoise via-databake-turquoise-dark to-databake-pink flex items-center justify-center shadow-glass glow-turquoise">
               <Sparkles className="w-6 h-6 text-white" strokeWidth={2.5} />
             </div>
             <div className="text-left">
-              <h1 className="text-2xl font-bold text-tada-text dark:text-gray-100">
-                DataBake<span className="text-tada-pink">.media</span>
+              <h1 className="text-2xl font-bold text-databake-text dark:text-gray-100">
+                DataBake<span className="text-databake-pink">.media</span>
               </h1>
-              <p className="text-xs text-tada-text-light dark:text-gray-400">AI Content Studio</p>
+              <p className="text-xs text-databake-text-light dark:text-gray-400">AI Content Studio</p>
             </div>
           </Link>
         </div>
 
         {/* Auth Card */}
         <div className="glass p-8">
-          <h2 className="text-2xl font-bold text-tada-text dark:text-gray-100 text-center mb-2">
+          <h2 className="text-2xl font-bold text-databake-text dark:text-gray-100 text-center mb-2">
             {isLogin ? 'Welcome back!' : 'Create account'}
           </h2>
-          <p className="text-tada-text-light dark:text-gray-400 text-center mb-6">
+          <p className="text-databake-text-light dark:text-gray-400 text-center mb-6">
             {isLogin
               ? 'Sign in to continue creating content'
               : 'Start creating viral content today'}
@@ -87,7 +87,7 @@ export default function LoginPage() {
           {/* Google Sign In */}
           <button
             onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-2xl bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 hover:border-tada-turquoise dark:hover:border-tada-turquoise transition-colors mb-6"
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-2xl bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 hover:border-databake-turquoise dark:hover:border-databake-turquoise transition-colors mb-6"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
@@ -107,7 +107,7 @@ export default function LoginPage() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            <span className="font-medium text-tada-text dark:text-gray-200">
+            <span className="font-medium text-databake-text dark:text-gray-200">
               Continue with Google
             </span>
           </button>
@@ -117,7 +117,7 @@ export default function LoginPage() {
               <div className="w-full border-t border-gray-200 dark:border-gray-700" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white/70 dark:bg-gray-800/70 text-tada-text-light dark:text-gray-400 rounded-full">
+              <span className="px-4 bg-white/70 dark:bg-gray-800/70 text-databake-text-light dark:text-gray-400 rounded-full">
                 or
               </span>
             </div>
@@ -127,11 +127,11 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <div>
-                <label className="block text-sm font-medium text-tada-text dark:text-gray-200 mb-2">
+                <label className="block text-sm font-medium text-databake-text dark:text-gray-200 mb-2">
                   Name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-tada-text-light" />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-databake-text-light" />
                   <input
                     type="text"
                     value={name}
@@ -145,11 +145,11 @@ export default function LoginPage() {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-tada-text dark:text-gray-200 mb-2">
+              <label className="block text-sm font-medium text-databake-text dark:text-gray-200 mb-2">
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-tada-text-light" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-databake-text-light" />
                 <input
                   type="email"
                   value={email}
@@ -162,11 +162,11 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-tada-text dark:text-gray-200 mb-2">
+              <label className="block text-sm font-medium text-databake-text dark:text-gray-200 mb-2">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-tada-text-light" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-databake-text-light" />
                 <input
                   type="password"
                   value={password}
@@ -206,14 +206,14 @@ export default function LoginPage() {
           </form>
 
           {/* Toggle */}
-          <p className="mt-6 text-center text-sm text-tada-text-light dark:text-gray-400">
+          <p className="mt-6 text-center text-sm text-databake-text-light dark:text-gray-400">
             {isLogin ? "Don't have an account?" : 'Already have an account?'}
             <button
               onClick={() => {
                 setIsLogin(!isLogin)
                 setError('')
               }}
-              className="ml-2 font-medium text-tada-turquoise-dark hover:underline"
+              className="ml-2 font-medium text-databake-turquoise-dark hover:underline"
             >
               {isLogin ? 'Sign up' : 'Sign in'}
             </button>
@@ -221,7 +221,7 @@ export default function LoginPage() {
         </div>
 
         {/* Demo Note */}
-        <p className="mt-6 text-center text-xs text-tada-text-light dark:text-gray-500">
+        <p className="mt-6 text-center text-xs text-databake-text-light dark:text-gray-500">
           Demo mode: Sign up with any email to test. <br />
           For Google login, configure OAuth in Settings.
         </p>

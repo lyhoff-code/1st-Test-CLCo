@@ -23,7 +23,7 @@ export function GenerationPanel({ state }: GenerationPanelProps) {
       {/* Progress Bar */}
       <div className="relative h-2 bg-white/50 rounded-full overflow-hidden mb-6">
         <motion.div
-          className="absolute inset-y-0 left-0 bg-gradient-to-r from-tada-turquoise to-tada-pink rounded-full"
+          className="absolute inset-y-0 left-0 bg-gradient-to-r from-databake-turquoise to-databake-pink rounded-full"
           initial={{ width: 0 }}
           animate={{ width: `${state.progress}%` }}
           transition={{ duration: 0.5 }}
@@ -48,23 +48,23 @@ export function GenerationPanel({ state }: GenerationPanelProps) {
               <motion.div
                 className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg mb-2 ${
                   isActive
-                    ? 'bg-gradient-to-br from-tada-turquoise to-tada-pink text-white shadow-glass glow-turquoise'
+                    ? 'bg-gradient-to-br from-databake-turquoise to-databake-pink text-white shadow-glass glow-turquoise'
                     : isCompleted
-                    ? 'bg-tada-turquoise/20 border-2 border-tada-turquoise'
+                    ? 'bg-databake-turquoise/20 border-2 border-databake-turquoise'
                     : 'bg-white/50'
                 }`}
                 animate={isActive ? { scale: [1, 1.05, 1] } : {}}
                 transition={{ repeat: Infinity, duration: 1.5 }}
               >
                 {isCompleted ? (
-                  <CheckCircle2 className="w-5 h-5 text-tada-turquoise-dark" />
+                  <CheckCircle2 className="w-5 h-5 text-databake-turquoise-dark" />
                 ) : (
                   <Icon className={`w-5 h-5 ${
-                    isActive ? 'text-white' : 'text-tada-text-light'
+                    isActive ? 'text-white' : 'text-databake-text-light'
                   }`} />
                 )}
               </motion.div>
-              <span className="text-xs text-center text-tada-text-light font-medium">{step.label}</span>
+              <span className="text-xs text-center text-databake-text-light font-medium">{step.label}</span>
             </div>
           )
         })}
@@ -76,7 +76,7 @@ export function GenerationPanel({ state }: GenerationPanelProps) {
           key={state.message}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-tada-text-light"
+          className="text-databake-text-light"
         >
           {state.message}
         </motion.p>

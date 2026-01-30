@@ -14,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="font-sans antialiased bg-tada-background dark:bg-gray-900 transition-colors">
+      <body className="font-sans antialiased bg-databake-background dark:bg-gray-900 transition-colors">
         <Providers>
           <div className="min-h-screen">
             {/* Background decoration */}

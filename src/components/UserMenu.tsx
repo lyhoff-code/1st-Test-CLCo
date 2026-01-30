@@ -50,16 +50,16 @@ export function UserMenu() {
             className="w-8 h-8 rounded-lg object-cover"
           />
         ) : (
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-tada-turquoise to-tada-pink flex items-center justify-center">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-databake-turquoise to-databake-pink flex items-center justify-center">
             <span className="text-white font-semibold text-sm uppercase">
               {userInitial}
             </span>
           </div>
         )}
-        <span className="hidden md:block text-sm font-medium text-tada-text dark:text-gray-200 max-w-[100px] truncate">
+        <span className="hidden md:block text-sm font-medium text-databake-text dark:text-gray-200 max-w-[100px] truncate">
           {session.user?.name || session.user?.email?.split('@')[0]}
         </span>
-        <ChevronDown className={`w-4 h-4 text-tada-text-light transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-4 h-4 text-databake-text-light transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       <AnimatePresence>
@@ -80,10 +80,10 @@ export function UserMenu() {
             >
               {/* User Info */}
               <div className="p-4 border-b border-white/20 dark:border-gray-700/30">
-                <p className="font-medium text-tada-text dark:text-gray-100 truncate">
+                <p className="font-medium text-databake-text dark:text-gray-100 truncate">
                   {session.user?.name || 'User'}
                 </p>
-                <p className="text-sm text-tada-text-light dark:text-gray-400 truncate">
+                <p className="text-sm text-databake-text-light dark:text-gray-400 truncate">
                   {session.user?.email}
                 </p>
               </div>
@@ -95,16 +95,16 @@ export function UserMenu() {
                   onClick={() => setIsOpen(false)}
                   className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/50 dark:hover:bg-gray-700/50 transition-colors"
                 >
-                  <BarChart3 className="w-5 h-5 text-tada-turquoise-dark" />
-                  <span className="text-sm font-medium text-tada-text dark:text-gray-200">Dashboard</span>
+                  <BarChart3 className="w-5 h-5 text-databake-turquoise-dark" />
+                  <span className="text-sm font-medium text-databake-text dark:text-gray-200">Dashboard</span>
                 </Link>
                 <Link
                   href="/settings"
                   onClick={() => setIsOpen(false)}
                   className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/50 dark:hover:bg-gray-700/50 transition-colors"
                 >
-                  <Settings className="w-5 h-5 text-tada-text-light dark:text-gray-400" />
-                  <span className="text-sm font-medium text-tada-text dark:text-gray-200">Settings</span>
+                  <Settings className="w-5 h-5 text-databake-text-light dark:text-gray-400" />
+                  <span className="text-sm font-medium text-databake-text dark:text-gray-200">Settings</span>
                 </Link>
               </div>
 
@@ -117,8 +117,8 @@ export function UserMenu() {
                   }}
                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors group"
                 >
-                  <LogOut className="w-5 h-5 text-tada-text-light group-hover:text-red-500 dark:text-gray-400" />
-                  <span className="text-sm font-medium text-tada-text group-hover:text-red-500 dark:text-gray-200">
+                  <LogOut className="w-5 h-5 text-databake-text-light group-hover:text-red-500 dark:text-gray-400" />
+                  <span className="text-sm font-medium text-databake-text group-hover:text-red-500 dark:text-gray-200">
                     Sign Out
                   </span>
                 </button>

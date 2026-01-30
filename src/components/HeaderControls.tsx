@@ -30,7 +30,7 @@ export function ThemeToggle() {
             exit={{ scale: 0, rotate: 90 }}
             transition={{ duration: 0.2 }}
           >
-            <Moon className="w-5 h-5 text-tada-text dark:text-gray-200" />
+            <Moon className="w-5 h-5 text-databake-text dark:text-gray-200" />
           </motion.div>
         ) : (
           <motion.div
@@ -60,9 +60,9 @@ export function LanguageSwitcher() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/50 dark:bg-gray-800/50 hover:bg-white/70 dark:hover:bg-gray-700/70 border border-white/30 dark:border-gray-600/30 transition-all"
       >
-        <Globe className="w-4 h-4 text-tada-text-light dark:text-gray-400" />
-        <span className="text-sm font-medium text-tada-text dark:text-gray-200">{currentLang.flag}</span>
-        <ChevronDown className={`w-4 h-4 text-tada-text-light dark:text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <Globe className="w-4 h-4 text-databake-text-light dark:text-gray-400" />
+        <span className="text-sm font-medium text-databake-text dark:text-gray-200">{currentLang.flag}</span>
+        <ChevronDown className={`w-4 h-4 text-databake-text-light dark:text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       <AnimatePresence>
@@ -89,13 +89,13 @@ export function LanguageSwitcher() {
                     setIsOpen(false)
                   }}
                   className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/50 dark:hover:bg-gray-700/50 transition-colors ${
-                    language === lang.code ? 'bg-tada-turquoise/20 dark:bg-tada-turquoise/10' : ''
+                    language === lang.code ? 'bg-databake-turquoise/20 dark:bg-databake-turquoise/10' : ''
                   }`}
                 >
                   <span className="text-lg">{lang.flag}</span>
-                  <span className="text-sm font-medium text-tada-text dark:text-gray-200">{lang.name}</span>
+                  <span className="text-sm font-medium text-databake-text dark:text-gray-200">{lang.name}</span>
                   {language === lang.code && (
-                    <span className="ml-auto w-2 h-2 rounded-full bg-tada-turquoise" />
+                    <span className="ml-auto w-2 h-2 rounded-full bg-databake-turquoise" />
                   )}
                 </button>
               ))}

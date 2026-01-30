@@ -263,8 +263,8 @@ function VoiceSection({ settings, onChange }: { settings: VoiceSettings; onChang
               onClick={() => onChange({ gender: gender.value })}
               className={`p-3 rounded-xl text-sm font-medium transition-all ${
                 settings.gender === gender.value
-                  ? 'bg-tada-turquoise/30 border-2 border-tada-turquoise text-tada-text'
-                  : 'bg-white/50 border-2 border-transparent hover:bg-white/70 text-tada-text-light'
+                  ? 'bg-databake-turquoise/30 border-2 border-databake-turquoise text-databake-text'
+                  : 'bg-white/50 border-2 border-transparent hover:bg-white/70 text-databake-text-light'
               }`}
             >
               {gender.label}
@@ -275,7 +275,7 @@ function VoiceSection({ settings, onChange }: { settings: VoiceSettings; onChang
 
       {/* Accent */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Accent</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Accent</label>
         <div className="flex flex-wrap gap-2">
           {VOICE_ACCENTS.map((accent) => (
             <button
@@ -283,8 +283,8 @@ function VoiceSection({ settings, onChange }: { settings: VoiceSettings; onChang
               onClick={() => onChange({ accent: accent.value })}
               className={`px-3 py-2 rounded-xl text-sm transition-all flex items-center gap-2 ${
                 settings.accent === accent.value
-                  ? 'bg-tada-pink/30 border-2 border-tada-pink text-tada-text'
-                  : 'bg-white/50 border-2 border-transparent hover:bg-white/70 text-tada-text-light'
+                  ? 'bg-databake-pink/30 border-2 border-databake-pink text-databake-text'
+                  : 'bg-white/50 border-2 border-transparent hover:bg-white/70 text-databake-text-light'
               }`}
             >
               <span>{accent.flag}</span>
@@ -296,7 +296,7 @@ function VoiceSection({ settings, onChange }: { settings: VoiceSettings; onChang
 
       {/* Emotion */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Emotion</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Emotion</label>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {VOICE_EMOTIONS.map((emotion) => {
             const Icon = ICON_MAP[emotion.iconName] || Smile
@@ -308,15 +308,15 @@ function VoiceSection({ settings, onChange }: { settings: VoiceSettings; onChang
                 className={`p-3 rounded-xl text-sm transition-all flex items-center gap-2 ${
                   settings.emotion === emotion.value
                     ? isTurquoise
-                      ? 'bg-tada-turquoise/30 border-2 border-tada-turquoise text-tada-text'
-                      : 'bg-tada-pink/30 border-2 border-tada-pink text-tada-text'
-                    : 'bg-white/50 border-2 border-transparent hover:bg-white/70 text-tada-text-light'
+                      ? 'bg-databake-turquoise/30 border-2 border-databake-turquoise text-databake-text'
+                      : 'bg-databake-pink/30 border-2 border-databake-pink text-databake-text'
+                    : 'bg-white/50 border-2 border-transparent hover:bg-white/70 text-databake-text-light'
                 }`}
               >
                 <Icon className={`w-4 h-4 ${
                   settings.emotion === emotion.value
-                    ? isTurquoise ? 'text-tada-turquoise-dark' : 'text-tada-pink-dark'
-                    : 'text-tada-text-light'
+                    ? isTurquoise ? 'text-databake-turquoise-dark' : 'text-databake-pink-dark'
+                    : 'text-databake-text-light'
                 }`} />
                 <span>{emotion.label}</span>
               </button>
@@ -327,7 +327,7 @@ function VoiceSection({ settings, onChange }: { settings: VoiceSettings; onChang
 
       {/* Speed */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Speaking Speed</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Speaking Speed</label>
         <div className="grid grid-cols-3 gap-2">
           {VOICE_SPEEDS.map((speed) => (
             <button
@@ -335,8 +335,8 @@ function VoiceSection({ settings, onChange }: { settings: VoiceSettings; onChang
               onClick={() => onChange({ speed: speed.value })}
               className={`p-3 rounded-xl text-sm transition-all ${
                 settings.speed === speed.value
-                  ? 'bg-tada-turquoise/30 border-2 border-tada-turquoise text-tada-text'
-                  : 'bg-white/50 border-2 border-transparent hover:bg-white/70 text-tada-text-light'
+                  ? 'bg-databake-turquoise/30 border-2 border-databake-turquoise text-databake-text'
+                  : 'bg-white/50 border-2 border-transparent hover:bg-white/70 text-databake-text-light'
               }`}
             >
               {speed.label}
@@ -347,9 +347,9 @@ function VoiceSection({ settings, onChange }: { settings: VoiceSettings; onChang
 
       {/* Volume Slider */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 flex justify-between">
+        <label className="text-sm font-medium text-databake-text mb-2 flex justify-between">
           <span>Volume</span>
-          <span className="text-tada-text-light">{settings.volume}%</span>
+          <span className="text-databake-text-light">{settings.volume}%</span>
         </label>
         <input
           type="range"
@@ -357,7 +357,7 @@ function VoiceSection({ settings, onChange }: { settings: VoiceSettings; onChang
           max="100"
           value={settings.volume}
           onChange={(e) => onChange({ volume: parseInt(e.target.value) })}
-          className="w-full h-2 bg-white/50 rounded-lg appearance-none cursor-pointer accent-tada-turquoise"
+          className="w-full h-2 bg-white/50 rounded-lg appearance-none cursor-pointer accent-databake-turquoise"
         />
       </div>
     </div>
@@ -373,7 +373,7 @@ function AudienceSection({ settings, onChange }: { settings: AudienceSettings; o
     <div className="space-y-4">
       {/* Age Group */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Target Age Group</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Target Age Group</label>
         <div className="space-y-2">
           {AGE_GROUPS.map((age) => (
             <button
@@ -381,15 +381,15 @@ function AudienceSection({ settings, onChange }: { settings: AudienceSettings; o
               onClick={() => onChange({ ageGroup: age.value })}
               className={`w-full p-3 rounded-xl text-left transition-all ${
                 settings.ageGroup === age.value
-                  ? 'bg-tada-pink/30 border-2 border-tada-pink'
+                  ? 'bg-databake-pink/30 border-2 border-databake-pink'
                   : 'bg-white/50 border-2 border-transparent hover:bg-white/70'
               }`}
             >
               <div className="flex justify-between items-center">
-                <span className="font-medium text-tada-text">{age.label}</span>
-                <span className="text-xs text-tada-text-light">{age.range}</span>
+                <span className="font-medium text-databake-text">{age.label}</span>
+                <span className="text-xs text-databake-text-light">{age.range}</span>
               </div>
-              <p className="text-xs text-tada-text-light mt-1">{age.traits}</p>
+              <p className="text-xs text-databake-text-light mt-1">{age.traits}</p>
             </button>
           ))}
         </div>
@@ -397,7 +397,7 @@ function AudienceSection({ settings, onChange }: { settings: AudienceSettings; o
 
       {/* Platform */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Target Platform</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Target Platform</label>
         <div className="grid grid-cols-2 gap-2">
           {PLATFORMS.map((platform) => {
             const Icon = ICON_MAP[platform.iconName] || Globe
@@ -407,8 +407,8 @@ function AudienceSection({ settings, onChange }: { settings: AudienceSettings; o
                 onClick={() => onChange({ platform: platform.value })}
                 className={`p-3 rounded-xl text-sm transition-all flex items-center gap-2 ${
                   settings.platform === platform.value
-                    ? 'bg-tada-turquoise/30 border-2 border-tada-turquoise text-tada-text'
-                    : 'bg-white/50 border-2 border-transparent hover:bg-white/70 text-tada-text-light'
+                    ? 'bg-databake-turquoise/30 border-2 border-databake-turquoise text-databake-text'
+                    : 'bg-white/50 border-2 border-transparent hover:bg-white/70 text-databake-text-light'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -421,7 +421,7 @@ function AudienceSection({ settings, onChange }: { settings: AudienceSettings; o
 
       {/* Niche */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Content Niche</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Content Niche</label>
         <div className="flex flex-wrap gap-2">
           {NICHES.map((niche) => {
             const Icon = ICON_MAP[niche.iconName] || Grid
@@ -433,9 +433,9 @@ function AudienceSection({ settings, onChange }: { settings: AudienceSettings; o
                 className={`px-3 py-2 rounded-xl text-sm transition-all flex items-center gap-2 ${
                   settings.niche === niche.value
                     ? isTurquoise
-                      ? 'bg-tada-turquoise/30 border-2 border-tada-turquoise text-tada-text'
-                      : 'bg-tada-pink/30 border-2 border-tada-pink text-tada-text'
-                    : 'bg-white/50 border-2 border-transparent hover:bg-white/70 text-tada-text-light'
+                      ? 'bg-databake-turquoise/30 border-2 border-databake-turquoise text-databake-text'
+                      : 'bg-databake-pink/30 border-2 border-databake-pink text-databake-text'
+                    : 'bg-white/50 border-2 border-transparent hover:bg-white/70 text-databake-text-light'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -448,7 +448,7 @@ function AudienceSection({ settings, onChange }: { settings: AudienceSettings; o
 
       {/* Pain Points */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Pain Points (select multiple)</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Pain Points (select multiple)</label>
         <div className="grid grid-cols-2 gap-2">
           {PAIN_POINTS.map((pain) => {
             const Icon = ICON_MAP[pain.iconName] || Clock
@@ -464,15 +464,15 @@ function AudienceSection({ settings, onChange }: { settings: AudienceSettings; o
                 }}
                 className={`p-3 rounded-xl text-left transition-all ${
                   isSelected
-                    ? 'bg-tada-pink/30 border-2 border-tada-pink'
+                    ? 'bg-databake-pink/30 border-2 border-databake-pink'
                     : 'bg-white/50 border-2 border-transparent hover:bg-white/70'
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <Icon className={`w-4 h-4 ${isSelected ? 'text-tada-pink-dark' : 'text-tada-text-light'}`} />
-                  <span className="text-sm font-medium text-tada-text">{pain.label}</span>
+                  <Icon className={`w-4 h-4 ${isSelected ? 'text-databake-pink-dark' : 'text-databake-text-light'}`} />
+                  <span className="text-sm font-medium text-databake-text">{pain.label}</span>
                 </div>
-                <p className="text-xs text-tada-text-light mt-1">{pain.description}</p>
+                <p className="text-xs text-databake-text-light mt-1">{pain.description}</p>
               </button>
             )
           })}
@@ -491,7 +491,7 @@ function VisualSection({ settings, onChange }: { settings: VisualSettings; onCha
     <div className="space-y-4">
       {/* Color Mood */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Color Mood</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Color Mood</label>
         <div className="grid grid-cols-2 gap-2">
           {COLOR_MOODS.map((mood) => (
             <button
@@ -499,7 +499,7 @@ function VisualSection({ settings, onChange }: { settings: VisualSettings; onCha
               onClick={() => onChange({ colorMood: mood.value })}
               className={`p-3 rounded-xl text-left transition-all ${
                 settings.colorMood === mood.value
-                  ? 'bg-tada-turquoise/30 border-2 border-tada-turquoise'
+                  ? 'bg-databake-turquoise/30 border-2 border-databake-turquoise'
                   : 'bg-white/50 border-2 border-transparent hover:bg-white/70'
               }`}
             >
@@ -512,8 +512,8 @@ function VisualSection({ settings, onChange }: { settings: VisualSettings; onCha
                   />
                 ))}
               </div>
-              <span className="font-medium text-tada-text text-sm">{mood.label}</span>
-              <p className="text-xs text-tada-text-light">{mood.description}</p>
+              <span className="font-medium text-databake-text text-sm">{mood.label}</span>
+              <p className="text-xs text-databake-text-light">{mood.description}</p>
             </button>
           ))}
         </div>
@@ -521,7 +521,7 @@ function VisualSection({ settings, onChange }: { settings: VisualSettings; onCha
 
       {/* Visual Style */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Visual Style</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Visual Style</label>
         <div className="grid grid-cols-2 gap-2">
           {VISUAL_STYLES.map((style) => {
             const Icon = ICON_MAP[style.iconName] || Film
@@ -531,14 +531,14 @@ function VisualSection({ settings, onChange }: { settings: VisualSettings; onCha
                 onClick={() => onChange({ visualStyle: style.value })}
                 className={`p-3 rounded-xl text-left transition-all flex items-center gap-3 ${
                   settings.visualStyle === style.value
-                    ? 'bg-tada-pink/30 border-2 border-tada-pink'
+                    ? 'bg-databake-pink/30 border-2 border-databake-pink'
                     : 'bg-white/50 border-2 border-transparent hover:bg-white/70'
                 }`}
               >
-                <Icon className={`w-5 h-5 ${settings.visualStyle === style.value ? 'text-tada-pink-dark' : 'text-tada-text-light'}`} />
+                <Icon className={`w-5 h-5 ${settings.visualStyle === style.value ? 'text-databake-pink-dark' : 'text-databake-text-light'}`} />
                 <div>
-                  <span className="font-medium text-tada-text text-sm block">{style.label}</span>
-                  <span className="text-xs text-tada-text-light">{style.description}</span>
+                  <span className="font-medium text-databake-text text-sm block">{style.label}</span>
+                  <span className="text-xs text-databake-text-light">{style.description}</span>
                 </div>
               </button>
             )
@@ -548,7 +548,7 @@ function VisualSection({ settings, onChange }: { settings: VisualSettings; onCha
 
       {/* Aspect Ratio */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Aspect Ratio</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Aspect Ratio</label>
         <div className="grid grid-cols-2 gap-2">
           {ASPECT_RATIOS.map((ratio) => (
             <button
@@ -556,12 +556,12 @@ function VisualSection({ settings, onChange }: { settings: VisualSettings; onCha
               onClick={() => onChange({ aspectRatio: ratio.value })}
               className={`p-3 rounded-xl transition-all ${
                 settings.aspectRatio === ratio.value
-                  ? 'bg-tada-turquoise/30 border-2 border-tada-turquoise'
+                  ? 'bg-databake-turquoise/30 border-2 border-databake-turquoise'
                   : 'bg-white/50 border-2 border-transparent hover:bg-white/70'
               }`}
             >
-              <span className="font-medium text-tada-text text-sm block">{ratio.label}</span>
-              <span className="text-xs text-tada-text-light">{ratio.platforms.join(', ')}</span>
+              <span className="font-medium text-databake-text text-sm block">{ratio.label}</span>
+              <span className="text-xs text-databake-text-light">{ratio.platforms.join(', ')}</span>
             </button>
           ))}
         </div>
@@ -569,7 +569,7 @@ function VisualSection({ settings, onChange }: { settings: VisualSettings; onCha
 
       {/* Image Style */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">AI Image Style</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">AI Image Style</label>
         <div className="flex flex-wrap gap-2">
           {IMAGE_STYLES.map((style) => {
             const Icon = ICON_MAP[style.iconName] || Camera
@@ -579,8 +579,8 @@ function VisualSection({ settings, onChange }: { settings: VisualSettings; onCha
                 onClick={() => onChange({ imageStyle: style.value })}
                 className={`px-3 py-2 rounded-xl text-sm transition-all flex items-center gap-2 ${
                   settings.imageStyle === style.value
-                    ? 'bg-tada-pink/30 border-2 border-tada-pink text-tada-text'
-                    : 'bg-white/50 border-2 border-transparent hover:bg-white/70 text-tada-text-light'
+                    ? 'bg-databake-pink/30 border-2 border-databake-pink text-databake-text'
+                    : 'bg-white/50 border-2 border-transparent hover:bg-white/70 text-databake-text-light'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -593,10 +593,10 @@ function VisualSection({ settings, onChange }: { settings: VisualSettings; onCha
 
       {/* Adjustments */}
       <div className="space-y-3">
-        <label className="text-sm font-medium text-tada-text block">Adjustments</label>
+        <label className="text-sm font-medium text-databake-text block">Adjustments</label>
 
         <div>
-          <div className="flex justify-between text-xs text-tada-text-light mb-1">
+          <div className="flex justify-between text-xs text-databake-text-light mb-1">
             <span>Brightness</span>
             <span>{settings.brightness > 0 ? '+' : ''}{settings.brightness}</span>
           </div>
@@ -606,12 +606,12 @@ function VisualSection({ settings, onChange }: { settings: VisualSettings; onCha
             max="50"
             value={settings.brightness}
             onChange={(e) => onChange({ brightness: parseInt(e.target.value) })}
-            className="w-full h-2 bg-white/50 rounded-lg appearance-none cursor-pointer accent-tada-turquoise"
+            className="w-full h-2 bg-white/50 rounded-lg appearance-none cursor-pointer accent-databake-turquoise"
           />
         </div>
 
         <div>
-          <div className="flex justify-between text-xs text-tada-text-light mb-1">
+          <div className="flex justify-between text-xs text-databake-text-light mb-1">
             <span>Contrast</span>
             <span>{settings.contrast > 0 ? '+' : ''}{settings.contrast}</span>
           </div>
@@ -621,12 +621,12 @@ function VisualSection({ settings, onChange }: { settings: VisualSettings; onCha
             max="50"
             value={settings.contrast}
             onChange={(e) => onChange({ contrast: parseInt(e.target.value) })}
-            className="w-full h-2 bg-white/50 rounded-lg appearance-none cursor-pointer accent-tada-turquoise"
+            className="w-full h-2 bg-white/50 rounded-lg appearance-none cursor-pointer accent-databake-turquoise"
           />
         </div>
 
         <div>
-          <div className="flex justify-between text-xs text-tada-text-light mb-1">
+          <div className="flex justify-between text-xs text-databake-text-light mb-1">
             <span>Saturation</span>
             <span>{settings.saturation > 0 ? '+' : ''}{settings.saturation}</span>
           </div>
@@ -636,7 +636,7 @@ function VisualSection({ settings, onChange }: { settings: VisualSettings; onCha
             max="50"
             value={settings.saturation}
             onChange={(e) => onChange({ saturation: parseInt(e.target.value) })}
-            className="w-full h-2 bg-white/50 rounded-lg appearance-none cursor-pointer accent-tada-turquoise"
+            className="w-full h-2 bg-white/50 rounded-lg appearance-none cursor-pointer accent-databake-turquoise"
           />
         </div>
       </div>
@@ -653,7 +653,7 @@ function MusicSection({ settings, onChange }: { settings: MusicSettings; onChang
     <div className="space-y-4">
       {/* Music Mood */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Music Mood</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Music Mood</label>
         <div className="grid grid-cols-2 gap-2">
           {MUSIC_MOODS.map((mood) => {
             const Icon = ICON_MAP[mood.iconName] || Music
@@ -663,17 +663,17 @@ function MusicSection({ settings, onChange }: { settings: MusicSettings; onChang
                 onClick={() => onChange({ mood: mood.value })}
                 className={`p-3 rounded-xl text-left transition-all ${
                   settings.mood === mood.value
-                    ? 'bg-tada-turquoise/30 border-2 border-tada-turquoise'
+                    ? 'bg-databake-turquoise/30 border-2 border-databake-turquoise'
                     : 'bg-white/50 border-2 border-transparent hover:bg-white/70'
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <Icon className={`w-4 h-4 ${settings.mood === mood.value ? 'text-tada-turquoise-dark' : 'text-tada-text-light'}`} />
-                  <span className="font-medium text-tada-text text-sm">{mood.label}</span>
+                  <Icon className={`w-4 h-4 ${settings.mood === mood.value ? 'text-databake-turquoise-dark' : 'text-databake-text-light'}`} />
+                  <span className="font-medium text-databake-text text-sm">{mood.label}</span>
                 </div>
-                <p className="text-xs text-tada-text-light">{mood.description}</p>
+                <p className="text-xs text-databake-text-light">{mood.description}</p>
                 {mood.bpm !== '-' && (
-                  <span className="text-xs text-tada-text-light">{mood.bpm} BPM</span>
+                  <span className="text-xs text-databake-text-light">{mood.bpm} BPM</span>
                 )}
               </button>
             )
@@ -683,9 +683,9 @@ function MusicSection({ settings, onChange }: { settings: MusicSettings; onChang
 
       {/* Volume */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 flex justify-between">
+        <label className="text-sm font-medium text-databake-text mb-2 flex justify-between">
           <span>Music Volume</span>
-          <span className="text-tada-text-light">{settings.volume}%</span>
+          <span className="text-databake-text-light">{settings.volume}%</span>
         </label>
         <input
           type="range"
@@ -693,15 +693,15 @@ function MusicSection({ settings, onChange }: { settings: MusicSettings; onChang
           max="100"
           value={settings.volume}
           onChange={(e) => onChange({ volume: parseInt(e.target.value) })}
-          className="w-full h-2 bg-white/50 rounded-lg appearance-none cursor-pointer accent-tada-pink"
+          className="w-full h-2 bg-white/50 rounded-lg appearance-none cursor-pointer accent-databake-pink"
         />
       </div>
 
       {/* Voice/Music Balance */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 flex justify-between">
+        <label className="text-sm font-medium text-databake-text mb-2 flex justify-between">
           <span>Voice/Music Balance</span>
-          <span className="text-tada-text-light">{settings.voiceMusicBalance}% voice</span>
+          <span className="text-databake-text-light">{settings.voiceMusicBalance}% voice</span>
         </label>
         <input
           type="range"
@@ -709,9 +709,9 @@ function MusicSection({ settings, onChange }: { settings: MusicSettings; onChang
           max="100"
           value={settings.voiceMusicBalance}
           onChange={(e) => onChange({ voiceMusicBalance: parseInt(e.target.value) })}
-          className="w-full h-2 bg-white/50 rounded-lg appearance-none cursor-pointer accent-tada-turquoise"
+          className="w-full h-2 bg-white/50 rounded-lg appearance-none cursor-pointer accent-databake-turquoise"
         />
-        <div className="flex justify-between text-xs text-tada-text-light mt-1">
+        <div className="flex justify-between text-xs text-databake-text-light mt-1">
           <span>More Music</span>
           <span>More Voice</span>
         </div>
@@ -729,8 +729,8 @@ function MusicSection({ settings, onChange }: { settings: MusicSettings; onChang
             onClick={() => onChange({ [toggle.key]: !settings[toggle.key as keyof MusicSettings] })}
             className={`p-3 rounded-xl text-sm transition-all ${
               settings[toggle.key as keyof MusicSettings]
-                ? 'bg-tada-pink/30 border-2 border-tada-pink text-tada-text'
-                : 'bg-white/50 border-2 border-transparent text-tada-text-light'
+                ? 'bg-databake-pink/30 border-2 border-databake-pink text-databake-text'
+                : 'bg-white/50 border-2 border-transparent text-databake-text-light'
             }`}
           >
             {toggle.label}
@@ -740,7 +740,7 @@ function MusicSection({ settings, onChange }: { settings: MusicSettings; onChang
 
       {/* Sound Effects */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Sound Effects</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Sound Effects</label>
         <div className="flex flex-wrap gap-2">
           {SOUND_EFFECTS.map((effect) => {
             const Icon = ICON_MAP[effect.iconName] || Circle
@@ -756,8 +756,8 @@ function MusicSection({ settings, onChange }: { settings: MusicSettings; onChang
                 }}
                 className={`px-3 py-2 rounded-xl text-sm transition-all flex items-center gap-2 ${
                   isSelected
-                    ? 'bg-tada-turquoise/30 border-2 border-tada-turquoise text-tada-text'
-                    : 'bg-white/50 border-2 border-transparent text-tada-text-light'
+                    ? 'bg-databake-turquoise/30 border-2 border-databake-turquoise text-databake-text'
+                    : 'bg-white/50 border-2 border-transparent text-databake-text-light'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -782,7 +782,7 @@ function ScriptSection({ settings, onChange }: { settings: ScriptSettings; onCha
     <div className="space-y-4">
       {/* Hook Style */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Hook Style</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Hook Style</label>
         <div className="space-y-2">
           {HOOK_STYLES.map((hook) => {
             const Icon = ICON_MAP[hook.iconName] || HelpCircle
@@ -792,15 +792,15 @@ function ScriptSection({ settings, onChange }: { settings: ScriptSettings; onCha
                 onClick={() => onChange({ hookStyle: hook.value })}
                 className={`w-full p-3 rounded-xl text-left transition-all ${
                   settings.hookStyle === hook.value
-                    ? 'bg-tada-turquoise/30 border-2 border-tada-turquoise'
+                    ? 'bg-databake-turquoise/30 border-2 border-databake-turquoise'
                     : 'bg-white/50 border-2 border-transparent hover:bg-white/70'
                 }`}
               >
                 <div className="flex items-center gap-2 mb-1">
-                  <Icon className={`w-4 h-4 ${settings.hookStyle === hook.value ? 'text-tada-turquoise-dark' : 'text-tada-text-light'}`} />
-                  <span className="font-medium text-tada-text text-sm">{hook.label}</span>
+                  <Icon className={`w-4 h-4 ${settings.hookStyle === hook.value ? 'text-databake-turquoise-dark' : 'text-databake-text-light'}`} />
+                  <span className="font-medium text-databake-text text-sm">{hook.label}</span>
                 </div>
-                <p className="text-xs text-tada-text-light italic">"{hook.example}"</p>
+                <p className="text-xs text-databake-text-light italic">"{hook.example}"</p>
               </button>
             )
           })}
@@ -809,7 +809,7 @@ function ScriptSection({ settings, onChange }: { settings: ScriptSettings; onCha
 
       {/* Script Length */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Script Length</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Script Length</label>
         <div className="grid grid-cols-2 gap-2">
           {SCRIPT_LENGTHS.map((len) => (
             <button
@@ -817,12 +817,12 @@ function ScriptSection({ settings, onChange }: { settings: ScriptSettings; onCha
               onClick={() => onChange({ length: len.value })}
               className={`p-3 rounded-xl transition-all ${
                 settings.length === len.value
-                  ? 'bg-tada-pink/30 border-2 border-tada-pink'
+                  ? 'bg-databake-pink/30 border-2 border-databake-pink'
                   : 'bg-white/50 border-2 border-transparent hover:bg-white/70'
               }`}
             >
-              <span className="font-medium text-tada-text text-sm block">{len.label}</span>
-              <span className="text-xs text-tada-text-light">{len.wordsApprox}</span>
+              <span className="font-medium text-databake-text text-sm block">{len.label}</span>
+              <span className="text-xs text-databake-text-light">{len.wordsApprox}</span>
             </button>
           ))}
         </div>
@@ -830,7 +830,7 @@ function ScriptSection({ settings, onChange }: { settings: ScriptSettings; onCha
 
       {/* CTA Style */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Call-to-Action Style</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Call-to-Action Style</label>
         <div className="grid grid-cols-3 gap-2">
           {(['soft', 'medium', 'direct'] as const).map((style) => (
             <button
@@ -838,8 +838,8 @@ function ScriptSection({ settings, onChange }: { settings: ScriptSettings; onCha
               onClick={() => onChange({ ctaStyle: style })}
               className={`p-3 rounded-xl text-sm capitalize transition-all ${
                 settings.ctaStyle === style
-                  ? 'bg-tada-turquoise/30 border-2 border-tada-turquoise text-tada-text'
-                  : 'bg-white/50 border-2 border-transparent text-tada-text-light'
+                  ? 'bg-databake-turquoise/30 border-2 border-databake-turquoise text-databake-text'
+                  : 'bg-white/50 border-2 border-transparent text-databake-text-light'
               }`}
             >
               {style}
@@ -850,7 +850,7 @@ function ScriptSection({ settings, onChange }: { settings: ScriptSettings; onCha
 
       {/* Keywords */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Include Keywords</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Include Keywords</label>
         <div className="flex gap-2 mb-2">
           <input
             type="text"
@@ -870,12 +870,12 @@ function ScriptSection({ settings, onChange }: { settings: ScriptSettings; onCha
           {settings.includeKeywords.map((keyword, i) => (
             <span
               key={i}
-              className="px-2 py-1 bg-tada-turquoise/20 rounded-lg text-sm text-tada-text flex items-center gap-1"
+              className="px-2 py-1 bg-databake-turquoise/20 rounded-lg text-sm text-databake-text flex items-center gap-1"
             >
               {keyword}
               <button
                 onClick={() => onChange({ includeKeywords: settings.includeKeywords.filter((_, idx) => idx !== i) })}
-                className="text-tada-text-light hover:text-tada-text"
+                className="text-databake-text-light hover:text-databake-text"
               >
                 ×
               </button>
@@ -890,8 +890,8 @@ function ScriptSection({ settings, onChange }: { settings: ScriptSettings; onCha
           onClick={() => onChange({ includeHashtags: !settings.includeHashtags })}
           className={`p-3 rounded-xl text-sm transition-all ${
             settings.includeHashtags
-              ? 'bg-tada-pink/30 border-2 border-tada-pink text-tada-text'
-              : 'bg-white/50 border-2 border-transparent text-tada-text-light'
+              ? 'bg-databake-pink/30 border-2 border-databake-pink text-databake-text'
+              : 'bg-white/50 border-2 border-transparent text-databake-text-light'
           }`}
         >
           Include Hashtags
@@ -900,8 +900,8 @@ function ScriptSection({ settings, onChange }: { settings: ScriptSettings; onCha
           onClick={() => onChange({ includeEmojis: !settings.includeEmojis })}
           className={`p-3 rounded-xl text-sm transition-all ${
             settings.includeEmojis
-              ? 'bg-tada-pink/30 border-2 border-tada-pink text-tada-text'
-              : 'bg-white/50 border-2 border-transparent text-tada-text-light'
+              ? 'bg-databake-pink/30 border-2 border-databake-pink text-databake-text'
+              : 'bg-white/50 border-2 border-transparent text-databake-text-light'
           }`}
         >
           Include Emojis
@@ -1085,7 +1085,7 @@ function ExportSection({ settings, onChange }: { settings: ExportSettings; onCha
     <div className="space-y-4">
       {/* Resolution */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Resolution</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Resolution</label>
         <div className="grid grid-cols-3 gap-2">
           {RESOLUTIONS.map((res) => (
             <button
@@ -1093,12 +1093,12 @@ function ExportSection({ settings, onChange }: { settings: ExportSettings; onCha
               onClick={() => onChange({ resolution: res.value })}
               className={`p-3 rounded-xl transition-all ${
                 settings.resolution === res.value
-                  ? 'bg-tada-turquoise/30 border-2 border-tada-turquoise'
+                  ? 'bg-databake-turquoise/30 border-2 border-databake-turquoise'
                   : 'bg-white/50 border-2 border-transparent hover:bg-white/70'
               }`}
             >
-              <span className="font-medium text-tada-text text-sm block">{res.label}</span>
-              <span className="text-xs text-tada-text-light">{res.fileSize}</span>
+              <span className="font-medium text-databake-text text-sm block">{res.label}</span>
+              <span className="text-xs text-databake-text-light">{res.fileSize}</span>
             </button>
           ))}
         </div>
@@ -1106,7 +1106,7 @@ function ExportSection({ settings, onChange }: { settings: ExportSettings; onCha
 
       {/* Format */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Format</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Format</label>
         <div className="grid grid-cols-2 gap-2">
           {EXPORT_FORMATS.map((format) => (
             <button
@@ -1114,12 +1114,12 @@ function ExportSection({ settings, onChange }: { settings: ExportSettings; onCha
               onClick={() => onChange({ format: format.value })}
               className={`p-3 rounded-xl transition-all ${
                 settings.format === format.value
-                  ? 'bg-tada-pink/30 border-2 border-tada-pink'
+                  ? 'bg-databake-pink/30 border-2 border-databake-pink'
                   : 'bg-white/50 border-2 border-transparent hover:bg-white/70'
               }`}
             >
-              <span className="font-medium text-tada-text text-sm block">.{format.value.toUpperCase()}</span>
-              <span className="text-xs text-tada-text-light">{format.description}</span>
+              <span className="font-medium text-databake-text text-sm block">.{format.value.toUpperCase()}</span>
+              <span className="text-xs text-databake-text-light">{format.description}</span>
             </button>
           ))}
         </div>
@@ -1127,7 +1127,7 @@ function ExportSection({ settings, onChange }: { settings: ExportSettings; onCha
 
       {/* FPS */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Frame Rate</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Frame Rate</label>
         <div className="grid grid-cols-3 gap-2">
           {[24, 30, 60].map((fps) => (
             <button
@@ -1135,8 +1135,8 @@ function ExportSection({ settings, onChange }: { settings: ExportSettings; onCha
               onClick={() => onChange({ fps })}
               className={`p-3 rounded-xl text-sm transition-all ${
                 settings.fps === fps
-                  ? 'bg-tada-turquoise/30 border-2 border-tada-turquoise text-tada-text'
-                  : 'bg-white/50 border-2 border-transparent text-tada-text-light'
+                  ? 'bg-databake-turquoise/30 border-2 border-databake-turquoise text-databake-text'
+                  : 'bg-white/50 border-2 border-transparent text-databake-text-light'
               }`}
             >
               {fps} FPS
@@ -1147,9 +1147,9 @@ function ExportSection({ settings, onChange }: { settings: ExportSettings; onCha
 
       {/* Quality */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 flex justify-between">
+        <label className="text-sm font-medium text-databake-text mb-2 flex justify-between">
           <span>Quality</span>
-          <span className="text-tada-text-light">{settings.quality}%</span>
+          <span className="text-databake-text-light">{settings.quality}%</span>
         </label>
         <input
           type="range"
@@ -1157,19 +1157,19 @@ function ExportSection({ settings, onChange }: { settings: ExportSettings; onCha
           max="100"
           value={settings.quality}
           onChange={(e) => onChange({ quality: parseInt(e.target.value) })}
-          className="w-full h-2 bg-white/50 rounded-lg appearance-none cursor-pointer accent-tada-turquoise"
+          className="w-full h-2 bg-white/50 rounded-lg appearance-none cursor-pointer accent-databake-turquoise"
         />
       </div>
 
       {/* Subtitles */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Subtitles</label>
+        <label className="text-sm font-medium text-databake-text mb-2 block">Subtitles</label>
         <button
           onClick={() => onChange({ includeSubtitles: !settings.includeSubtitles })}
           className={`w-full p-3 rounded-xl text-sm transition-all mb-2 ${
             settings.includeSubtitles
-              ? 'bg-tada-pink/30 border-2 border-tada-pink text-tada-text'
-              : 'bg-white/50 border-2 border-transparent text-tada-text-light'
+              ? 'bg-databake-pink/30 border-2 border-databake-pink text-databake-text'
+              : 'bg-white/50 border-2 border-transparent text-databake-text-light'
           }`}
         >
           {settings.includeSubtitles ? 'Subtitles Enabled' : 'No Subtitles'}
@@ -1184,8 +1184,8 @@ function ExportSection({ settings, onChange }: { settings: ExportSettings; onCha
                   onClick={() => onChange({ subtitleStyle: style.value })}
                   className={`px-3 py-2 rounded-xl text-xs transition-all ${
                     settings.subtitleStyle === style.value
-                      ? 'bg-tada-turquoise/30 border-2 border-tada-turquoise text-tada-text'
-                      : 'bg-white/50 border-2 border-transparent text-tada-text-light'
+                      ? 'bg-databake-turquoise/30 border-2 border-databake-turquoise text-databake-text'
+                      : 'bg-white/50 border-2 border-transparent text-databake-text-light'
                   }`}
                 >
                   {style.label}
@@ -1200,8 +1200,8 @@ function ExportSection({ settings, onChange }: { settings: ExportSettings; onCha
                   onClick={() => onChange({ subtitlePosition: pos })}
                   className={`p-2 rounded-xl text-xs capitalize transition-all ${
                     settings.subtitlePosition === pos
-                      ? 'bg-tada-pink/30 border-2 border-tada-pink text-tada-text'
-                      : 'bg-white/50 border-2 border-transparent text-tada-text-light'
+                      ? 'bg-databake-pink/30 border-2 border-databake-pink text-databake-text'
+                      : 'bg-white/50 border-2 border-transparent text-databake-text-light'
                   }`}
                 >
                   {pos}

@@ -266,7 +266,7 @@ export default function Home() {
               animate={{ opacity: 1, x: 0 }}
               className="flex items-center gap-3"
             >
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-tada-turquoise via-tada-turquoise-dark to-tada-pink flex items-center justify-center shadow-glass glow-turquoise">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-databake-turquoise via-databake-turquoise-dark to-databake-pink flex items-center justify-center shadow-glass glow-turquoise">
                 <Sparkles className="w-6 h-6 text-white" strokeWidth={2.5} />
               </div>
               <div>
@@ -288,12 +288,12 @@ export default function Home() {
 
               <button
                 onClick={() => setShowHistory(!showHistory)}
-                className={`btn-ghost flex items-center gap-2 ${showHistory ? 'bg-tada-turquoise/20 text-tada-text dark:text-gray-200' : ''}`}
+                className={`btn-ghost flex items-center gap-2 ${showHistory ? 'bg-databake-turquoise/20 text-databake-text dark:text-gray-200' : ''}`}
               >
                 <Clock className="w-5 h-5" />
                 <span className="hidden sm:inline">History</span>
                 {history.length > 0 && (
-                  <span className="w-5 h-5 rounded-full bg-gradient-to-r from-tada-pink to-tada-pink-dark text-white text-xs flex items-center justify-center font-medium">
+                  <span className="w-5 h-5 rounded-full bg-gradient-to-r from-databake-pink to-databake-pink-dark text-white text-xs flex items-center justify-center font-medium">
                     {history.length}
                   </span>
                 )}
@@ -444,7 +444,7 @@ export default function Home() {
                 className="glass p-6 card-lift"
               >
                 <h3 className="section-title mb-5">
-                  <span className="step-badge bg-gradient-to-br from-tada-turquoise to-tada-turquoise-dark text-white">
+                  <span className="step-badge bg-gradient-to-br from-databake-turquoise to-databake-turquoise-dark text-white">
                     <Package className="w-4 h-4" />
                   </span>
                   Select Your Product
@@ -485,7 +485,7 @@ export default function Home() {
                 className="glass p-6 card-lift"
               >
                 <h3 className="section-title mb-5">
-                  <span className="step-badge bg-gradient-to-br from-tada-pink to-tada-pink-dark text-white">
+                  <span className="step-badge bg-gradient-to-br from-databake-pink to-databake-pink-dark text-white">
                     <Film className="w-4 h-4" />
                   </span>
                   Content Type
@@ -502,16 +502,16 @@ export default function Home() {
                   animate={{ opacity: 1, height: 'auto' }}
                   className={`mt-4 p-4 rounded-2xl border ${
                     contentType === 'reel' || contentType === 'post' || contentType === 'carousel'
-                      ? 'bg-gradient-to-r from-tada-turquoise/10 to-tada-turquoise/5 border-tada-turquoise/20'
-                      : 'bg-gradient-to-r from-tada-pink/10 to-tada-pink/5 border-tada-pink/20'
+                      ? 'bg-gradient-to-r from-databake-turquoise/10 to-databake-turquoise/5 border-databake-turquoise/20'
+                      : 'bg-gradient-to-r from-databake-pink/10 to-databake-pink/5 border-databake-pink/20'
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    {contentType === 'reel' && <Film className="w-5 h-5 text-tada-turquoise-dark mt-0.5 shrink-0" />}
-                    {contentType === 'story' && <Eye className="w-5 h-5 text-tada-pink-dark mt-0.5 shrink-0" />}
-                    {contentType === 'post' && <Package className="w-5 h-5 text-tada-turquoise-dark mt-0.5 shrink-0" />}
-                    {contentType === 'storytelling' && <BookOpen className="w-5 h-5 text-tada-pink-dark mt-0.5 shrink-0" />}
-                    {contentType === 'carousel' && <LayoutGrid className="w-5 h-5 text-tada-turquoise-dark mt-0.5 shrink-0" />}
+                    {contentType === 'reel' && <Film className="w-5 h-5 text-databake-turquoise-dark mt-0.5 shrink-0" />}
+                    {contentType === 'story' && <Eye className="w-5 h-5 text-databake-pink-dark mt-0.5 shrink-0" />}
+                    {contentType === 'post' && <Package className="w-5 h-5 text-databake-turquoise-dark mt-0.5 shrink-0" />}
+                    {contentType === 'storytelling' && <BookOpen className="w-5 h-5 text-databake-pink-dark mt-0.5 shrink-0" />}
+                    {contentType === 'carousel' && <LayoutGrid className="w-5 h-5 text-databake-turquoise-dark mt-0.5 shrink-0" />}
                     <div className="flex-1">
                       <p className="text-sm font-bold text-slate-800 dark:text-white">
                         {contentType === 'reel' && 'Reel Structure (15-60s)'}
@@ -603,7 +603,7 @@ export default function Home() {
                 className="glass p-6 card-lift"
               >
                 <h3 className="section-title mb-5">
-                  <span className="step-badge bg-gradient-to-r from-tada-turquoise to-tada-pink text-white">
+                  <span className="step-badge bg-gradient-to-r from-databake-turquoise to-databake-pink text-white">
                     <MessageSquare className="w-4 h-4" />
                   </span>
                   Content Tone
@@ -630,12 +630,12 @@ export default function Home() {
                       <Sliders className="w-4 h-4" />
                     </span>
                     Advanced Settings
-                    <span className="ml-2 text-xs font-normal text-tada-text-light">(7 categories)</span>
+                    <span className="ml-2 text-xs font-normal text-databake-text-light">(7 categories)</span>
                   </h3>
                   {showAdvancedSettings ? (
-                    <ChevronUp className="w-5 h-5 text-tada-text-light" />
+                    <ChevronUp className="w-5 h-5 text-databake-text-light" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-tada-text-light" />
+                    <ChevronDown className="w-5 h-5 text-databake-text-light" />
                   )}
                 </button>
 

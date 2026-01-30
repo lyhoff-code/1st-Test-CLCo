@@ -247,8 +247,8 @@ export function StorytellingEditor({ product, tone, onSave }: StorytellingEditor
               <BookOpen className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-tada-text">Storytelling Mode</h2>
-              <p className="text-sm text-tada-text-light">
+              <h2 className="text-xl font-bold text-databake-text">Storytelling Mode</h2>
+              <p className="text-sm text-databake-text-light">
                 Create a 30-second story-driven reel with 6 scenes
               </p>
             </div>
@@ -272,8 +272,8 @@ export function StorytellingEditor({ product, tone, onSave }: StorytellingEditor
               />
             )}
             <div>
-              <h3 className="font-semibold text-tada-text">{product.title}</h3>
-              <p className="text-sm text-tada-text-light line-clamp-1">{product.description}</p>
+              <h3 className="font-semibold text-databake-text">{product.title}</h3>
+              <p className="text-sm text-databake-text-light line-clamp-1">{product.description}</p>
             </div>
           </div>
         </div>
@@ -327,7 +327,7 @@ export function StorytellingEditor({ product, tone, onSave }: StorytellingEditor
         <div className="mt-4 flex items-center gap-4">
           <div className="flex-1 h-2 bg-white/50 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-tada-turquoise to-tada-pink rounded-full transition-all duration-500"
+              className="h-full bg-gradient-to-r from-databake-turquoise to-databake-pink rounded-full transition-all duration-500"
               style={{
                 width: `${(
                   (scenes.filter(s => s.script).length +
@@ -338,7 +338,7 @@ export function StorytellingEditor({ product, tone, onSave }: StorytellingEditor
               }}
             />
           </div>
-          <span className="text-sm text-tada-text-light">
+          <span className="text-sm text-databake-text-light">
             {Math.round(
               (scenes.filter(s => s.script).length +
                 scenes.filter(s => s.audioUrl).length +
@@ -382,12 +382,12 @@ export function StorytellingEditor({ product, tone, onSave }: StorytellingEditor
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-tada-turquoise to-tada-pink flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-databake-turquoise to-databake-pink flex items-center justify-center">
                 <Sparkles className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-tada-text">Story Complete!</h3>
-                <p className="text-sm text-tada-text-light">All 6 scenes are ready</p>
+                <h3 className="font-semibold text-databake-text">Story Complete!</h3>
+                <p className="text-sm text-databake-text-light">All 6 scenes are ready</p>
               </div>
             </div>
 
@@ -458,7 +458,7 @@ export function StorytellingEditor({ product, tone, onSave }: StorytellingEditor
                       onClick={() => setCurrentPreviewScene(i)}
                       className={`flex-1 h-1.5 rounded-full transition-all ${
                         i === currentPreviewScene
-                          ? 'bg-gradient-to-r from-tada-turquoise to-tada-pink'
+                          ? 'bg-gradient-to-r from-databake-turquoise to-databake-pink'
                           : 'bg-gray-200'
                       }`}
                     />

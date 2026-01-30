@@ -38,7 +38,7 @@ export default function AuthErrorPage() {
         {/* Logo */}
         <div className="mb-8">
           <Link href="/" className="inline-flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-tada-turquoise via-tada-turquoise-dark to-tada-pink flex items-center justify-center shadow-glass glow-turquoise">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-databake-turquoise via-databake-turquoise-dark to-databake-pink flex items-center justify-center shadow-glass glow-turquoise">
               <Sparkles className="w-6 h-6 text-white" strokeWidth={2.5} />
             </div>
           </Link>
@@ -50,10 +50,10 @@ export default function AuthErrorPage() {
             <AlertCircle className="w-8 h-8 text-red-500 dark:text-red-400" />
           </div>
 
-          <h2 className="text-2xl font-bold text-tada-text dark:text-gray-100 mb-2">
+          <h2 className="text-2xl font-bold text-databake-text dark:text-gray-100 mb-2">
             Authentication Error
           </h2>
-          <p className="text-tada-text-light dark:text-gray-400 mb-6">
+          <p className="text-databake-text-light dark:text-gray-400 mb-6">
             {getErrorMessage(error)}
           </p>
 

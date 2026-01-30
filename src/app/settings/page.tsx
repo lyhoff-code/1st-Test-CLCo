@@ -109,15 +109,15 @@ export default function SettingsPage() {
               href="/"
               className="p-2 hover:bg-white/50 dark:hover:bg-gray-700/50 rounded-xl transition-colors"
             >
-              <ArrowLeft className="w-5 h-5 text-tada-text dark:text-gray-200" />
+              <ArrowLeft className="w-5 h-5 text-databake-text dark:text-gray-200" />
             </Link>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-tada-turquoise via-tada-turquoise-dark to-tada-pink flex items-center justify-center shadow-glass glow-turquoise">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-databake-turquoise via-databake-turquoise-dark to-databake-pink flex items-center justify-center shadow-glass glow-turquoise">
                 <Sparkles className="w-5 h-5 text-white" strokeWidth={2.5} />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-tada-text dark:text-gray-100">Settings</h1>
-                <p className="text-xs text-tada-text-light dark:text-gray-400">Configure your integrations</p>
+                <h1 className="text-xl font-bold text-databake-text dark:text-gray-100">Settings</h1>
+                <p className="text-xs text-databake-text-light dark:text-gray-400">Configure your integrations</p>
               </div>
             </div>
           </div>
@@ -132,8 +132,8 @@ export default function SettingsPage() {
             animate={{ opacity: 1, y: 0 }}
             className="glass p-6"
           >
-            <h2 className="font-semibold text-tada-text dark:text-gray-100 mb-4 flex items-center gap-2">
-              <Palette className="w-5 h-5 text-tada-turquoise-dark" />
+            <h2 className="font-semibold text-databake-text dark:text-gray-100 mb-4 flex items-center gap-2">
+              <Palette className="w-5 h-5 text-databake-turquoise-dark" />
               Appearance
             </h2>
 
@@ -147,8 +147,8 @@ export default function SettingsPage() {
                     <Moon className="w-5 h-5 text-blue-400" />
                   )}
                   <div>
-                    <p className="font-medium text-tada-text dark:text-gray-200">Theme</p>
-                    <p className="text-sm text-tada-text-light dark:text-gray-400">
+                    <p className="font-medium text-databake-text dark:text-gray-200">Theme</p>
+                    <p className="text-sm text-databake-text-light dark:text-gray-400">
                       {theme === 'light' ? 'Light mode' : 'Dark mode'}
                     </p>
                   </div>
@@ -156,7 +156,7 @@ export default function SettingsPage() {
                 <button
                   onClick={toggleTheme}
                   className={`relative w-14 h-8 rounded-full transition-colors ${
-                    theme === 'dark' ? 'bg-tada-turquoise' : 'bg-gray-300 dark:bg-gray-600'
+                    theme === 'dark' ? 'bg-databake-turquoise' : 'bg-gray-300 dark:bg-gray-600'
                   }`}
                 >
                   <span
@@ -170,10 +170,10 @@ export default function SettingsPage() {
               {/* Language Toggle */}
               <div className="flex items-center justify-between p-4 rounded-2xl bg-white/50 dark:bg-gray-800/50 border border-white/30 dark:border-gray-700/30">
                 <div className="flex items-center gap-3">
-                  <Globe className="w-5 h-5 text-tada-turquoise-dark" />
+                  <Globe className="w-5 h-5 text-databake-turquoise-dark" />
                   <div>
-                    <p className="font-medium text-tada-text dark:text-gray-200">Language</p>
-                    <p className="text-sm text-tada-text-light dark:text-gray-400">
+                    <p className="font-medium text-databake-text dark:text-gray-200">Language</p>
+                    <p className="text-sm text-databake-text-light dark:text-gray-400">
                       {language === 'en' ? 'English' : 'Español'}
                     </p>
                   </div>
@@ -183,8 +183,8 @@ export default function SettingsPage() {
                     onClick={() => setLanguage('en')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                       language === 'en'
-                        ? 'bg-tada-turquoise text-tada-text'
-                        : 'bg-white/50 dark:bg-gray-700/50 text-tada-text-light dark:text-gray-400'
+                        ? 'bg-databake-turquoise text-databake-text'
+                        : 'bg-white/50 dark:bg-gray-700/50 text-databake-text-light dark:text-gray-400'
                     }`}
                   >
                     🇺🇸 EN
@@ -193,8 +193,8 @@ export default function SettingsPage() {
                     onClick={() => setLanguage('es')}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                       language === 'es'
-                        ? 'bg-tada-turquoise text-tada-text'
-                        : 'bg-white/50 dark:bg-gray-700/50 text-tada-text-light dark:text-gray-400'
+                        ? 'bg-databake-turquoise text-databake-text'
+                        : 'bg-white/50 dark:bg-gray-700/50 text-databake-text-light dark:text-gray-400'
                     }`}
                   >
                     🇪🇸 ES
@@ -216,14 +216,14 @@ export default function SettingsPage() {
                 <ShoppingBag className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="font-semibold text-tada-text dark:text-gray-100">Shopify</h2>
-                <p className="text-sm text-tada-text-light dark:text-gray-400">Connect your store to import products</p>
+                <h2 className="font-semibold text-databake-text dark:text-gray-100">Shopify</h2>
+                <p className="text-sm text-databake-text-light dark:text-gray-400">Connect your store to import products</p>
               </div>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-tada-text dark:text-gray-200 mb-2">Store URL</label>
+                <label className="block text-sm font-medium text-databake-text dark:text-gray-200 mb-2">Store URL</label>
                 <input
                   type="text"
                   value={shopifyUrl}
@@ -233,7 +233,7 @@ export default function SettingsPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-tada-text dark:text-gray-200 mb-2">Storefront Access Token</label>
+                <label className="block text-sm font-medium text-databake-text dark:text-gray-200 mb-2">Storefront Access Token</label>
                 <input
                   type="password"
                   value={shopifyToken}
@@ -241,7 +241,7 @@ export default function SettingsPage() {
                   placeholder="shpat_xxxxxxxxxxxx"
                   className="input-field dark:bg-gray-800/50 dark:text-gray-200 dark:placeholder-gray-500"
                 />
-                <p className="text-xs text-tada-text-light dark:text-gray-400 mt-2">
+                <p className="text-xs text-databake-text-light dark:text-gray-400 mt-2">
                   Get this from Shopify Admin → Settings → Apps → Develop apps
                 </p>
               </div>
@@ -260,8 +260,8 @@ export default function SettingsPage() {
                 <Sparkles className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="font-semibold text-tada-text dark:text-gray-100">Gemini AI</h2>
-                <p className="text-sm text-tada-text-light dark:text-gray-400">For AI scripts and image generation (FREE)</p>
+                <h2 className="font-semibold text-databake-text dark:text-gray-100">Gemini AI</h2>
+                <p className="text-sm text-databake-text-light dark:text-gray-400">For AI scripts and image generation (FREE)</p>
               </div>
               <span className="ml-auto px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-medium rounded-full">
                 Free Tier
@@ -269,7 +269,7 @@ export default function SettingsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-tada-text dark:text-gray-200 mb-2">API Key</label>
+              <label className="block text-sm font-medium text-databake-text dark:text-gray-200 mb-2">API Key</label>
               <input
                 type="password"
                 value={geminiKey}
@@ -277,9 +277,9 @@ export default function SettingsPage() {
                 placeholder="AIza..."
                 className="input-field dark:bg-gray-800/50 dark:text-gray-200 dark:placeholder-gray-500"
               />
-              <p className="text-xs text-tada-text-light dark:text-gray-400 mt-2">
+              <p className="text-xs text-databake-text-light dark:text-gray-400 mt-2">
                 Get your free API key at{' '}
-                <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer" className="text-tada-turquoise-dark hover:underline inline-flex items-center gap-1">
+                <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer" className="text-databake-turquoise-dark hover:underline inline-flex items-center gap-1">
                   Google AI Studio <ExternalLink className="w-3 h-3" />
                 </a>
               </p>
@@ -298,14 +298,14 @@ export default function SettingsPage() {
                 <Mic className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="font-semibold text-tada-text dark:text-gray-100">ElevenLabs</h2>
-                <p className="text-sm text-tada-text-light dark:text-gray-400">For premium voice generation</p>
+                <h2 className="font-semibold text-databake-text dark:text-gray-100">ElevenLabs</h2>
+                <p className="text-sm text-databake-text-light dark:text-gray-400">For premium voice generation</p>
               </div>
-              <span className="ml-auto px-3 py-1 glass-subtle text-tada-text-light dark:text-gray-400 text-xs font-medium">Optional</span>
+              <span className="ml-auto px-3 py-1 glass-subtle text-databake-text-light dark:text-gray-400 text-xs font-medium">Optional</span>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-tada-text dark:text-gray-200 mb-2">API Key</label>
+              <label className="block text-sm font-medium text-databake-text dark:text-gray-200 mb-2">API Key</label>
               <input
                 type="password"
                 value={elevenlabsKey}
@@ -313,7 +313,7 @@ export default function SettingsPage() {
                 placeholder="xxxxxxxxxxxx"
                 className="input-field dark:bg-gray-800/50 dark:text-gray-200 dark:placeholder-gray-500"
               />
-              <p className="text-xs text-tada-text-light dark:text-gray-400 mt-2">
+              <p className="text-xs text-databake-text-light dark:text-gray-400 mt-2">
                 Without this key, browser Text-to-Speech will be used
               </p>
             </div>
@@ -331,10 +331,10 @@ export default function SettingsPage() {
                 <Video className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="font-semibold text-tada-text dark:text-gray-100">Video Export</h2>
-                <p className="text-sm text-tada-text-light dark:text-gray-400">Professional video editing integrations</p>
+                <h2 className="font-semibold text-databake-text dark:text-gray-100">Video Export</h2>
+                <p className="text-sm text-databake-text-light dark:text-gray-400">Professional video editing integrations</p>
               </div>
-              <span className="ml-auto px-3 py-1 glass-subtle text-tada-text-light dark:text-gray-400 text-xs font-medium">Optional</span>
+              <span className="ml-auto px-3 py-1 glass-subtle text-databake-text-light dark:text-gray-400 text-xs font-medium">Optional</span>
             </div>
 
             <div className="space-y-4">
@@ -345,14 +345,14 @@ export default function SettingsPage() {
                     <span className="text-white font-bold text-sm">CC</span>
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-tada-text dark:text-gray-200">CapCut</p>
-                    <p className="text-xs text-tada-text-light dark:text-gray-400">Export to CapCut templates</p>
+                    <p className="font-medium text-databake-text dark:text-gray-200">CapCut</p>
+                    <p className="text-xs text-databake-text-light dark:text-gray-400">Export to CapCut templates</p>
                   </div>
                   <a
                     href="https://open.capcut.com/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-tada-turquoise-dark hover:underline inline-flex items-center gap-1"
+                    className="text-sm text-databake-turquoise-dark hover:underline inline-flex items-center gap-1"
                   >
                     Get API <ExternalLink className="w-3 h-3" />
                   </a>
@@ -373,14 +373,14 @@ export default function SettingsPage() {
                     <span className="text-white font-bold text-sm">C</span>
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-tada-text dark:text-gray-200">Canva</p>
-                    <p className="text-xs text-tada-text-light dark:text-gray-400">Export to Canva designs</p>
+                    <p className="font-medium text-databake-text dark:text-gray-200">Canva</p>
+                    <p className="text-xs text-databake-text-light dark:text-gray-400">Export to Canva designs</p>
                   </div>
                   <a
                     href="https://www.canva.com/developers/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-tada-turquoise-dark hover:underline inline-flex items-center gap-1"
+                    className="text-sm text-databake-turquoise-dark hover:underline inline-flex items-center gap-1"
                   >
                     Get API <ExternalLink className="w-3 h-3" />
                   </a>
@@ -424,7 +424,7 @@ export default function SettingsPage() {
                 </>
               )}
             </button>
-            <p className="text-center text-xs text-tada-text-light dark:text-gray-400 mt-3">
+            <p className="text-center text-xs text-databake-text-light dark:text-gray-400 mt-3">
               Settings are stored locally in your browser
             </p>
           </motion.div>
@@ -436,17 +436,17 @@ export default function SettingsPage() {
             transition={{ delay: 0.6 }}
             className="glass p-6"
           >
-            <h3 className="font-semibold text-tada-text dark:text-gray-100 mb-3 flex items-center gap-2">
+            <h3 className="font-semibold text-databake-text dark:text-gray-100 mb-3 flex items-center gap-2">
               <span className="icon-turquoise">
                 <Info className="w-5 h-5" />
               </span>
               Environment Variables (Production)
             </h3>
-            <p className="text-sm text-tada-text-light dark:text-gray-400 mb-4">
+            <p className="text-sm text-databake-text-light dark:text-gray-400 mb-4">
               For Vercel deployment, add these environment variables:
             </p>
             <div className="bg-gray-900 rounded-2xl p-4 font-mono text-sm overflow-x-auto shadow-glass">
-              <pre className="text-tada-turquoise">
+              <pre className="text-databake-turquoise">
 {`# .env.local or Vercel Environment Variables
 GEMINI_API_KEY=AIza...
 SHOPIFY_STORE_URL=your-store.myshopify.com

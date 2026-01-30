@@ -34,8 +34,8 @@ export function ContentTypeSelector({ selected, onSelect }: ContentTypeSelectorP
             className={`relative p-3 sm:p-4 rounded-2xl text-center transition-all ${
               isSelected
                 ? isTurquoise
-                  ? 'glass-subtle border-2 border-tada-turquoise glow-turquoise'
-                  : 'glass-subtle border-2 border-tada-pink glow-pink'
+                  ? 'glass-subtle border-2 border-databake-turquoise glow-turquoise'
+                  : 'glass-subtle border-2 border-databake-pink glow-pink'
                 : 'bg-white/40 dark:bg-gray-800/40 border-2 border-transparent hover:bg-white/60 dark:hover:bg-gray-700/60 hover:border-white/50'
             }`}
             whileHover={{ scale: 1.02 }}
@@ -45,7 +45,7 @@ export function ContentTypeSelector({ selected, onSelect }: ContentTypeSelectorP
               <div className={`absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[10px] font-bold text-white shadow-glass-sm ${
                 type.value === 'video-to-shorts'
                   ? 'bg-gradient-to-r from-rose-500 to-pink-500'
-                  : 'bg-gradient-to-r from-tada-turquoise to-tada-pink'
+                  : 'bg-gradient-to-r from-databake-turquoise to-databake-pink'
               }`}>
                 {type.value === 'video-to-shorts' ? 'HOT' : 'NEW'}
               </div>
@@ -53,16 +53,16 @@ export function ContentTypeSelector({ selected, onSelect }: ContentTypeSelectorP
             <div className={`w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 rounded-xl flex items-center justify-center ${
               isSelected
                 ? isTurquoise
-                  ? 'bg-tada-turquoise/30'
-                  : 'bg-tada-pink/30'
+                  ? 'bg-databake-turquoise/30'
+                  : 'bg-databake-pink/30'
                 : 'bg-white/50'
             }`}>
               <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${
                 isSelected
                   ? isTurquoise
-                    ? 'text-tada-turquoise-dark'
-                    : 'text-tada-pink-dark'
-                  : 'text-tada-text-light'
+                    ? 'text-databake-turquoise-dark'
+                    : 'text-databake-pink-dark'
+                  : 'text-databake-text-light'
               }`} />
             </div>
             <span className="font-bold block text-slate-800 dark:text-white text-sm sm:text-base">
@@ -75,7 +75,7 @@ export function ContentTypeSelector({ selected, onSelect }: ContentTypeSelectorP
               <motion.div
                 layoutId="content-type-indicator"
                 className={`absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full flex items-center justify-center shadow-glass-sm ${
-                  isTurquoise ? 'bg-gradient-to-br from-tada-turquoise to-tada-turquoise-dark' : 'bg-gradient-to-br from-tada-pink to-tada-pink-dark'
+                  isTurquoise ? 'bg-gradient-to-br from-databake-turquoise to-databake-turquoise-dark' : 'bg-gradient-to-br from-databake-pink to-databake-pink-dark'
                 }`}
                 initial={false}
               >
