@@ -66,7 +66,7 @@ export default function LoginPage() {
             </div>
             <div className="text-left">
               <h1 className="text-2xl font-bold text-tada-text dark:text-gray-100">
-                Tada<span className="text-tada-pink">.media</span>
+                DataBake<span className="text-tada-pink">.media</span>
               </h1>
               <p className="text-xs text-tada-text-light dark:text-gray-400">AI Content Studio</p>
             </div>

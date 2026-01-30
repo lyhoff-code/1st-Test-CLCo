@@ -22,7 +22,7 @@ import {
 import { useTheme } from '@/lib/ThemeContext'
 import { useLanguage } from '@/lib/LanguageContext'
 
-const STORAGE_KEY = 'tada-settings'
+const STORAGE_KEY = 'databake-settings'
 
 interface Settings {
   shopifyUrl: string

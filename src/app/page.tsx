@@ -70,12 +70,12 @@ export default function Home() {
 
   // Load history from localStorage
   useEffect(() => {
-    const savedHistory = localStorage.getItem('tada-history')
+    const savedHistory = localStorage.getItem('databake-history')
     if (savedHistory) {
       setHistory(JSON.parse(savedHistory))
     }
     // Load saved video settings
-    const savedSettings = localStorage.getItem('tada-video-settings')
+    const savedSettings = localStorage.getItem('databake-video-settings')
     if (savedSettings) {
       setVideoSettings(JSON.parse(savedSettings))
     }
@@ -83,7 +83,7 @@ export default function Home() {
 
   // Save video settings when they change
   useEffect(() => {
-    localStorage.setItem('tada-video-settings', JSON.stringify(videoSettings))
+    localStorage.setItem('databake-video-settings', JSON.stringify(videoSettings))
   }, [videoSettings])
 
   // Reset storytelling editor when content type changes
@@ -139,7 +139,7 @@ export default function Home() {
     }
     const updatedHistory = [newItem, ...history].slice(0, 20)
     setHistory(updatedHistory)
-    localStorage.setItem('tada-history', JSON.stringify(updatedHistory))
+    localStorage.setItem('databake-history', JSON.stringify(updatedHistory))
   }
 
   const handleGenerate = async () => {
@@ -271,7 +271,7 @@ export default function Home() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-                  Tada<span className="text-pink-600 dark:text-pink-400">.media</span>
+                  DataBake<span className="text-pink-600 dark:text-pink-400">.media</span>
                 </h1>
                 <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">AI Content Studio</p>
               </div>
@@ -330,7 +330,7 @@ export default function Home() {
             onClose={() => setShowHistory(false)}
             onClear={() => {
               setHistory([])
-              localStorage.removeItem('tada-history')
+              localStorage.removeItem('databake-history')
             }}
           />
         )}
@@ -790,7 +790,7 @@ export default function Home() {
           <div className="flex items-center justify-center gap-2 text-slate-600 dark:text-slate-300 text-sm font-medium">
             <Sparkles className="w-4 h-4 text-teal-500" />
             <span>Made with</span>
-            <span className="font-bold text-slate-800 dark:text-white">Tada.media</span>
+            <span className="font-bold text-slate-800 dark:text-white">DataBake.media</span>
             <span>— AI-Powered Content Creation</span>
           </div>
         </div>

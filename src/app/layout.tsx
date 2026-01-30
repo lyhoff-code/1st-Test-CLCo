@@ -3,7 +3,7 @@ import { Providers } from '@/components/Providers'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Tada.media | AI-Powered Video Content Generator',
+  title: 'DataBake.media | AI-Powered Video Content Generator',
   description: 'Generate stunning video content for your products with AI storytelling',
 }
 
