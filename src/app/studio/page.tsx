@@ -95,8 +95,8 @@ const Steam = () => (
 const SECTIONS = [
   {
     id: 'templates' as const,
-    name: 'Recetas',
-    description: 'Templates listos para cocinar',
+    name: 'Recipes',
+    description: 'Ready-to-cook templates',
     icon: Cookie,
     color: 'from-amber-500 to-orange-500',
     emoji: '🍪',
@@ -104,8 +104,8 @@ const SECTIONS = [
   },
   {
     id: 'music' as const,
-    name: 'Ingredientes',
-    description: 'Sonidos trending',
+    name: 'Ingredients',
+    description: 'Trending sounds',
     icon: Music,
     color: 'from-purple-500 to-pink-500',
     emoji: '🎵',
@@ -113,8 +113,8 @@ const SECTIONS = [
   },
   {
     id: 'captions' as const,
-    name: 'Decoración',
-    description: 'Estilos de texto viral',
+    name: 'Decoration',
+    description: 'Viral text styles',
     icon: Type,
     color: 'from-yellow-500 to-orange-500',
     emoji: '✨',
@@ -122,8 +122,8 @@ const SECTIONS = [
   },
   {
     id: 'scheduler' as const,
-    name: 'Servir',
-    description: 'Publicar y programar',
+    name: 'Serve',
+    description: 'Publish and schedule',
     icon: Send,
     color: 'from-green-500 to-emerald-500',
     emoji: '🚀',
@@ -131,8 +131,8 @@ const SECTIONS = [
   },
   {
     id: 'analytics' as const,
-    name: 'Sabor',
-    description: 'Métricas y rendimiento',
+    name: 'Flavor',
+    description: 'Metrics and performance',
     icon: BarChart3,
     color: 'from-blue-500 to-cyan-500',
     emoji: '📊',
@@ -193,7 +193,7 @@ export default function StudioPage() {
                     <AnimatedEmoji emoji="👨‍🍳" delay={0.2} />
                   </h1>
                   <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
-                    Cocina contenido viral <AnimatedEmoji emoji="🔥" delay={0.4} />
+                    Cook viral content <AnimatedEmoji emoji="🔥" delay={0.4} />
                   </p>
                 </div>
               </div>
@@ -207,7 +207,7 @@ export default function StudioPage() {
               >
                 <Timer className="w-4 h-4 text-orange-500" />
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                  Tiempo de cocción: <span className="text-orange-500 font-bold">2 min</span>
+                  Cooking time: <span className="text-orange-500 font-bold">2 min</span>
                 </span>
               </motion.div>
               <motion.span
@@ -238,23 +238,23 @@ export default function StudioPage() {
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Horno listo</span>
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Oven ready</span>
               </div>
               <div className="flex items-center gap-2">
                 <Thermometer className="w-4 h-4 text-red-500" />
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                  Temperatura: <span className="text-red-500 font-bold">🔥 Viral</span>
+                  Temperature: <span className="text-red-500 font-bold">🔥 Viral</span>
                 </span>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-sm text-slate-500 dark:text-slate-400">Ingredientes seleccionados:</span>
+              <span className="text-sm text-slate-500 dark:text-slate-400">Selected ingredients:</span>
               <div className="flex items-center gap-1">
                 {selectedTemplate && <AnimatedEmoji emoji="🍪" />}
                 {selectedTrack && <AnimatedEmoji emoji="🎵" delay={0.1} />}
                 {selectedCaptionStyle && <AnimatedEmoji emoji="✨" delay={0.2} />}
                 {!selectedTemplate && !selectedTrack && !selectedCaptionStyle && (
-                  <span className="text-sm text-slate-400 italic">Ninguno aún</span>
+                  <span className="text-sm text-slate-400 italic">None yet</span>
                 )}
               </div>
             </div>
@@ -378,7 +378,7 @@ export default function StudioPage() {
                     transition={{ duration: 2, repeat: Infinity }}
                   >
                     <div className="w-2 h-2 rounded-full bg-green-500" />
-                    <span className="text-xs font-medium">Activo</span>
+                    <span className="text-xs font-medium">Active</span>
                   </motion.div>
                 </div>
               </div>
@@ -465,7 +465,7 @@ export default function StudioPage() {
               <div className="px-6 py-4 border-b border-white/20 dark:border-slate-700/30 bg-gradient-to-r from-amber-500/10 to-orange-500/10">
                 <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
                   <AnimatedEmoji emoji="📝" />
-                  Tu Receta
+                  Your Recipe
                 </h3>
               </div>
 
@@ -483,7 +483,7 @@ export default function StudioPage() {
                       onClick={() => setActiveSection('templates')}
                       className="text-xs text-databake-turquoise-dark hover:underline"
                     >
-                      Cambiar
+                      Change
                     </button>
                   </div>
                   {selectedTemplate ? (
@@ -500,7 +500,7 @@ export default function StudioPage() {
                     </div>
                   ) : (
                     <p className="text-sm text-slate-400 dark:text-slate-500 italic flex items-center gap-2">
-                      <span className="opacity-50">🍪</span> Selecciona una receta base
+                      <span className="opacity-50">🍪</span> Select a base recipe
                     </p>
                   )}
                 </motion.div>
@@ -512,13 +512,13 @@ export default function StudioPage() {
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide flex items-center gap-1">
-                      <AnimatedEmoji emoji="🎵" /> Música
+                      <AnimatedEmoji emoji="🎵" /> Music
                     </span>
                     <button
                       onClick={() => setActiveSection('music')}
                       className="text-xs text-databake-turquoise-dark hover:underline"
                     >
-                      Cambiar
+                      Change
                     </button>
                   </div>
                   {selectedTrack ? (
@@ -535,7 +535,7 @@ export default function StudioPage() {
                     </div>
                   ) : (
                     <p className="text-sm text-slate-400 dark:text-slate-500 italic flex items-center gap-2">
-                      <span className="opacity-50">🎵</span> Agrega el sonido perfecto
+                      <span className="opacity-50">🎵</span> Add the perfect sound
                     </p>
                   )}
                 </motion.div>
@@ -547,13 +547,13 @@ export default function StudioPage() {
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide flex items-center gap-1">
-                      <AnimatedEmoji emoji="✨" /> Estilo
+                      <AnimatedEmoji emoji="✨" /> Style
                     </span>
                     <button
                       onClick={() => setActiveSection('captions')}
                       className="text-xs text-databake-turquoise-dark hover:underline"
                     >
-                      Cambiar
+                      Change
                     </button>
                   </div>
                   {selectedCaptionStyle ? (
@@ -574,7 +574,7 @@ export default function StudioPage() {
                     </div>
                   ) : (
                     <p className="text-sm text-slate-400 dark:text-slate-500 italic flex items-center gap-2">
-                      <span className="opacity-50">✨</span> Elige el estilo de texto
+                      <span className="opacity-50">✨</span> Choose the text style
                     </p>
                   )}
                 </motion.div>
@@ -595,13 +595,13 @@ export default function StudioPage() {
                       >
                         <Utensils className="w-6 h-6" />
                       </motion.span>
-                      Cocinando...
+                      Cooking...
                       <AnimatedEmoji emoji="🔥" />
                     </>
                   ) : (
                     <>
                       <ChefHat className="w-6 h-6" />
-                      Cocinar Contenido
+                      Cook Content
                       <AnimatedEmoji emoji="🚀" />
                     </>
                   )}
@@ -621,13 +621,13 @@ export default function StudioPage() {
                   <div className="flex items-center justify-between">
                     <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
                       <AnimatedEmoji emoji="📊" />
-                      Estadísticas Rápidas
+                      Quick Stats
                     </h3>
                     <button
                       onClick={() => setActiveSection('analytics')}
                       className="text-xs text-databake-turquoise-dark hover:underline flex items-center gap-1"
                     >
-                      Ver más <ChevronRight className="w-3 h-3" />
+                      See more <ChevronRight className="w-3 h-3" />
                     </button>
                   </div>
                 </div>
@@ -649,13 +649,13 @@ export default function StudioPage() {
                   <div className="flex items-center justify-between">
                     <h3 className="font-bold text-slate-800 dark:text-white flex items-center gap-2">
                       <AnimatedEmoji emoji="🎵" />
-                      Sonidos Trending
+                      Trending Sounds
                     </h3>
                     <button
                       onClick={() => setActiveSection('music')}
                       className="text-xs text-databake-turquoise-dark hover:underline flex items-center gap-1"
                     >
-                      Ver más <ChevronRight className="w-3 h-3" />
+                      See more <ChevronRight className="w-3 h-3" />
                     </button>
                   </div>
                 </div>
@@ -681,7 +681,7 @@ export default function StudioPage() {
             animate={{ opacity: 1, y: 0 }}
           >
             <AnimatedEmoji emoji="👨‍🍳" />
-            <span>Cocinado con amor en</span>
+            <span>Cooked with love at</span>
             <span className="font-bold text-slate-800 dark:text-white">DataBake.media</span>
             <AnimatedEmoji emoji="🔥" delay={0.2} />
           </motion.div>
