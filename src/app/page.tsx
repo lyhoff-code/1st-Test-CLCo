@@ -268,10 +268,10 @@ export default function Home() {
                 <Sparkles className="w-6 h-6 text-white" strokeWidth={2.5} />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-tada-text dark:text-gray-100">
-                  Tada<span className="text-tada-pink">.media</span>
+                <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+                  Tada<span className="text-pink-600 dark:text-pink-400">.media</span>
                 </h1>
-                <p className="text-xs text-tada-text-light dark:text-gray-400">AI Content Studio</p>
+                <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">AI Content Studio</p>
               </div>
             </motion.div>
 
@@ -347,14 +347,14 @@ export default function Home() {
             transition={{ delay: 0.1 }}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-subtle mb-6"
           >
-            <Sparkles className="w-4 h-4 text-tada-turquoise-dark" />
-            <span className="text-sm font-medium text-tada-text">AI-Powered Content Creation</span>
+            <Sparkles className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">AI-Powered Content Creation</span>
           </motion.div>
-          <h2 className="text-4xl md:text-6xl font-bold mb-5 text-tada-text leading-tight">
+          <h2 className="text-4xl md:text-6xl font-bold mb-5 text-slate-900 dark:text-white leading-tight">
             Create <span className="gradient-text">Viral Content</span>
             <br className="hidden md:block" /> for Your Products
           </h2>
-          <p className="text-tada-text-light text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+          <p className="text-slate-600 dark:text-slate-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-medium">
             Transform your Shopify products into engaging reels, stories, and posts with AI-powered scripts and voiceovers.
           </p>
         </motion.section>
@@ -374,8 +374,8 @@ export default function Home() {
                     <BookOpen className="w-6 h-6" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-tada-text">Storytelling Mode</h2>
-                    <p className="text-sm text-tada-text-light">Create a story-driven 30-second reel</p>
+                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Storytelling Mode</h2>
+                    <p className="text-sm text-slate-600 dark:text-slate-300 font-medium">Create a story-driven 30-second reel</p>
                   </div>
                 </div>
                 <button
@@ -477,7 +477,7 @@ export default function Home() {
                     {contentType === 'storytelling' && <BookOpen className="w-5 h-5 text-tada-pink-dark mt-0.5 shrink-0" />}
                     {contentType === 'carousel' && <LayoutGrid className="w-5 h-5 text-tada-turquoise-dark mt-0.5 shrink-0" />}
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-tada-text dark:text-gray-100">
+                      <p className="text-sm font-bold text-slate-800 dark:text-white">
                         {contentType === 'reel' && 'Reel Structure (15-60s)'}
                         {contentType === 'story' && 'Story Structure (15s)'}
                         {contentType === 'post' && 'Post Structure'}
@@ -487,67 +487,67 @@ export default function Home() {
                       <div className="flex flex-wrap items-center gap-1.5 mt-2">
                         {contentType === 'reel' && (
                           <>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Hook</span>
-                            <span className="text-tada-text-light">→</span>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Value</span>
-                            <span className="text-tada-text-light">→</span>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Demo</span>
-                            <span className="text-tada-text-light">→</span>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">CTA</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Hook</span>
+                            <span className="text-slate-500 dark:text-slate-400">→</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Value</span>
+                            <span className="text-slate-500 dark:text-slate-400">→</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Demo</span>
+                            <span className="text-slate-500 dark:text-slate-400">→</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">CTA</span>
                           </>
                         )}
                         {contentType === 'story' && (
                           <>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">Attention</span>
-                            <span className="text-tada-text-light">→</span>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">Message</span>
-                            <span className="text-tada-text-light">→</span>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">Action</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">Attention</span>
+                            <span className="text-slate-500 dark:text-slate-400">→</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">Message</span>
+                            <span className="text-slate-500 dark:text-slate-400">→</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">Action</span>
                           </>
                         )}
                         {contentType === 'post' && (
                           <>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Visual</span>
-                            <span className="text-tada-text-light">+</span>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Caption</span>
-                            <span className="text-tada-text-light">+</span>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Hashtags</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Visual</span>
+                            <span className="text-slate-500 dark:text-slate-400">+</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Caption</span>
+                            <span className="text-slate-500 dark:text-slate-400">+</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Hashtags</span>
                           </>
                         )}
                         {contentType === 'storytelling' && (
                           <>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">Hook</span>
-                            <span className="text-tada-text-light">→</span>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">Problem</span>
-                            <span className="text-tada-text-light">→</span>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">Agitation</span>
-                            <span className="text-tada-text-light">→</span>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">Solution</span>
-                            <span className="text-tada-text-light">→</span>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">Result</span>
-                            <span className="text-tada-text-light">→</span>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-pink/20 text-tada-pink-dark">CTA</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">Hook</span>
+                            <span className="text-slate-500 dark:text-slate-400">→</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">Problem</span>
+                            <span className="text-slate-500 dark:text-slate-400">→</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">Agitation</span>
+                            <span className="text-slate-500 dark:text-slate-400">→</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">Solution</span>
+                            <span className="text-slate-500 dark:text-slate-400">→</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">Result</span>
+                            <span className="text-slate-500 dark:text-slate-400">→</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">CTA</span>
                           </>
                         )}
                         {contentType === 'carousel' && (
                           <>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Cover</span>
-                            <span className="text-tada-text-light">→</span>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Problem</span>
-                            <span className="text-tada-text-light">→</span>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Stats</span>
-                            <span className="text-tada-text-light">→</span>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Solution</span>
-                            <span className="text-tada-text-light">→</span>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Benefits</span>
-                            <span className="text-tada-text-light">→</span>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">Proof</span>
-                            <span className="text-tada-text-light">→</span>
-                            <span className="px-2 py-1 text-xs font-medium rounded-lg bg-tada-turquoise/20 text-tada-turquoise-dark">CTA</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Cover</span>
+                            <span className="text-slate-500 dark:text-slate-400">→</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Problem</span>
+                            <span className="text-slate-500 dark:text-slate-400">→</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Stats</span>
+                            <span className="text-slate-500 dark:text-slate-400">→</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Solution</span>
+                            <span className="text-slate-500 dark:text-slate-400">→</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Benefits</span>
+                            <span className="text-slate-500 dark:text-slate-400">→</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Proof</span>
+                            <span className="text-slate-500 dark:text-slate-400">→</span>
+                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">CTA</span>
                           </>
                         )}
                       </div>
-                      <p className="text-xs text-tada-text-light dark:text-gray-400 mt-2">
+                      <p className="text-xs text-slate-600 dark:text-slate-300 mt-2 font-medium">
                         {contentType === 'reel' && 'Perfect for Instagram Reels, TikTok, and YouTube Shorts. Each scene with script and voiceover.'}
                         {contentType === 'story' && 'Quick ephemeral content for Instagram/Facebook Stories. Optimized for swipe-up engagement.'}
                         {contentType === 'post' && 'Static feed content with engaging caption and optimized hashtags for discovery.'}
@@ -613,8 +613,8 @@ export default function Home() {
                       className="overflow-hidden"
                     >
                       <div className="px-6 pb-6">
-                        <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 mb-4">
-                          <p className="text-xs text-tada-text-light">
+                        <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 border border-purple-200 dark:border-purple-700/50 mb-4">
+                          <p className="text-xs text-slate-700 dark:text-slate-200 font-medium">
                             Customize voice, audience targeting, visual style, music, script options, branding, and export quality for professional results.
                           </p>
                         </div>
@@ -710,34 +710,34 @@ export default function Home() {
                     animate={{ opacity: 1 }}
                     className="mt-4 p-4 glass-subtle rounded-2xl"
                   >
-                    <h4 className="text-sm font-medium text-tada-text mb-3 flex items-center gap-2">
-                      <Sliders className="w-4 h-4 text-tada-turquoise-dark" />
+                    <h4 className="text-sm font-bold text-slate-800 dark:text-white mb-3 flex items-center gap-2">
+                      <Sliders className="w-4 h-4 text-teal-600 dark:text-teal-400" />
                       Current Settings
                     </h4>
                     <div className="grid grid-cols-2 gap-2 text-xs">
                       <div className="flex justify-between">
-                        <span className="text-tada-text-light">Voice:</span>
-                        <span className="text-tada-text capitalize">{videoSettings.voice.gender}, {videoSettings.voice.emotion}</span>
+                        <span className="text-slate-500 dark:text-slate-400 font-medium">Voice:</span>
+                        <span className="text-slate-800 dark:text-slate-100 font-semibold capitalize">{videoSettings.voice.gender}, {videoSettings.voice.emotion}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-tada-text-light">Platform:</span>
-                        <span className="text-tada-text capitalize">{videoSettings.audience.platform}</span>
+                        <span className="text-slate-500 dark:text-slate-400 font-medium">Platform:</span>
+                        <span className="text-slate-800 dark:text-slate-100 font-semibold capitalize">{videoSettings.audience.platform}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-tada-text-light">Style:</span>
-                        <span className="text-tada-text capitalize">{videoSettings.visual.visualStyle}</span>
+                        <span className="text-slate-500 dark:text-slate-400 font-medium">Style:</span>
+                        <span className="text-slate-800 dark:text-slate-100 font-semibold capitalize">{videoSettings.visual.visualStyle}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-tada-text-light">Music:</span>
-                        <span className="text-tada-text capitalize">{videoSettings.music.mood}</span>
+                        <span className="text-slate-500 dark:text-slate-400 font-medium">Music:</span>
+                        <span className="text-slate-800 dark:text-slate-100 font-semibold capitalize">{videoSettings.music.mood}</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-tada-text-light">Duration:</span>
-                        <span className="text-tada-text">{videoSettings.script.length}s</span>
+                        <span className="text-slate-500 dark:text-slate-400 font-medium">Duration:</span>
+                        <span className="text-slate-800 dark:text-slate-100 font-semibold">{videoSettings.script.length}s</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-tada-text-light">Quality:</span>
-                        <span className="text-tada-text">{videoSettings.export.resolution}</span>
+                        <span className="text-slate-500 dark:text-slate-400 font-medium">Quality:</span>
+                        <span className="text-slate-800 dark:text-slate-100 font-semibold">{videoSettings.export.resolution}</span>
                       </div>
                     </div>
                   </motion.div>
@@ -751,10 +751,10 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-white/20 mt-16 py-8">
         <div className="container mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-2 text-tada-text-light text-sm">
-            <Sparkles className="w-4 h-4 text-tada-turquoise" />
+          <div className="flex items-center justify-center gap-2 text-slate-600 dark:text-slate-300 text-sm font-medium">
+            <Sparkles className="w-4 h-4 text-teal-500" />
             <span>Made with</span>
-            <span className="font-semibold text-tada-text">Tada.media</span>
+            <span className="font-bold text-slate-800 dark:text-white">Tada.media</span>
             <span>— AI-Powered Content Creation</span>
           </div>
         </div>

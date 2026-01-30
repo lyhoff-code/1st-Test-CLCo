@@ -54,10 +54,10 @@ export function ToneSelector({ selected, onSelect }: ToneSelectorProps) {
                   : 'text-tada-text-light dark:text-gray-400'
               }`} />
             </div>
-            <span className="font-semibold block text-tada-text dark:text-gray-100 text-sm">
+            <span className="font-bold block text-slate-800 dark:text-white text-sm">
               {tone.label}
             </span>
-            <span className="text-[10px] text-tada-text-light dark:text-gray-400 mt-0.5 block leading-tight">
+            <span className="text-[10px] text-slate-600 dark:text-slate-300 mt-0.5 block leading-tight font-medium">
               {tone.description}
             </span>
             {isSelected && (

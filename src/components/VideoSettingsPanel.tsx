@@ -65,6 +65,7 @@ import {
   Volume2,
   Sliders
 } from 'lucide-react'
+import { BrandUploader, BrandData } from './BrandUploader'
 import {
   VideoSettings,
   VoiceSettings,
@@ -166,9 +167,9 @@ export function VideoSettingsPanel({ settings, onChange }: VideoSettingsPanelPro
     <div className="space-y-3">
       {/* Section Headers */}
       <div className="flex items-center gap-2 mb-4">
-        <Sliders className="w-5 h-5 text-tada-turquoise-dark" />
-        <h3 className="font-semibold text-tada-text">Advanced Settings</h3>
-        <span className="text-xs text-tada-text-light">(7 categories)</span>
+        <Sliders className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+        <h3 className="font-bold text-slate-800 dark:text-white">Advanced Settings</h3>
+        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">(7 categories)</span>
       </div>
 
       {sections.map((section) => {
@@ -182,23 +183,23 @@ export function VideoSettingsPanel({ settings, onChange }: VideoSettingsPanelPro
             <button
               onClick={() => toggleSection(section.id)}
               className={`w-full p-4 flex items-center justify-between transition-all ${
-                isExpanded ? 'bg-white/50' : 'hover:bg-white/30'
+                isExpanded ? 'bg-white/50 dark:bg-slate-700/50' : 'hover:bg-white/30 dark:hover:bg-slate-700/30'
               }`}
             >
               <div className="flex items-center gap-3">
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                  isTurquoise ? 'bg-tada-turquoise/20' : 'bg-tada-pink/20'
+                  isTurquoise ? 'bg-teal-100 dark:bg-teal-900/50' : 'bg-pink-100 dark:bg-pink-900/50'
                 }`}>
                   <Icon className={`w-4 h-4 ${
-                    isTurquoise ? 'text-tada-turquoise-dark' : 'text-tada-pink-dark'
+                    isTurquoise ? 'text-teal-600 dark:text-teal-400' : 'text-pink-600 dark:text-pink-400'
                   }`} />
                 </div>
-                <span className="font-medium text-tada-text">{section.label}</span>
+                <span className="font-bold text-slate-800 dark:text-white">{section.label}</span>
               </div>
               {isExpanded ? (
-                <ChevronUp className="w-5 h-5 text-tada-text-light" />
+                <ChevronUp className="w-5 h-5 text-slate-500 dark:text-slate-400" />
               ) : (
-                <ChevronDown className="w-5 h-5 text-tada-text-light" />
+                <ChevronDown className="w-5 h-5 text-slate-500 dark:text-slate-400" />
               )}
             </button>
 
@@ -254,7 +255,7 @@ function VoiceSection({ settings, onChange }: { settings: VoiceSettings; onChang
     <div className="space-y-4">
       {/* Gender */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Voice Gender</label>
+        <label className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-2 block">Voice Gender</label>
         <div className="grid grid-cols-3 gap-2">
           {VOICE_GENDERS.map((gender) => (
             <button
@@ -915,32 +916,39 @@ function ScriptSection({ settings, onChange }: { settings: ScriptSettings; onCha
 // ============================================
 
 function BrandingSection({ settings, onChange }: { settings: BrandingSettings; onChange: (s: Partial<BrandingSettings>) => void }) {
+  const handleBrandUpdate = (brand: BrandData | null) => {
+    if (brand) {
+      onChange({
+        logoUrl: brand.logoUrl,
+        primaryColor: brand.brandColor || settings.primaryColor
+      })
+    } else {
+      onChange({ logoUrl: undefined })
+    }
+  }
+
   return (
     <div className="space-y-4">
-      {/* Logo URL */}
+      {/* Brand Logo Upload */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Logo URL</label>
-        <input
-          type="text"
-          value={settings.logoUrl || ''}
-          onChange={(e) => onChange({ logoUrl: e.target.value || undefined })}
-          placeholder="https://your-logo.png"
-          className="input-field text-sm"
-        />
+        <label className="text-sm font-bold text-slate-800 dark:text-white mb-3 block">
+          Upload Brand Logo
+        </label>
+        <BrandUploader onBrandUpdate={handleBrandUpdate} />
       </div>
 
       {/* Logo Position */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Logo Position</label>
+        <label className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-2 block">Logo Position</label>
         <div className="grid grid-cols-3 gap-2">
           {LOGO_POSITIONS.map((pos) => (
             <button
               key={pos.value}
               onClick={() => onChange({ logoPosition: pos.value })}
-              className={`p-2 rounded-xl text-xs transition-all ${
+              className={`p-2 rounded-xl text-xs font-semibold transition-all ${
                 settings.logoPosition === pos.value
-                  ? 'bg-tada-turquoise/30 border-2 border-tada-turquoise text-tada-text'
-                  : 'bg-white/50 border-2 border-transparent text-tada-text-light'
+                  ? 'bg-teal-100 dark:bg-teal-900/50 border-2 border-teal-500 text-teal-700 dark:text-teal-300'
+                  : 'bg-white/50 dark:bg-slate-700/50 border-2 border-transparent text-slate-600 dark:text-slate-300 hover:bg-white/70'
               }`}
             >
               {pos.label}
@@ -952,9 +960,9 @@ function BrandingSection({ settings, onChange }: { settings: BrandingSettings; o
       {/* Logo Size & Opacity */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="text-sm font-medium text-tada-text mb-2 flex justify-between">
+          <label className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-2 flex justify-between">
             <span>Size</span>
-            <span className="text-tada-text-light">{settings.logoSize}%</span>
+            <span className="text-slate-500 dark:text-slate-400 font-semibold">{settings.logoSize}%</span>
           </label>
           <input
             type="range"
@@ -962,13 +970,13 @@ function BrandingSection({ settings, onChange }: { settings: BrandingSettings; o
             max="100"
             value={settings.logoSize}
             onChange={(e) => onChange({ logoSize: parseInt(e.target.value) })}
-            className="w-full h-2 bg-white/50 rounded-lg appearance-none cursor-pointer accent-tada-turquoise"
+            className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-teal-500"
           />
         </div>
         <div>
-          <label className="text-sm font-medium text-tada-text mb-2 flex justify-between">
+          <label className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-2 flex justify-between">
             <span>Opacity</span>
-            <span className="text-tada-text-light">{settings.logoOpacity}%</span>
+            <span className="text-slate-500 dark:text-slate-400 font-semibold">{settings.logoOpacity}%</span>
           </label>
           <input
             type="range"
@@ -976,7 +984,7 @@ function BrandingSection({ settings, onChange }: { settings: BrandingSettings; o
             max="100"
             value={settings.logoOpacity}
             onChange={(e) => onChange({ logoOpacity: parseInt(e.target.value) })}
-            className="w-full h-2 bg-white/50 rounded-lg appearance-none cursor-pointer accent-tada-turquoise"
+            className="w-full h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer accent-teal-500"
           />
         </div>
       </div>
@@ -984,36 +992,36 @@ function BrandingSection({ settings, onChange }: { settings: BrandingSettings; o
       {/* Brand Colors */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="text-sm font-medium text-tada-text mb-2 block">Primary Color</label>
+          <label className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-2 block">Primary Color</label>
           <div className="flex gap-2">
             <input
               type="color"
               value={settings.primaryColor}
               onChange={(e) => onChange({ primaryColor: e.target.value })}
-              className="w-10 h-10 rounded-lg cursor-pointer"
+              className="w-10 h-10 rounded-lg cursor-pointer border-0"
             />
             <input
               type="text"
               value={settings.primaryColor}
               onChange={(e) => onChange({ primaryColor: e.target.value })}
-              className="flex-1 input-field text-sm"
+              className="flex-1 px-3 py-2 rounded-xl text-sm bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white uppercase font-mono"
             />
           </div>
         </div>
         <div>
-          <label className="text-sm font-medium text-tada-text mb-2 block">Secondary Color</label>
+          <label className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-2 block">Secondary Color</label>
           <div className="flex gap-2">
             <input
               type="color"
               value={settings.secondaryColor}
               onChange={(e) => onChange({ secondaryColor: e.target.value })}
-              className="w-10 h-10 rounded-lg cursor-pointer"
+              className="w-10 h-10 rounded-lg cursor-pointer border-0"
             />
             <input
               type="text"
               value={settings.secondaryColor}
               onChange={(e) => onChange({ secondaryColor: e.target.value })}
-              className="flex-1 input-field text-sm"
+              className="flex-1 px-3 py-2 rounded-xl text-sm bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-600 text-slate-800 dark:text-white uppercase font-mono"
             />
           </div>
         </div>
@@ -1021,7 +1029,7 @@ function BrandingSection({ settings, onChange }: { settings: BrandingSettings; o
 
       {/* Font Family */}
       <div>
-        <label className="text-sm font-medium text-tada-text mb-2 block">Font Family</label>
+        <label className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-2 block">Font Family</label>
         <div className="grid grid-cols-2 gap-2">
           {FONT_FAMILIES.map((font) => (
             <button
@@ -1029,13 +1037,13 @@ function BrandingSection({ settings, onChange }: { settings: BrandingSettings; o
               onClick={() => onChange({ fontFamily: font.value })}
               className={`p-3 rounded-xl transition-all ${
                 settings.fontFamily === font.value
-                  ? 'bg-tada-pink/30 border-2 border-tada-pink'
-                  : 'bg-white/50 border-2 border-transparent hover:bg-white/70'
+                  ? 'bg-pink-100 dark:bg-pink-900/50 border-2 border-pink-500'
+                  : 'bg-white/50 dark:bg-slate-700/50 border-2 border-transparent hover:bg-white/70'
               }`}
               style={{ fontFamily: font.value }}
             >
-              <span className="font-medium text-tada-text text-sm block">{font.label}</span>
-              <span className="text-xs text-tada-text-light">{font.style}</span>
+              <span className="font-bold text-slate-800 dark:text-white text-sm block">{font.label}</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{font.style}</span>
             </button>
           ))}
         </div>
@@ -1045,20 +1053,20 @@ function BrandingSection({ settings, onChange }: { settings: BrandingSettings; o
       <div className="grid grid-cols-2 gap-2">
         <button
           onClick={() => onChange({ showIntro: !settings.showIntro })}
-          className={`p-3 rounded-xl text-sm transition-all ${
+          className={`p-3 rounded-xl text-sm font-semibold transition-all ${
             settings.showIntro
-              ? 'bg-tada-turquoise/30 border-2 border-tada-turquoise text-tada-text'
-              : 'bg-white/50 border-2 border-transparent text-tada-text-light'
+              ? 'bg-teal-100 dark:bg-teal-900/50 border-2 border-teal-500 text-teal-700 dark:text-teal-300'
+              : 'bg-white/50 dark:bg-slate-700/50 border-2 border-transparent text-slate-600 dark:text-slate-300'
           }`}
         >
           Show Intro
         </button>
         <button
           onClick={() => onChange({ showOutro: !settings.showOutro })}
-          className={`p-3 rounded-xl text-sm transition-all ${
+          className={`p-3 rounded-xl text-sm font-semibold transition-all ${
             settings.showOutro
-              ? 'bg-tada-turquoise/30 border-2 border-tada-turquoise text-tada-text'
-              : 'bg-white/50 border-2 border-transparent text-tada-text-light'
+              ? 'bg-teal-100 dark:bg-teal-900/50 border-2 border-teal-500 text-teal-700 dark:text-teal-300'
+              : 'bg-white/50 dark:bg-slate-700/50 border-2 border-transparent text-slate-600 dark:text-slate-300'
           }`}
         >
           Show Outro

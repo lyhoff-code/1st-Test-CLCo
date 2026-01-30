@@ -10,18 +10,20 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Tada.media Brand Colors
+        // Tada.media Brand Colors - High Contrast
         tada: {
           turquoise: '#A8E6E1',
-          'turquoise-dark': '#7DD3CC',
+          'turquoise-dark': '#4FB3A9',
+          'turquoise-darker': '#2D8A82',
           'turquoise-light': '#C5F0EC',
           pink: '#F9B4C4',
-          'pink-dark': '#F598AD',
+          'pink-dark': '#E87A94',
+          'pink-darker': '#D45A78',
           'pink-light': '#FCDCE4',
-          background: '#FAFBFC',
-          text: '#374151',
-          'text-light': '#6B7280',
-          'text-muted': '#9CA3AF',
+          background: '#F8FAFC',
+          text: '#1E293B',
+          'text-light': '#475569',
+          'text-muted': '#64748B',
           white: '#FFFFFF',
         },
       },

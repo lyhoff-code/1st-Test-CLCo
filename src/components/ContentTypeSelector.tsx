@@ -60,10 +60,10 @@ export function ContentTypeSelector({ selected, onSelect }: ContentTypeSelectorP
                   : 'text-tada-text-light'
               }`} />
             </div>
-            <span className="font-semibold block text-tada-text text-sm sm:text-base">
+            <span className="font-bold block text-slate-800 dark:text-white text-sm sm:text-base">
               {type.label}
             </span>
-            <span className="text-[10px] sm:text-xs text-tada-text-light mt-1 block leading-tight">
+            <span className="text-[10px] sm:text-xs text-slate-600 dark:text-slate-300 mt-1 block leading-tight font-medium">
               {type.description}
             </span>
             {isSelected && (

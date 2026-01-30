@@ -58,10 +58,10 @@ export function ContentStructurePanel({
           }`} />
         </div>
         <div>
-          <h4 className="font-semibold text-tada-text dark:text-gray-100 text-sm">
+          <h4 className="font-bold text-slate-800 dark:text-white text-sm">
             {config.label} Structure
           </h4>
-          <p className="text-xs text-tada-text-light dark:text-gray-400">
+          <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
             {config.scenes.length} scenes
           </p>
         </div>
@@ -105,24 +105,24 @@ export function ContentStructurePanel({
               {/* Scene Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className={`font-medium text-sm ${
+                  <span className={`font-semibold text-sm ${
                     isActive
-                      ? 'text-tada-text dark:text-gray-100'
-                      : 'text-tada-text dark:text-gray-200'
+                      ? 'text-slate-900 dark:text-white'
+                      : 'text-slate-700 dark:text-slate-200'
                   }`}>
                     {scene.name}
                   </span>
-                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
                     isActive
                       ? isTurquoise
-                        ? 'bg-tada-turquoise/30 text-tada-turquoise-dark'
-                        : 'bg-tada-pink/30 text-tada-pink-dark'
-                      : 'bg-white/50 dark:bg-gray-700/50 text-tada-text-light dark:text-gray-400'
+                        ? 'bg-teal-200 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300'
+                        : 'bg-pink-200 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300'
+                      : 'bg-slate-100 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300'
                   }`}>
                     {scene.time}
                   </span>
                 </div>
-                <p className="text-[11px] text-tada-text-light dark:text-gray-400 truncate">
+                <p className="text-[11px] text-slate-600 dark:text-slate-300 truncate font-medium">
                   {scene.purpose}
                 </p>
               </div>
@@ -138,11 +138,11 @@ export function ContentStructurePanel({
 
       {/* Progress Bar */}
       {currentScene >= 0 && (
-        <div className="mt-4 pt-4 border-t border-white/20 dark:border-gray-700/30">
+        <div className="mt-4 pt-4 border-t border-slate-200/50 dark:border-slate-700/30">
           <div className="flex items-center justify-between text-xs mb-2">
-            <span className="text-tada-text-light dark:text-gray-400">Progress</span>
-            <span className={`font-medium ${
-              isTurquoise ? 'text-tada-turquoise-dark' : 'text-tada-pink-dark'
+            <span className="text-slate-600 dark:text-slate-300 font-medium">Progress</span>
+            <span className={`font-bold ${
+              isTurquoise ? 'text-teal-600 dark:text-teal-400' : 'text-pink-600 dark:text-pink-400'
             }`}>
               {Math.round(((currentScene + 1) / config.scenes.length) * 100)}%
             </span>
@@ -180,10 +180,10 @@ export function ContentStructureBadges({ contentType }: { contentType: ContentTy
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: index * 0.05 }}
-          className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-medium ${
+          className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold ${
             isTurquoise
-              ? 'bg-tada-turquoise/10 text-tada-turquoise-dark border border-tada-turquoise/20'
-              : 'bg-tada-pink/10 text-tada-pink-dark border border-tada-pink/20'
+              ? 'bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-700/50'
+              : 'bg-pink-100 dark:bg-pink-900/40 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-700/50'
           }`}
         >
           <span className="opacity-60">{index + 1}.</span>

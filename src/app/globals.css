@@ -4,22 +4,26 @@
 
 :root {
   --tada-turquoise: #A8E6E1;
-  --tada-turquoise-dark: #7DD3CC;
+  --tada-turquoise-dark: #4FB3A9;
+  --tada-turquoise-darker: #2D8A82;
   --tada-turquoise-light: #C5F0EC;
   --tada-pink: #F9B4C4;
-  --tada-pink-dark: #F598AD;
+  --tada-pink-dark: #E87A94;
+  --tada-pink-darker: #D45A78;
   --tada-pink-light: #FCDCE4;
-  --tada-background: #FAFBFC;
-  --tada-text: #374151;
-  --tada-text-light: #6B7280;
+  --tada-background: #F8FAFC;
+  --tada-text: #1E293B;
+  --tada-text-light: #475569;
+  --tada-text-muted: #64748B;
   --tada-white: #FFFFFF;
 }
 
 .dark {
-  --tada-background: #111827;
-  --tada-text: #F3F4F6;
-  --tada-text-light: #9CA3AF;
-  --tada-white: #1F2937;
+  --tada-background: #0F172A;
+  --tada-text: #F8FAFC;
+  --tada-text-light: #CBD5E1;
+  --tada-text-muted: #94A3B8;
+  --tada-white: #1E293B;
 }
 
 body {
@@ -62,22 +66,27 @@ body {
     background-size: 200% auto;
   }
 
-  /* Glassmorphism Cards */
+  /* Glassmorphism Cards - High Contrast */
   .glass {
-    @apply bg-white/70 backdrop-blur-xl border border-white/50 rounded-3xl shadow-glass;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.6) 100%);
+    @apply backdrop-blur-xl border rounded-3xl shadow-glass;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.85) 100%);
+    border-color: rgba(255, 255, 255, 0.7);
   }
 
   .glass-subtle {
-    @apply bg-white/50 backdrop-blur-lg border border-white/30 rounded-2xl shadow-glass-sm;
+    @apply backdrop-blur-lg border rounded-2xl shadow-glass-sm;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.75) 100%);
+    border-color: rgba(255, 255, 255, 0.5);
   }
 
   .glass-strong {
-    @apply bg-white/80 backdrop-blur-2xl border border-white/60 rounded-3xl shadow-glass-lg;
+    @apply backdrop-blur-2xl border rounded-3xl shadow-glass-lg;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+    border-color: rgba(255, 255, 255, 0.8);
   }
 
   .glass-dark {
-    @apply bg-gray-900/80 backdrop-blur-xl border border-white/10 rounded-3xl;
+    @apply bg-gray-900/90 backdrop-blur-xl border border-gray-700/50 rounded-3xl;
   }
 
   /* Buttons */
@@ -125,7 +134,24 @@ body {
 
   /* Section Title */
   .section-title {
-    @apply text-lg font-semibold text-tada-text flex items-center gap-3;
+    @apply text-lg font-bold text-slate-800 flex items-center gap-3;
+  }
+
+  .dark .section-title {
+    @apply text-slate-100;
+  }
+
+  /* High Contrast Text Classes */
+  .text-high-contrast {
+    @apply text-slate-900 dark:text-slate-50;
+  }
+
+  .text-medium-contrast {
+    @apply text-slate-700 dark:text-slate-200;
+  }
+
+  .text-low-contrast {
+    @apply text-slate-600 dark:text-slate-300;
   }
 
   /* Step Badge */
@@ -262,38 +288,36 @@ body {
   background: linear-gradient(90deg, transparent, var(--tada-turquoise), var(--tada-pink), transparent);
 }
 
-/* Dark Mode Overrides */
+/* Dark Mode Overrides - High Contrast */
 .dark .glass {
-  @apply bg-gray-800/70 border-gray-700/50;
-  background: linear-gradient(135deg, rgba(31, 41, 55, 0.8) 0%, rgba(31, 41, 55, 0.6) 100%);
+  @apply border-slate-700/60;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
 }
 
 .dark .glass-subtle {
-  @apply bg-gray-800/50 border-gray-700/30;
+  @apply border-slate-700/40;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%);
 }
 
 .dark .glass-strong {
-  @apply bg-gray-800/80 border-gray-700/60;
+  @apply border-slate-700/70;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.98) 0%, rgba(30, 41, 59, 0.95) 100%);
 }
 
 .dark .btn-ghost {
-  @apply text-gray-400 hover:bg-gray-700/60 hover:text-gray-200;
+  @apply text-slate-300 hover:bg-slate-700/60 hover:text-slate-100;
 }
 
 .dark .btn-secondary {
-  @apply bg-gray-800/60 border-gray-600/30 text-gray-200 hover:bg-gray-700/60;
+  @apply bg-slate-800/80 border-slate-600/50 text-slate-100 hover:bg-slate-700/80;
 }
 
 .dark .input-field {
-  @apply bg-gray-800/60 border-gray-700/50 text-gray-200 placeholder-gray-500;
-}
-
-.dark .section-title {
-  @apply text-gray-200;
+  @apply bg-slate-800/80 border-slate-600/50 text-slate-100 placeholder-slate-400;
 }
 
 .dark .card-lift:hover {
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
 }
 
 .dark ::-webkit-scrollbar-thumb {
@@ -302,4 +326,14 @@ body {
 
 .dark ::-webkit-scrollbar-thumb:hover {
   background: var(--tada-turquoise);
+}
+
+/* Extra high contrast text utilities */
+.dark .text-readable {
+  @apply text-slate-100;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.light .text-readable {
+  @apply text-slate-800;
 }
