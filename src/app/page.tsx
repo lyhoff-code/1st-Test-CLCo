@@ -287,16 +287,25 @@ export default function Home() {
               {/* AI Assistant Button */}
               <AssistantHeaderButton onClick={() => setAssistantOpen(true)} />
 
+              {/* Content Creator Link */}
+              <Link
+                href="/editor"
+                className="btn-ghost flex items-center gap-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-400/30"
+              >
+                <Wand2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <span className="hidden sm:inline font-semibold">Creator</span>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                  PRO
+                </span>
+              </Link>
+
               {/* Creator Studio Link */}
               <Link
                 href="/studio"
                 className="btn-ghost flex items-center gap-2 bg-gradient-to-r from-databake-turquoise/10 to-databake-pink/10 border border-databake-turquoise/30"
               >
-                <Wand2 className="w-5 h-5 text-databake-turquoise-dark" />
+                <Sparkles className="w-5 h-5 text-databake-turquoise-dark" />
                 <span className="hidden sm:inline font-semibold">Studio</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
-                  NEW
-                </span>
               </Link>
 
               <button
