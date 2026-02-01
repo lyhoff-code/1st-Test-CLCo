@@ -5,826 +5,867 @@ import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Sparkles,
-  Clock,
-  Settings,
-  Zap,
-  RotateCcw,
-  Eye,
   Package,
-  Film,
-  MessageSquare,
-  BookOpen,
-  LayoutGrid,
-  Sliders,
-  ChevronDown,
-  ChevronUp,
   Search,
-  Scissors,
-  Wand2
+  Layout,
+  Wand2,
+  Download,
+  Play,
+  ChevronRight,
+  ChevronLeft,
+  Calendar,
+  Clock,
+  CheckCircle2,
+  Star,
+  Zap,
+  RefreshCw,
+  Image as ImageIcon,
+  Type,
+  Music,
+  Mic,
+  Settings,
+  Eye,
+  Lightbulb,
+  ArrowRight,
+  ChefHat,
+  Flame
 } from 'lucide-react'
-import { ProductSelector } from '@/components/ProductSelector'
-import { ContentTypeSelector } from '@/components/ContentTypeSelector'
-import { ToneSelector } from '@/components/ToneSelector'
-import { GenerationPanel } from '@/components/GenerationPanel'
-import { VideoPreview } from '@/components/VideoPreview'
-import { HistoryPanel } from '@/components/HistoryPanel'
-import { StorytellingEditor } from '@/components/StorytellingEditor'
-import { VideoSettingsPanel } from '@/components/VideoSettingsPanel'
-import { ContentAssistant, AssistantHeaderButton } from '@/components/ContentAssistant'
-import { ThemeToggle, LanguageSwitcher } from '@/components/HeaderControls'
-import { UserMenu } from '@/components/UserMenu'
-import { ResearchPanel } from '@/components/ResearchPanel'
-import { VideoToShortsPanel } from '@/components/VideoToShortsPanel'
-import { useLanguage } from '@/lib/LanguageContext'
 import {
-  ShopifyProduct,
-  ContentType,
-  ToneType,
-  GeneratedContent,
-  GenerationState,
-  HistoryItem,
-  StorytellingContent,
-  VideoSettings,
-  ProductResearch,
-  DEFAULT_VIDEO_SETTINGS
-} from '@/types'
+  VIDEO_TEMPLATES,
+  VideoTemplateStructure,
+  UserProject,
+  UserScene,
+  getTodaysRecommendedTemplates,
+  getCurrentDayName
+} from '@/types/templates'
+import { TemplateEditor } from '@/components/TemplateEditor'
+import { TimelineEditor } from '@/components/TimelineEditor'
+import { ExportPanel } from '@/components/ExportPanel'
+import { MusicLibrary, Track } from '@/components/MusicLibrary'
+import { CaptionStyles, CaptionStyle } from '@/components/CaptionStyles'
+import { ThemeToggle } from '@/components/HeaderControls'
+import { UserMenu } from '@/components/UserMenu'
+
+// Workflow Steps
+type WorkflowStep = 'product' | 'research' | 'template' | 'edit' | 'extras' | 'export'
+
+// Product interface
+interface Product {
+  id: string
+  name: string
+  description: string
+  price: string
+  imageUrl: string
+}
+
+// Mock products (will be replaced with Shopify data)
+const MOCK_PRODUCTS: Product[] = [
+  {
+    id: '1',
+    name: 'Premium Wireless Headphones',
+    description: 'High-quality noise-cancelling headphones with 40-hour battery life',
+    price: '$199.99',
+    imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300'
+  },
+  {
+    id: '2',
+    name: 'Smart Fitness Watch',
+    description: 'Track your health and fitness with advanced sensors',
+    price: '$299.99',
+    imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300'
+  },
+  {
+    id: '3',
+    name: 'Organic Skincare Set',
+    description: 'Natural skincare routine with premium ingredients',
+    price: '$89.99',
+    imageUrl: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=300'
+  },
+  {
+    id: '4',
+    name: 'Portable Bluetooth Speaker',
+    description: 'Waterproof speaker with 360° sound and 24-hour battery',
+    price: '$149.99',
+    imageUrl: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=300'
+  }
+]
+
+// Step configuration
+const STEPS = [
+  { id: 'product', name: 'Product', icon: Package, color: 'blue' },
+  { id: 'research', name: 'AI Research', icon: Search, color: 'purple' },
+  { id: 'template', name: 'Template', icon: Layout, color: 'green' },
+  { id: 'edit', name: 'Create', icon: Wand2, color: 'orange' },
+  { id: 'extras', name: 'Extras', icon: Music, color: 'pink' },
+  { id: 'export', name: 'Export', icon: Download, color: 'emerald' }
+]
 
 export default function Home() {
-  const [selectedProduct, setSelectedProduct] = useState<ShopifyProduct | null>(null)
-  const [contentType, setContentType] = useState<ContentType>('reel')
-  const [tone, setTone] = useState<ToneType>('divertido')
-  const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null)
-  const [generationState, setGenerationState] = useState<GenerationState>({
-    step: 'idle',
-    progress: 0,
-    message: ''
-  })
-  const [history, setHistory] = useState<HistoryItem[]>([])
-  const [showHistory, setShowHistory] = useState(false)
-  const [showStorytellingEditor, setShowStorytellingEditor] = useState(false)
-  const [videoSettings, setVideoSettings] = useState<VideoSettings>(DEFAULT_VIDEO_SETTINGS)
-  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false)
-  const [assistantOpen, setAssistantOpen] = useState(false)
-  const [research, setResearch] = useState<ProductResearch | null>(null)
+  // Workflow state
+  const [currentStep, setCurrentStep] = useState<WorkflowStep>('product')
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+
+  // Research state
   const [isResearching, setIsResearching] = useState(false)
-  const [selectedHook, setSelectedHook] = useState<string | null>(null)
+  const [research, setResearch] = useState<{
+    insights: string[]
+    hooks: string[]
+    keywords: string[]
+    recommendedType: string
+  } | null>(null)
 
-  // Load history from localStorage
+  // Template & Project state
+  const [selectedTemplate, setSelectedTemplate] = useState<VideoTemplateStructure | null>(null)
+  const [project, setProject] = useState<UserProject | null>(null)
+  const [selectedSceneIndex, setSelectedSceneIndex] = useState(0)
+
+  // Extras state
+  const [selectedTrack, setSelectedTrack] = useState<Track | null>(null)
+  const [selectedCaptionStyle, setSelectedCaptionStyle] = useState<CaptionStyle | null>(null)
+
+  // Export state
+  const [showExport, setShowExport] = useState(false)
+
+  // Get today's recommendations
+  const todaysTemplates = getTodaysRecommendedTemplates()
+  const today = getCurrentDayName()
+
+  // Calculate current step index
+  const currentStepIndex = STEPS.findIndex(s => s.id === currentStep)
+
+  // Initialize project when template is selected
   useEffect(() => {
-    const savedHistory = localStorage.getItem('databake-history')
-    if (savedHistory) {
-      setHistory(JSON.parse(savedHistory))
+    if (selectedTemplate && selectedProduct) {
+      const userScenes: UserScene[] = selectedTemplate.scenes.map(scene => ({
+        id: `user-${scene.id}`,
+        templateSceneId: scene.id,
+        imageUrl: null,
+        script: scene.defaultText.replace('[product]', selectedProduct.name),
+        duration: scene.duration,
+        isEdited: false
+      }))
+
+      setProject({
+        id: `project-${Date.now()}`,
+        templateId: selectedTemplate.id,
+        productId: selectedProduct.id,
+        productName: selectedProduct.name,
+        scenes: userScenes,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        status: 'draft'
+      })
     }
-    // Load saved video settings
-    const savedSettings = localStorage.getItem('databake-video-settings')
-    if (savedSettings) {
-      setVideoSettings(JSON.parse(savedSettings))
-    }
-  }, [])
+  }, [selectedTemplate, selectedProduct])
 
-  // Save video settings when they change
-  useEffect(() => {
-    localStorage.setItem('databake-video-settings', JSON.stringify(videoSettings))
-  }, [videoSettings])
+  // Handle product selection
+  const handleSelectProduct = (product: Product) => {
+    setSelectedProduct(product)
+    setCurrentStep('research')
+  }
 
-  // Reset storytelling editor when content type changes
-  useEffect(() => {
-    if (contentType !== 'storytelling') {
-      setShowStorytellingEditor(false)
-    }
-  }, [contentType])
-
-  // Reset research when product changes
-  useEffect(() => {
-    setResearch(null)
-    setSelectedHook(null)
-  }, [selectedProduct])
-
-  // Research product with AI
+  // Simulate AI research
   const handleResearch = async () => {
     if (!selectedProduct) return
 
     setIsResearching(true)
-    try {
-      const response = await fetch('/api/research', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          productName: selectedProduct.title,
-          productDescription: selectedProduct.description,
-          productPrice: selectedProduct.priceRange.minVariantPrice.amount,
-        }),
-      })
+    await new Promise(resolve => setTimeout(resolve, 2500))
 
-      if (!response.ok) throw new Error('Research failed')
+    const recommendedType = todaysTemplates[0]?.name || 'Educational'
 
-      const data = await response.json()
-      setResearch(data.research)
-    } catch (error) {
-      console.error('Research error:', error)
-    } finally {
-      setIsResearching(false)
+    setResearch({
+      insights: [
+        `${selectedProduct.name} is trending in the lifestyle category`,
+        `Best content type for ${today}: ${recommendedType}`,
+        'Recommended video length: 15-30 seconds',
+        'Peak engagement time: 6-8 PM',
+        'Top performing hashtags identified'
+      ],
+      hooks: [
+        `Stop scrolling if you want the best ${selectedProduct.name.split(' ').pop()?.toLowerCase()}!`,
+        `I wish I knew about ${selectedProduct.name} sooner...`,
+        `Here's why everyone is obsessed with this`,
+        `${selectedProduct.name} changed everything for me`,
+        `POV: You finally discover ${selectedProduct.name}`
+      ],
+      keywords: ['viral', 'musthave', 'fyp', 'review', selectedProduct.name.toLowerCase().replace(/\s+/g, '')],
+      recommendedType
+    })
+    setIsResearching(false)
+  }
+
+  // Handle template selection
+  const handleSelectTemplate = (template: VideoTemplateStructure) => {
+    setSelectedTemplate(template)
+    setCurrentStep('edit')
+  }
+
+  // Handle scene changes
+  const handleScenesChange = (scenes: UserScene[]) => {
+    if (!project) return
+    setProject({
+      ...project,
+      scenes,
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  // Handle duration change
+  const handleDurationChange = (index: number, duration: number) => {
+    if (!project) return
+    const newScenes = [...project.scenes]
+    newScenes[index] = { ...newScenes[index], duration }
+    setProject({
+      ...project,
+      scenes: newScenes,
+      updatedAt: new Date().toISOString()
+    })
+  }
+
+  // Handle export
+  const handleExport = (exportedProject: UserProject) => {
+    setProject(exportedProject)
+    setShowExport(true)
+  }
+
+  // Navigation functions
+  const goToStep = (step: WorkflowStep) => {
+    const stepIndex = STEPS.findIndex(s => s.id === step)
+    if (stepIndex <= currentStepIndex) {
+      setCurrentStep(step)
     }
   }
 
-  // Save history to localStorage
-  const saveToHistory = (content: GeneratedContent, product: ShopifyProduct) => {
-    const newItem: HistoryItem = {
-      id: Date.now().toString(),
-      timestamp: new Date().toISOString(),
-      product: product,
-      contentType,
-      tone,
-      content,
-      videoSettings
-    }
-    const updatedHistory = [newItem, ...history].slice(0, 20)
-    setHistory(updatedHistory)
-    localStorage.setItem('databake-history', JSON.stringify(updatedHistory))
-  }
-
-  const handleGenerate = async () => {
-    if (!selectedProduct) return
-
-    // If storytelling mode, show the editor instead of auto-generating
-    if (contentType === 'storytelling') {
-      setShowStorytellingEditor(true)
-      return
-    }
-
-    setGenerationState({ step: 'generating-script', progress: 0, message: 'Analyzing product...' })
-
-    try {
-      const scriptResponse = await fetch('/api/generate-script', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          product: selectedProduct,
-          contentType,
-          tone,
-          videoSettings,
-          research,
-          selectedHook
-        })
-      })
-
-      if (!scriptResponse.ok) throw new Error('Error generating script')
-
-      const { script, scenes } = await scriptResponse.json()
-      setGenerationState({ step: 'generating-audio', progress: 33, message: 'Creating voiceover...' })
-
-      const audioResponse = await fetch('/api/generate-audio', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          script,
-          tone,
-          voiceSettings: videoSettings.voice
-        })
-      })
-
-      if (!audioResponse.ok) throw new Error('Error generating audio')
-
-      const { audioUrl } = await audioResponse.json()
-      setGenerationState({ step: 'generating-video', progress: 66, message: 'Composing video...' })
-
-      await new Promise(resolve => setTimeout(resolve, 2000))
-
-      const newContent: GeneratedContent = {
-        script,
-        audioUrl,
-        scenes,
-        videoUrl: undefined
-      }
-
-      setGeneratedContent(newContent)
-      saveToHistory(newContent, selectedProduct)
-      setGenerationState({ step: 'complete', progress: 100, message: 'Content ready!' })
-
-    } catch (error) {
-      setGenerationState({
-        step: 'error',
-        progress: 0,
-        message: error instanceof Error ? error.message : 'Unknown error'
-      })
+  const goNext = () => {
+    const nextIndex = currentStepIndex + 1
+    if (nextIndex < STEPS.length) {
+      setCurrentStep(STEPS[nextIndex].id as WorkflowStep)
     }
   }
 
-  const handleStorytellingComplete = (storytellingContent: StorytellingContent) => {
-    if (!selectedProduct) return
-
-    const fullScript = storytellingContent.scenes.map(s => s.script).join('\n\n')
-
-    const newContent: GeneratedContent = {
-      script: fullScript,
-      audioUrl: undefined,
-      scenes: storytellingContent.scenes.map(s => ({
-        text: s.script,
-        duration: 5,
-        imageUrl: s.imageUrl
-      })),
-      storytelling: storytellingContent,
-      videoUrl: undefined
+  const goBack = () => {
+    const prevIndex = currentStepIndex - 1
+    if (prevIndex >= 0) {
+      setCurrentStep(STEPS[prevIndex].id as WorkflowStep)
     }
-
-    setGeneratedContent(newContent)
-    saveToHistory(newContent, selectedProduct)
-    setGenerationState({ step: 'complete', progress: 100, message: 'Storytelling content saved!' })
   }
-
-  const handleReset = () => {
-    setGeneratedContent(null)
-    setGenerationState({ step: 'idle', progress: 0, message: '' })
-    setShowStorytellingEditor(false)
-  }
-
-  const loadFromHistory = (item: HistoryItem) => {
-    setSelectedProduct(item.product)
-    setContentType(item.contentType)
-    setTone(item.tone)
-    setGeneratedContent(item.content)
-    if (item.videoSettings) {
-      setVideoSettings(item.videoSettings)
-    }
-    setGenerationState({ step: 'complete', progress: 100, message: 'Loaded from history' })
-    setShowHistory(false)
-    setShowStorytellingEditor(false)
-  }
-
-  const canGenerate = selectedProduct && generationState.step === 'idle' && !showStorytellingEditor
-  const isGenerating = ['generating-script', 'generating-audio', 'generating-video'].includes(generationState.step)
-  const isStorytellingMode = contentType === 'storytelling'
 
   return (
-    <main className="min-h-screen aurora-bg">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       {/* Header */}
-      <header className="sticky top-0 z-50 glass-subtle border-b border-white/20 dark:border-gray-700/30">
-        <div className="container mx-auto px-4 py-4">
+      <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-800/50">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-3"
-            >
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-databake-turquoise via-databake-turquoise-dark to-databake-pink flex items-center justify-center shadow-glass glow-turquoise">
-                <Sparkles className="w-6 h-6 text-white" strokeWidth={2.5} />
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+                <ChefHat className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-                  DataBake<span className="text-pink-600 dark:text-pink-400">.media</span>
+                <h1 className="font-bold text-slate-900 dark:text-white">
+                  DataBake<span className="text-pink-500">.media</span>
                 </h1>
-                <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">AI Content Studio</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+                  AI Content Creator
+                </p>
               </div>
-            </motion.div>
+            </div>
 
-            {/* Navigation */}
-            <motion.nav
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-2"
-            >
-              {/* AI Assistant Button */}
-              <AssistantHeaderButton onClick={() => setAssistantOpen(true)} />
+            {/* Progress Steps */}
+            <div className="hidden lg:flex items-center gap-1">
+              {STEPS.map((step, idx) => {
+                const isActive = step.id === currentStep
+                const isCompleted = idx < currentStepIndex
+                const isClickable = idx <= currentStepIndex
+                const Icon = step.icon
 
-              {/* Content Creator Link */}
-              <Link
-                href="/editor"
-                className="btn-ghost flex items-center gap-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-400/30"
-              >
-                <Wand2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                <span className="hidden sm:inline font-semibold">Creator</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
-                  PRO
-                </span>
-              </Link>
+                return (
+                  <div key={step.id} className="flex items-center">
+                    <button
+                      onClick={() => isClickable && goToStep(step.id as WorkflowStep)}
+                      disabled={!isClickable}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
+                        isActive
+                          ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400'
+                          : isCompleted
+                          ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50 cursor-pointer'
+                          : 'text-slate-400 dark:text-slate-600 cursor-not-allowed'
+                      }`}
+                    >
+                      {isCompleted ? (
+                        <CheckCircle2 className="w-4 h-4" />
+                      ) : (
+                        <Icon className="w-4 h-4" />
+                      )}
+                      <span className="text-xs font-medium">{step.name}</span>
+                    </button>
+                    {idx < STEPS.length - 1 && (
+                      <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-700 mx-0.5" />
+                    )}
+                  </div>
+                )
+              })}
+            </div>
 
-              {/* Creator Studio Link */}
-              <Link
-                href="/studio"
-                className="btn-ghost flex items-center gap-2 bg-gradient-to-r from-databake-turquoise/10 to-databake-pink/10 border border-databake-turquoise/30"
-              >
-                <Sparkles className="w-5 h-5 text-databake-turquoise-dark" />
-                <span className="hidden sm:inline font-semibold">Studio</span>
-              </Link>
-
-              <button
-                onClick={() => setShowHistory(!showHistory)}
-                className={`btn-ghost flex items-center gap-2 ${showHistory ? 'bg-databake-turquoise/20 text-databake-text dark:text-gray-200' : ''}`}
-              >
-                <Clock className="w-5 h-5" />
-                <span className="hidden sm:inline">History</span>
-                {history.length > 0 && (
-                  <span className="w-5 h-5 rounded-full bg-gradient-to-r from-databake-pink to-databake-pink-dark text-white text-xs flex items-center justify-center font-medium">
-                    {history.length}
-                  </span>
-                )}
-              </button>
+            {/* Right side */}
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
               <Link
                 href="/settings"
-                className="btn-ghost flex items-center gap-2"
+                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
-                <Settings className="w-5 h-5" />
-                <span className="hidden sm:inline">Settings</span>
+                <Settings className="w-5 h-5 text-slate-500" />
               </Link>
-
-              {/* Language & Theme */}
-              <div className="hidden md:flex items-center gap-2 ml-2 pl-2 border-l border-white/20 dark:border-gray-700/30">
-                <LanguageSwitcher />
-                <ThemeToggle />
-              </div>
-
-              {/* User Menu */}
-              <div className="ml-2 pl-2 border-l border-white/20 dark:border-gray-700/30">
-                <UserMenu />
-              </div>
-            </motion.nav>
+              <UserMenu />
+            </div>
           </div>
         </div>
       </header>
 
-      {/* History Panel */}
-      <AnimatePresence>
-        {showHistory && (
-          <HistoryPanel
-            history={history}
-            onSelect={loadFromHistory}
-            onClose={() => setShowHistory(false)}
-            onClear={() => {
-              setHistory([])
-              localStorage.removeItem('databake-history')
-            }}
-          />
-        )}
-      </AnimatePresence>
-
-      <div className="container mx-auto px-4 py-8 md:py-12">
-        {/* Hero Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12 md:mb-16"
-        >
+      {/* Mobile Progress */}
+      <div className="lg:hidden px-4 py-3 bg-white/50 dark:bg-slate-900/50 border-b border-slate-200/50 dark:border-slate-800/50">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs font-medium text-slate-500">
+            Step {currentStepIndex + 1} of {STEPS.length}
+          </span>
+          <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+            {STEPS[currentStepIndex].name}
+          </span>
+        </div>
+        <div className="w-full h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-subtle mb-6"
-          >
-            <Sparkles className="w-4 h-4 text-teal-600 dark:text-teal-400" />
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">AI-Powered Content Creation</span>
-          </motion.div>
-          <h2 className="text-4xl md:text-6xl font-bold mb-5 text-slate-900 dark:text-white leading-tight">
-            Create <span className="gradient-text">Viral Content</span>
-            <br className="hidden md:block" /> for Your Products
-          </h2>
-          <p className="text-slate-600 dark:text-slate-300 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed font-medium">
-            Transform your Shopify products into engaging reels, stories, and posts with AI-powered scripts and voiceovers.
-          </p>
-        </motion.section>
+            className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
+            initial={{ width: 0 }}
+            animate={{ width: `${((currentStepIndex + 1) / STEPS.length) * 100}%` }}
+          />
+        </div>
+      </div>
 
-        {/* Storytelling Editor Full Screen Mode */}
-        <AnimatePresence>
-          {showStorytellingEditor && selectedProduct && (
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8">
+        <AnimatePresence mode="wait">
+          {/* STEP 1: Product Selection */}
+          {currentStep === 'product' && (
             <motion.div
+              key="product"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="mb-8"
+              className="max-w-5xl mx-auto"
             >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="icon-pink">
-                    <BookOpen className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Storytelling Mode</h2>
-                    <p className="text-sm text-slate-600 dark:text-slate-300 font-medium">Create a story-driven 30-second reel</p>
-                  </div>
-                </div>
-                <button
-                  onClick={handleReset}
-                  className="btn-secondary px-4 py-2 flex items-center gap-2"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  Exit Storytelling
-                </button>
-              </div>
-              <StorytellingEditor
-                product={selectedProduct}
-                tone={tone}
-                onSave={handleStorytellingComplete}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Video to Shorts Mode - Full Width Panel */}
-        <AnimatePresence>
-          {contentType === 'video-to-shorts' && !showStorytellingEditor && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="mb-8"
-            >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center shadow-lg">
-                    <Scissors className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Video to Shorts</h2>
-                    <p className="text-sm text-slate-600 dark:text-slate-300 font-medium">Convert long videos into viral shorts with AI</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setContentType('reel')}
-                  className="btn-secondary px-4 py-2 flex items-center gap-2"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  Back to Content Types
-                </button>
-              </div>
-              <div className="glass p-6">
-                <VideoToShortsPanel />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Main Content - Hidden when storytelling editor or video-to-shorts is open */}
-        {!showStorytellingEditor && contentType !== 'video-to-shorts' && (
-          <div className="grid lg:grid-cols-2 gap-6 md:gap-8 items-start">
-            {/* Left Column - Configuration */}
-            <div className="space-y-5">
-              {/* Step 1: Product Selection */}
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="glass p-6 card-lift"
-              >
-                <h3 className="section-title mb-5">
-                  <span className="step-badge bg-gradient-to-br from-databake-turquoise to-databake-turquoise-dark text-white">
-                    <Package className="w-4 h-4" />
-                  </span>
-                  Select Your Product
-                </h3>
-                <ProductSelector
-                  selectedProduct={selectedProduct}
-                  onSelect={setSelectedProduct}
-                />
-              </motion.section>
-
-              {/* Step 1.5: AI Research (appears after product selection) */}
-              <AnimatePresence>
-                {selectedProduct && (
-                  <motion.section
-                    initial={{ opacity: 0, y: 20, height: 0 }}
-                    animate={{ opacity: 1, y: 0, height: 'auto' }}
-                    exit={{ opacity: 0, y: -20, height: 0 }}
-                    transition={{ delay: 0.15 }}
-                    className="card-lift"
-                  >
-                    <ResearchPanel
-                      product={selectedProduct}
-                      research={research}
-                      isLoading={isResearching}
-                      onResearch={handleResearch}
-                      onSelectHook={setSelectedHook}
-                      selectedHook={selectedHook}
-                    />
-                  </motion.section>
-                )}
-              </AnimatePresence>
-
-              {/* Step 2: Content Type */}
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="glass p-6 card-lift"
-              >
-                <h3 className="section-title mb-5">
-                  <span className="step-badge bg-gradient-to-br from-databake-pink to-databake-pink-dark text-white">
-                    <Film className="w-4 h-4" />
-                  </span>
-                  Content Type
-                </h3>
-                <ContentTypeSelector
-                  selected={contentType}
-                  onSelect={setContentType}
-                />
-
-                {/* Content Structure Info - Shows for ALL content types */}
+              <div className="text-center mb-8">
                 <motion.div
-                  key={contentType}
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  className={`mt-4 p-4 rounded-2xl border ${
-                    contentType === 'reel' || contentType === 'post' || contentType === 'carousel'
-                      ? 'bg-gradient-to-r from-databake-turquoise/10 to-databake-turquoise/5 border-databake-turquoise/20'
-                      : 'bg-gradient-to-r from-databake-pink/10 to-databake-pink/5 border-databake-pink/20'
-                  }`}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-medium mb-4"
                 >
-                  <div className="flex items-start gap-3">
-                    {contentType === 'reel' && <Film className="w-5 h-5 text-databake-turquoise-dark mt-0.5 shrink-0" />}
-                    {contentType === 'story' && <Eye className="w-5 h-5 text-databake-pink-dark mt-0.5 shrink-0" />}
-                    {contentType === 'post' && <Package className="w-5 h-5 text-databake-turquoise-dark mt-0.5 shrink-0" />}
-                    {contentType === 'storytelling' && <BookOpen className="w-5 h-5 text-databake-pink-dark mt-0.5 shrink-0" />}
-                    {contentType === 'carousel' && <LayoutGrid className="w-5 h-5 text-databake-turquoise-dark mt-0.5 shrink-0" />}
-                    <div className="flex-1">
-                      <p className="text-sm font-bold text-slate-800 dark:text-white">
-                        {contentType === 'reel' && 'Reel Structure (15-60s)'}
-                        {contentType === 'story' && 'Story Structure (15s)'}
-                        {contentType === 'post' && 'Post Structure'}
-                        {contentType === 'storytelling' && 'Storytelling Structure (30s)'}
-                        {contentType === 'carousel' && 'Carousel Structure (7 slides)'}
-                      </p>
-                      <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                        {contentType === 'reel' && (
-                          <>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Hook</span>
-                            <span className="text-slate-500 dark:text-slate-400">→</span>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Value</span>
-                            <span className="text-slate-500 dark:text-slate-400">→</span>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Demo</span>
-                            <span className="text-slate-500 dark:text-slate-400">→</span>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">CTA</span>
-                          </>
-                        )}
-                        {contentType === 'story' && (
-                          <>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">Attention</span>
-                            <span className="text-slate-500 dark:text-slate-400">→</span>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">Message</span>
-                            <span className="text-slate-500 dark:text-slate-400">→</span>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">Action</span>
-                          </>
-                        )}
-                        {contentType === 'post' && (
-                          <>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Visual</span>
-                            <span className="text-slate-500 dark:text-slate-400">+</span>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Caption</span>
-                            <span className="text-slate-500 dark:text-slate-400">+</span>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Hashtags</span>
-                          </>
-                        )}
-                        {contentType === 'storytelling' && (
-                          <>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">Hook</span>
-                            <span className="text-slate-500 dark:text-slate-400">→</span>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">Problem</span>
-                            <span className="text-slate-500 dark:text-slate-400">→</span>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">Agitation</span>
-                            <span className="text-slate-500 dark:text-slate-400">→</span>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">Solution</span>
-                            <span className="text-slate-500 dark:text-slate-400">→</span>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">Result</span>
-                            <span className="text-slate-500 dark:text-slate-400">→</span>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300">CTA</span>
-                          </>
-                        )}
-                        {contentType === 'carousel' && (
-                          <>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Cover</span>
-                            <span className="text-slate-500 dark:text-slate-400">→</span>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Problem</span>
-                            <span className="text-slate-500 dark:text-slate-400">→</span>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Stats</span>
-                            <span className="text-slate-500 dark:text-slate-400">→</span>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Solution</span>
-                            <span className="text-slate-500 dark:text-slate-400">→</span>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Benefits</span>
-                            <span className="text-slate-500 dark:text-slate-400">→</span>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">Proof</span>
-                            <span className="text-slate-500 dark:text-slate-400">→</span>
-                            <span className="px-2 py-1 text-xs font-bold rounded-lg bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300">CTA</span>
-                          </>
-                        )}
-                      </div>
-                      <p className="text-xs text-slate-600 dark:text-slate-300 mt-2 font-medium">
-                        {contentType === 'reel' && 'Perfect for Instagram Reels, TikTok, and YouTube Shorts. Each scene with script and voiceover.'}
-                        {contentType === 'story' && 'Quick ephemeral content for Instagram/Facebook Stories. Optimized for swipe-up engagement.'}
-                        {contentType === 'post' && 'Static feed content with engaging caption and optimized hashtags for discovery.'}
-                        {contentType === 'storytelling' && 'Advanced 6-scene narrative. Each scene gets its own script, voice, and AI-generated image.'}
-                        {contentType === 'carousel' && 'Swipeable multi-slide format. 7 slides with impactful text and AI images. High save rate.'}
-                      </p>
-                    </div>
-                  </div>
+                  <Package className="w-4 h-4" />
+                  Step 1
                 </motion.div>
-              </motion.section>
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+                  Select Your Product
+                </h2>
+                <p className="text-slate-600 dark:text-slate-400">
+                  Choose the product you want to create viral content for
+                </p>
+              </div>
 
-              {/* Step 3: Tone */}
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="glass p-6 card-lift"
-              >
-                <h3 className="section-title mb-5">
-                  <span className="step-badge bg-gradient-to-r from-databake-turquoise to-databake-pink text-white">
-                    <MessageSquare className="w-4 h-4" />
-                  </span>
-                  Content Tone
-                </h3>
-                <ToneSelector
-                  selected={tone}
-                  onSelect={setTone}
-                />
-              </motion.section>
-
-              {/* Step 4: Advanced Settings (Collapsible) */}
-              <motion.section
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.35 }}
-                className="glass overflow-hidden card-lift"
-              >
-                <button
-                  onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
-                  className="w-full p-6 flex items-center justify-between hover:bg-white/10 transition-colors"
-                >
-                  <h3 className="section-title mb-0">
-                    <span className="step-badge bg-gradient-to-br from-purple-400 to-purple-600 text-white">
-                      <Sliders className="w-4 h-4" />
-                    </span>
-                    Advanced Settings
-                    <span className="ml-2 text-xs font-normal text-databake-text-light">(7 categories)</span>
-                  </h3>
-                  {showAdvancedSettings ? (
-                    <ChevronUp className="w-5 h-5 text-databake-text-light" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-databake-text-light" />
-                  )}
-                </button>
-
-                <AnimatePresence>
-                  {showAdvancedSettings && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-6 pb-6">
-                        <div className="p-4 rounded-2xl bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 border border-purple-200 dark:border-purple-700/50 mb-4">
-                          <p className="text-xs text-slate-700 dark:text-slate-200 font-medium">
-                            Customize voice, audience targeting, visual style, music, script options, branding, and export quality for professional results.
-                          </p>
-                        </div>
-                        <VideoSettingsPanel
-                          settings={videoSettings}
-                          onChange={setVideoSettings}
-                        />
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.section>
-
-              {/* Generate Button */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="flex gap-3"
-              >
-                <button
-                  onClick={handleGenerate}
-                  disabled={!canGenerate || isGenerating}
-                  className="flex-1 btn-primary py-4 text-lg flex items-center justify-center gap-3"
-                >
-                  {isGenerating ? (
-                    <>
-                      <div className="w-5 h-5 rounded-full spinner" />
-                      Generating...
-                    </>
-                  ) : isStorytellingMode ? (
-                    <>
-                      <BookOpen className="w-5 h-5" />
-                      Start Storytelling Mode
-                    </>
-                  ) : (
-                    <>
-                      <Zap className="w-5 h-5" />
-                      Generate Content
-                    </>
-                  )}
-                </button>
-                {generatedContent && (
-                  <button
-                    onClick={handleReset}
-                    className="btn-secondary px-4"
-                    title="Start over"
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {MOCK_PRODUCTS.map((product, idx) => (
+                  <motion.button
+                    key={product.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.1 }}
+                    onClick={() => handleSelectProduct(product)}
+                    className="group p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-left hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-700 hover:-translate-y-1 transition-all"
                   >
-                    <RotateCcw className="w-5 h-5" />
-                  </button>
-                )}
-              </motion.div>
+                    <div className="relative mb-3 overflow-hidden rounded-xl">
+                      <img
+                        src={product.imageUrl}
+                        alt={product.name}
+                        className="w-full h-32 object-cover group-hover:scale-105 transition-transform"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                    </div>
+                    <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-1 line-clamp-1">
+                      {product.name}
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-2">
+                      {product.description}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-blue-600 dark:text-blue-400">
+                        {product.price}
+                      </span>
+                      <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-blue-500 group-hover:translate-x-1 transition-all" />
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+            </motion.div>
+          )}
 
-              {/* Generation Progress */}
-              <AnimatePresence>
-                {isGenerating && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                  >
-                    <GenerationPanel state={generationState} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Right Column - Preview */}
+          {/* STEP 2: AI Research */}
+          {currentStep === 'research' && selectedProduct && (
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-              className="lg:sticky lg:top-24 lg:self-start"
+              key="research"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="max-w-4xl mx-auto"
             >
-              <div className="glass p-6">
-                <h3 className="section-title mb-5">
-                  <span className="icon-turquoise">
-                    <Eye className="w-5 h-5" />
-                  </span>
-                  Preview
-                </h3>
-                <VideoPreview
-                  product={selectedProduct}
-                  contentType={contentType}
-                  generatedContent={generatedContent}
-                  generationState={generationState}
-                />
+              <div className="text-center mb-8">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-sm font-medium mb-4"
+                >
+                  <Search className="w-4 h-4" />
+                  Step 2
+                </motion.div>
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+                  AI Research
+                </h2>
+                <p className="text-slate-600 dark:text-slate-400">
+                  Let AI analyze trends and find the best content strategy
+                </p>
+              </div>
 
-                {/* Quick Settings Summary */}
-                {selectedProduct && (
+              {/* Selected Product Card */}
+              <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 mb-6">
+                <div className="flex items-center gap-4">
+                  <img
+                    src={selectedProduct.imageUrl}
+                    alt={selectedProduct.name}
+                    className="w-16 h-16 rounded-xl object-cover"
+                  />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-slate-900 dark:text-white">
+                      {selectedProduct.name}
+                    </h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                      {selectedProduct.description}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setCurrentStep('product')}
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  >
+                    Change
+                  </button>
+                </div>
+              </div>
+
+              {!research ? (
+                <div className="text-center py-8">
+                  <motion.button
+                    onClick={handleResearch}
+                    disabled={isResearching}
+                    className="px-8 py-4 rounded-2xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold text-lg flex items-center gap-3 mx-auto hover:shadow-xl hover:scale-105 transition-all disabled:opacity-70 disabled:hover:scale-100"
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {isResearching ? (
+                      <>
+                        <RefreshCw className="w-5 h-5 animate-spin" />
+                        Analyzing with AI...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-5 h-5" />
+                        Start AI Research
+                      </>
+                    )}
+                  </motion.button>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
+                    AI will analyze trends, competitors, and find the best hooks
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Insights */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-5 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-800"
+                  >
+                    <h3 className="font-semibold text-purple-900 dark:text-purple-100 mb-3 flex items-center gap-2">
+                      <Lightbulb className="w-5 h-5" />
+                      AI Insights
+                    </h3>
+                    <ul className="space-y-2">
+                      {research.insights.map((insight, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-sm text-purple-800 dark:text-purple-200">
+                          <CheckCircle2 className="w-4 h-4 mt-0.5 text-purple-500 flex-shrink-0" />
+                          {insight}
+                        </li>
+                      ))}
+                    </ul>
+                  </motion.div>
+
+                  {/* Hooks */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
+                  >
+                    <h3 className="font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                      <Zap className="w-5 h-5 text-yellow-500" />
+                      Viral Hooks
+                    </h3>
+                    <div className="space-y-2">
+                      {research.hooks.slice(0, 3).map((hook, idx) => (
+                        <div key={idx} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 text-sm text-slate-700 dark:text-slate-300 border-l-4 border-yellow-400">
+                          "{hook}"
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+
+                  {/* Keywords */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
+                  >
+                    <h3 className="font-semibold text-slate-900 dark:text-white mb-3">
+                      Trending Keywords
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {research.keywords.map((keyword, idx) => (
+                        <span key={idx} className="px-3 py-1.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-medium">
+                          #{keyword}
+                        </span>
+                      ))}
+                    </div>
+                  </motion.div>
+
+                  {/* Continue Button */}
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="mt-4 p-4 glass-subtle rounded-2xl"
+                    transition={{ delay: 0.3 }}
+                    className="flex justify-center pt-4"
                   >
-                    <h4 className="text-sm font-bold text-slate-800 dark:text-white mb-3 flex items-center gap-2">
-                      <Sliders className="w-4 h-4 text-teal-600 dark:text-teal-400" />
-                      Current Settings
-                    </h4>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div className="flex justify-between">
-                        <span className="text-slate-500 dark:text-slate-400 font-medium">Voice:</span>
-                        <span className="text-slate-800 dark:text-slate-100 font-semibold capitalize">{videoSettings.voice.gender}, {videoSettings.voice.emotion}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-500 dark:text-slate-400 font-medium">Platform:</span>
-                        <span className="text-slate-800 dark:text-slate-100 font-semibold capitalize">{videoSettings.audience.platform}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-500 dark:text-slate-400 font-medium">Style:</span>
-                        <span className="text-slate-800 dark:text-slate-100 font-semibold capitalize">{videoSettings.visual.visualStyle}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-500 dark:text-slate-400 font-medium">Music:</span>
-                        <span className="text-slate-800 dark:text-slate-100 font-semibold capitalize">{videoSettings.music.mood}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-500 dark:text-slate-400 font-medium">Duration:</span>
-                        <span className="text-slate-800 dark:text-slate-100 font-semibold">{videoSettings.script.length}s</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-500 dark:text-slate-400 font-medium">Quality:</span>
-                        <span className="text-slate-800 dark:text-slate-100 font-semibold">{videoSettings.export.resolution}</span>
-                      </div>
-                    </div>
+                    <button
+                      onClick={() => setCurrentStep('template')}
+                      className="px-8 py-4 rounded-2xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold text-lg flex items-center gap-3 hover:shadow-xl hover:scale-105 transition-all"
+                    >
+                      Choose Template
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
                   </motion.div>
-                )}
+                </div>
+              )}
+            </motion.div>
+          )}
+
+          {/* STEP 3: Template Selection */}
+          {currentStep === 'template' && (
+            <motion.div
+              key="template"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="max-w-6xl mx-auto"
+            >
+              <div className="text-center mb-8">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-sm font-medium mb-4"
+                >
+                  <Layout className="w-4 h-4" />
+                  Step 3
+                </motion.div>
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+                  Choose Your Template
+                </h2>
+                <p className="text-slate-600 dark:text-slate-400">
+                  Select a video structure that fits your content goal
+                </p>
+              </div>
+
+              {/* Today's Recommendations */}
+              {todaysTemplates.length > 0 && (
+                <div className="mb-8">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Calendar className="w-5 h-5 text-green-500" />
+                    <h3 className="font-semibold text-slate-900 dark:text-white">
+                      Recommended for {today}
+                    </h3>
+                    <span className="px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-medium flex items-center gap-1">
+                      <Star className="w-3 h-3 fill-current" />
+                      Best conversion
+                    </span>
+                  </div>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    {todaysTemplates.slice(0, 3).map((template, idx) => (
+                      <motion.button
+                        key={template.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.1 }}
+                        onClick={() => handleSelectTemplate(template)}
+                        className="p-5 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-200 dark:border-green-800 text-left hover:shadow-lg hover:-translate-y-1 transition-all"
+                      >
+                        <div className="flex items-center gap-3 mb-3">
+                          <span className="text-3xl">{template.emoji}</span>
+                          <div>
+                            <h4 className="font-semibold text-slate-900 dark:text-white">
+                              {template.name}
+                            </h4>
+                            <p className="text-xs text-green-600 dark:text-green-400">
+                              {template.scenes.length} scenes • {template.totalDuration}s
+                            </p>
+                          </div>
+                        </div>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">
+                          {template.description}
+                        </p>
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* All Templates */}
+              <div>
+                <h3 className="font-semibold text-slate-900 dark:text-white mb-4">
+                  All Templates
+                </h3>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {VIDEO_TEMPLATES.map((template, idx) => (
+                    <motion.button
+                      key={template.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.05 }}
+                      onClick={() => handleSelectTemplate(template)}
+                      className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-left hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700 hover:-translate-y-1 transition-all"
+                    >
+                      <span className="text-2xl mb-2 block">{template.emoji}</span>
+                      <h4 className="font-semibold text-slate-900 dark:text-white text-sm mb-1">
+                        {template.name}
+                      </h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mb-2 line-clamp-2">
+                        {template.description}
+                      </p>
+                      <div className="flex items-center gap-2 text-xs text-slate-400">
+                        <span>{template.scenes.length} scenes</span>
+                        <span>•</span>
+                        <span>{template.totalDuration}s</span>
+                      </div>
+                    </motion.button>
+                  ))}
+                </div>
               </div>
             </motion.div>
-          </div>
-        )}
+          )}
+
+          {/* STEP 4: Edit/Create */}
+          {currentStep === 'edit' && selectedTemplate && project && (
+            <motion.div
+              key="edit"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="max-w-7xl mx-auto"
+            >
+              <div className="text-center mb-6">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-sm font-medium mb-4"
+                >
+                  <Wand2 className="w-4 h-4" />
+                  Step 4
+                </motion.div>
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+                  Create Your Content
+                </h2>
+                <p className="text-slate-600 dark:text-slate-400">
+                  Replace placeholders, edit scripts, and generate speech
+                </p>
+              </div>
+
+              {/* Template Editor */}
+              <div className="mb-8">
+                <TemplateEditor
+                  template={selectedTemplate}
+                  product={selectedProduct ? {
+                    id: selectedProduct.id,
+                    name: selectedProduct.name,
+                    description: selectedProduct.description,
+                    imageUrl: selectedProduct.imageUrl
+                  } : undefined}
+                  onExport={handleExport}
+                />
+              </div>
+
+              {/* Timeline Editor */}
+              <div className="mb-8">
+                <h3 className="font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-blue-500" />
+                  Timeline
+                </h3>
+                <TimelineEditor
+                  scenes={project.scenes}
+                  templateScenes={selectedTemplate.scenes}
+                  selectedMusic={selectedTrack ? {
+                    id: selectedTrack.id,
+                    title: selectedTrack.title,
+                    artist: selectedTrack.artist,
+                    duration: 30
+                  } : undefined}
+                  onScenesChange={handleScenesChange}
+                  onSceneSelect={setSelectedSceneIndex}
+                  selectedSceneIndex={selectedSceneIndex}
+                  onDurationChange={handleDurationChange}
+                />
+              </div>
+
+              {/* Navigation */}
+              <div className="flex justify-center gap-4">
+                <button
+                  onClick={() => setCurrentStep('extras')}
+                  className="px-6 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium flex items-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                >
+                  <Music className="w-4 h-4" />
+                  Add Music & Style
+                </button>
+                <button
+                  onClick={() => setShowExport(true)}
+                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium flex items-center gap-2 hover:shadow-lg transition-all"
+                >
+                  <Download className="w-4 h-4" />
+                  Export Project
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* STEP 5: Extras (Music & Captions) */}
+          {currentStep === 'extras' && (
+            <motion.div
+              key="extras"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="max-w-6xl mx-auto"
+            >
+              <div className="text-center mb-6">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 text-sm font-medium mb-4"
+                >
+                  <Music className="w-4 h-4" />
+                  Step 5
+                </motion.div>
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+                  Add Extras
+                </h2>
+                <p className="text-slate-600 dark:text-slate-400">
+                  Choose music and caption style for your video
+                </p>
+              </div>
+
+              <div className="grid lg:grid-cols-2 gap-6">
+                {/* Music */}
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                  <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
+                    <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                      <Music className="w-5 h-5 text-purple-500" />
+                      Music Library
+                    </h3>
+                  </div>
+                  <div className="p-4 max-h-[400px] overflow-y-auto">
+                    <MusicLibrary
+                      onSelectTrack={setSelectedTrack}
+                      selectedTrackId={selectedTrack?.id}
+                      compact
+                    />
+                  </div>
+                </div>
+
+                {/* Caption Styles */}
+                <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                  <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20">
+                    <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                      <Type className="w-5 h-5 text-yellow-500" />
+                      Caption Styles
+                    </h3>
+                  </div>
+                  <div className="p-4 max-h-[400px] overflow-y-auto">
+                    <CaptionStyles
+                      selectedStyle={selectedCaptionStyle}
+                      onSelectStyle={setSelectedCaptionStyle}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Selected Summary */}
+              <div className="mt-6 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+                <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+                  Selected Extras
+                </h4>
+                <div className="flex gap-4">
+                  <div className="flex items-center gap-2">
+                    <Music className="w-4 h-4 text-purple-500" />
+                    <span className="text-sm text-slate-600 dark:text-slate-400">
+                      {selectedTrack ? selectedTrack.title : 'No music selected'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Type className="w-4 h-4 text-yellow-500" />
+                    <span className="text-sm text-slate-600 dark:text-slate-400">
+                      {selectedCaptionStyle ? selectedCaptionStyle.name : 'No style selected'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Navigation */}
+              <div className="flex justify-center gap-4 mt-6">
+                <button
+                  onClick={() => setCurrentStep('edit')}
+                  className="px-6 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium flex items-center gap-2"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Back to Editor
+                </button>
+                <button
+                  onClick={() => setShowExport(true)}
+                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium flex items-center gap-2 hover:shadow-lg transition-all"
+                >
+                  <Download className="w-4 h-4" />
+                  Export Project
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
-      {/* Footer */}
-      <footer className="border-t border-white/20 mt-16 py-8">
-        <div className="container mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-2 text-slate-600 dark:text-slate-300 text-sm font-medium">
-            <Sparkles className="w-4 h-4 text-teal-500" />
-            <span>Made with</span>
-            <span className="font-bold text-slate-800 dark:text-white">DataBake.media</span>
-            <span>— AI-Powered Content Creation</span>
-          </div>
-        </div>
-      </footer>
-
-      {/* AI Content Assistant */}
-      <ContentAssistant
-        productName={selectedProduct?.title}
-        productDescription={selectedProduct?.description}
-        externalOpen={assistantOpen}
-        onOpenChange={setAssistantOpen}
-      />
+      {/* Export Modal */}
+      <AnimatePresence>
+        {showExport && project && selectedTemplate && (
+          <ExportPanel
+            project={project}
+            template={selectedTemplate}
+            selectedMusic={selectedTrack ? {
+              id: selectedTrack.id,
+              title: selectedTrack.title,
+              artist: selectedTrack.artist
+            } : undefined}
+            onClose={() => setShowExport(false)}
+          />
+        )}
+      </AnimatePresence>
     </main>
   )
 }
