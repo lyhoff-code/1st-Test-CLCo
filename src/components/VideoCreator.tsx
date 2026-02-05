@@ -33,7 +33,10 @@ import {
   VolumeX,
   Loader2,
   Brain,
-  Settings
+  Settings,
+  Layout,
+  Star,
+  TrendingUp
 } from 'lucide-react'
 import {
   VideoScene,
@@ -45,6 +48,7 @@ import {
   FREE_VIDEO_TOOLS
 } from '@/types/content'
 import { ToneType } from '@/types'
+import { VIDEO_TEMPLATES, VideoTemplateStructure } from '@/types/templates'
 
 interface VideoCreatorProps {
   productImage?: string
@@ -125,8 +129,11 @@ export function VideoCreator({ productImage, productName, productDescription, pr
   // Music state
   const [selectedMusic, setSelectedMusic] = useState<string>('none')
 
+  // Template state
+  const [selectedTemplate, setSelectedTemplate] = useState<VideoTemplateStructure | null>(null)
+
   // UI state
-  const [activeTab, setActiveTab] = useState<'edit' | 'ai' | 'prompts' | 'upload' | 'music'>('ai')
+  const [activeTab, setActiveTab] = useState<'templates' | 'edit' | 'ai' | 'prompts' | 'upload' | 'music'>('templates')
   const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null)
   const [showToneSelector, setShowToneSelector] = useState(false)
 
@@ -135,6 +142,42 @@ export function VideoCreator({ productImage, productName, productDescription, pr
 
   const selectedScene = scenes[selectedSceneIndex]
   const totalDuration = calculateTotalDuration(scenes)
+
+  // Apply template to create scenes
+  const applyTemplate = (template: VideoTemplateStructure) => {
+    setSelectedTemplate(template)
+
+    // Create scenes from template
+    const newScenes: VideoScene[] = template.scenes.map((sceneTemplate, index) => {
+      // Replace placeholders with product info
+      let script = sceneTemplate.defaultText
+      if (productName) {
+        script = script.replace('[product]', productName)
+      }
+      if (productPrice) {
+        script = script.replace('[price]', productPrice)
+      }
+
+      return {
+        id: `scene-${Date.now()}-${index}`,
+        order: index,
+        script,
+        duration: sceneTemplate.duration || 3,
+        imageUrl: null,
+        videoUrl: null,
+        motionType: 'zoom_in' as MotionType,
+        cutType: sceneTemplate.transition === 'fade' ? 'fade' :
+                 sceneTemplate.transition === 'slide' ? 'slide' :
+                 sceneTemplate.transition === 'zoom' ? 'zoom' : 'hard',
+        status: 'pending' as const,
+        videoPrompts: generateVideoPrompts(script, 'zoom_in', sceneTemplate.duration || 3)
+      }
+    })
+
+    setScenes(newScenes)
+    setSelectedSceneIndex(0)
+    setActiveTab('ai') // Move to AI tab to customize
+  }
 
   // AI Script Generation
   const generateScript = async () => {
@@ -477,6 +520,7 @@ export function VideoCreator({ productImage, productName, productDescription, pr
           {/* Tabs */}
           <div className="flex border-b border-slate-200 dark:border-slate-700">
             {[
+              { id: 'templates', label: 'Templates', icon: Layout },
               { id: 'ai', label: 'AI Script', icon: Brain },
               { id: 'edit', label: 'Edit', icon: Type },
               { id: 'music', label: 'Music', icon: Music },
@@ -500,6 +544,123 @@ export function VideoCreator({ productImage, productName, productDescription, pr
 
           {/* Tab Content */}
           <div className="p-4">
+            {/* Templates Tab */}
+            {activeTab === 'templates' && (
+              <div className="space-y-4">
+                {/* Header */}
+                <div className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
+                      <Layout className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-800 dark:text-white">Choose a Template</h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">
+                        Pre-designed structures like CapCut & Canva
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Selected Template Badge */}
+                {selectedTemplate && (
+                  <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800">
+                    <div className="flex items-center gap-2">
+                      <Check className="w-5 h-5 text-green-600" />
+                      <span className="text-sm font-medium text-green-700 dark:text-green-400">
+                        Using: {selectedTemplate.emoji} {selectedTemplate.name}
+                      </span>
+                    </div>
+                    <span className="text-xs text-green-600 bg-green-100 dark:bg-green-900/50 px-2 py-1 rounded-full">
+                      {selectedTemplate.scenes.length} scenes
+                    </span>
+                  </div>
+                )}
+
+                {/* Templates Grid */}
+                <div className="grid grid-cols-2 gap-3 max-h-[400px] overflow-y-auto pr-1">
+                  {VIDEO_TEMPLATES.map(template => (
+                    <motion.button
+                      key={template.id}
+                      onClick={() => applyTemplate(template)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`p-4 rounded-xl text-left transition-all ${
+                        selectedTemplate?.id === template.id
+                          ? 'bg-purple-100 dark:bg-purple-900/30 border-2 border-purple-500 shadow-lg'
+                          : 'bg-white dark:bg-slate-700/50 border-2 border-slate-200 dark:border-slate-600 hover:border-purple-300 hover:shadow-md'
+                      }`}
+                    >
+                      {/* Template Header */}
+                      <div className="flex items-start justify-between mb-2">
+                        <span className="text-3xl">{template.emoji}</span>
+                        <div className="flex flex-col items-end gap-1">
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                            template.difficulty === 'easy' ? 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400' :
+                            template.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-400' :
+                            'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400'
+                          }`}>
+                            {template.difficulty}
+                          </span>
+                          {selectedTemplate?.id === template.id && (
+                            <Check className="w-5 h-5 text-purple-600" />
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Template Info */}
+                      <h4 className="font-semibold text-slate-800 dark:text-white mb-1">
+                        {template.name}
+                      </h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mb-3 line-clamp-2">
+                        {template.description}
+                      </p>
+
+                      {/* Stats */}
+                      <div className="flex items-center gap-3 text-xs text-slate-500">
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {template.totalDuration}s
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Layout className="w-3 h-3" />
+                          {template.scenes.length} scenes
+                        </span>
+                        <span className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-600 text-slate-600 dark:text-slate-300">
+                          {template.aspectRatio}
+                        </span>
+                      </div>
+
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {template.tags.slice(0, 3).map(tag => (
+                          <span
+                            key={tag}
+                            className="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-slate-600 text-slate-500 dark:text-slate-400"
+                          >
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                    </motion.button>
+                  ))}
+                </div>
+
+                {/* Tip */}
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-start gap-2">
+                  <TrendingUp className="w-4 h-4 text-blue-500 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-blue-700 dark:text-blue-400 font-medium">
+                      Pro Tip
+                    </p>
+                    <p className="text-xs text-blue-600 dark:text-blue-300">
+                      Select a template to auto-generate scenes, then customize with AI in the next tab.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* AI Script Tab */}
             {activeTab === 'ai' && (
               <div className="space-y-6">
