@@ -21,7 +21,9 @@ import {
   Search,
   RefreshCw,
   Info,
-  Loader2
+  Loader2,
+  Download,
+  FileText
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/HeaderControls'
 import { UserMenu } from '@/components/UserMenu'
@@ -30,6 +32,7 @@ import { VideoCreator } from '@/components/VideoCreator'
 import { StoriesCreator } from '@/components/StoriesCreator'
 import { AdGenerator } from '@/components/AdGenerator'
 import { ShopifyProduct } from '@/types'
+import { VideoProject } from '@/types/content'
 
 // Content types / Modules
 type ContentModule = 'dashboard' | 'image-editor' | 'video-creator' | 'stories' | 'ads'
@@ -191,6 +194,10 @@ export default function Home() {
   const [showProductSelector, setShowProductSelector] = useState(false)
   const [pendingModule, setPendingModule] = useState<ContentModule | null>(null)
 
+  // Export state
+  const [showExportModal, setShowExportModal] = useState(false)
+  const [exportProject, setExportProject] = useState<VideoProject | null>(null)
+
   // Fetch products from Shopify on mount
   useEffect(() => {
     fetchProducts()
@@ -267,6 +274,44 @@ export default function Home() {
   const quickAction = (product: ShopifyProduct, moduleId: ContentModule) => {
     setSelectedProduct(product)
     setActiveModule(moduleId)
+  }
+
+  // Handle export from VideoCreator
+  const handleExport = (project: VideoProject) => {
+    setExportProject(project)
+    setShowExportModal(true)
+  }
+
+  // Download project as JSON
+  const downloadProjectJson = () => {
+    if (!exportProject) return
+    const dataStr = JSON.stringify(exportProject, null, 2)
+    const blob = new Blob([dataStr], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${exportProject.name.replace(/\s+/g, '-').toLowerCase()}-project.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }
+
+  // Download scripts as text
+  const downloadScripts = () => {
+    if (!exportProject) return
+    const scripts = exportProject.scenes.map((scene, i) =>
+      `Scene ${i + 1} (${scene.duration}s):\n${scene.script}\n`
+    ).join('\n---\n\n')
+    const blob = new Blob([scripts], { type: 'text/plain' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${exportProject.name.replace(/\s+/g, '-').toLowerCase()}-scripts.txt`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
   }
 
   return (
@@ -459,6 +504,137 @@ export default function Home() {
                   className="text-sm text-slate-500 hover:text-slate-700"
                 >
                   Continue without product
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Export Modal */}
+      <AnimatePresence>
+        {showExportModal && exportProject && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden"
+            >
+              <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
+                <div>
+                  <h2 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <Download className="w-5 h-5 text-purple-500" />
+                    Export Project
+                  </h2>
+                  <p className="text-sm text-slate-500">{exportProject.name}</p>
+                </div>
+                <button
+                  onClick={() => setShowExportModal(false)}
+                  className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
+                >
+                  <X className="w-5 h-5 text-slate-500" />
+                </button>
+              </div>
+
+              <div className="p-4 space-y-4 max-h-[60vh] overflow-y-auto">
+                {/* Project Summary */}
+                <div className="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+                  <h3 className="font-medium text-slate-700 dark:text-slate-300 mb-2">Project Summary</h3>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div className="text-slate-500">Scenes:</div>
+                    <div className="text-slate-700 dark:text-slate-300">{exportProject.scenes.length}</div>
+                    <div className="text-slate-500">Duration:</div>
+                    <div className="text-slate-700 dark:text-slate-300">{exportProject.totalDuration}s</div>
+                    <div className="text-slate-500">Type:</div>
+                    <div className="text-slate-700 dark:text-slate-300 capitalize">{exportProject.type}</div>
+                    {exportProject.music && (
+                      <>
+                        <div className="text-slate-500">Music:</div>
+                        <div className="text-slate-700 dark:text-slate-300">{exportProject.music.title}</div>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Download Options */}
+                <div className="space-y-2">
+                  <h3 className="font-medium text-slate-700 dark:text-slate-300">Download</h3>
+                  <button
+                    onClick={downloadProjectJson}
+                    className="w-full p-4 bg-purple-50 dark:bg-purple-900/30 rounded-xl flex items-center gap-3 hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-colors"
+                  >
+                    <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/50 rounded-lg flex items-center justify-center">
+                      <Download className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-medium text-slate-700 dark:text-slate-300">Project Data (JSON)</p>
+                      <p className="text-xs text-slate-500">Complete project with all settings</p>
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={downloadScripts}
+                    className="w-full p-4 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center gap-3 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                  >
+                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/50 rounded-lg flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-medium text-slate-700 dark:text-slate-300">Scripts (TXT)</p>
+                      <p className="text-xs text-slate-500">All scene scripts for voiceover</p>
+                    </div>
+                  </button>
+                </div>
+
+                {/* Free Tools for Editing */}
+                <div className="space-y-2">
+                  <h3 className="font-medium text-slate-700 dark:text-slate-300">Edit with Free Tools</h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { name: 'CapCut', url: 'https://www.capcut.com', desc: 'Video editing' },
+                      { name: 'Canva', url: 'https://www.canva.com', desc: 'Design & video' },
+                      { name: 'DaVinci Resolve', url: 'https://www.blackmagicdesign.com/products/davinciresolve', desc: 'Pro editing' },
+                      { name: 'Clipchamp', url: 'https://clipchamp.com', desc: 'Quick edits' },
+                    ].map(tool => (
+                      <a
+                        key={tool.name}
+                        href={tool.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                      >
+                        <p className="font-medium text-slate-700 dark:text-slate-300 text-sm">{tool.name}</p>
+                        <p className="text-xs text-slate-500">{tool.desc}</p>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Instructions */}
+                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                  <h4 className="font-medium text-green-700 dark:text-green-400 mb-2">Next Steps</h4>
+                  <ol className="text-sm text-green-600 dark:text-green-300 space-y-1 list-decimal list-inside">
+                    <li>Download your project data</li>
+                    <li>Use the generated videos from Prompts tab</li>
+                    <li>Import into CapCut or your preferred editor</li>
+                    <li>Add the background music track</li>
+                    <li>Export and share on social media!</li>
+                  </ol>
+                </div>
+              </div>
+
+              <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
+                <button
+                  onClick={() => setShowExportModal(false)}
+                  className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-medium hover:shadow-lg transition-all"
+                >
+                  Done
                 </button>
               </div>
             </motion.div>
@@ -687,6 +863,7 @@ export default function Home() {
                 productName={selectedProduct?.title}
                 productDescription={selectedProduct?.description}
                 productPrice={selectedProduct ? getProductPrice(selectedProduct) : undefined}
+                onExport={handleExport}
               />
             </motion.div>
           )}
