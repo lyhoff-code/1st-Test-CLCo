@@ -88,6 +88,17 @@ const CONTENT_TYPES = [
   { id: 'storytelling', name: 'Storytelling', duration: 30, icon: '📖' },
 ]
 
+// Music tracks (simplified)
+const MUSIC_TRACKS = [
+  { id: 'none', name: 'No Music', mood: '', bpm: 0, icon: '🔇' },
+  { id: 'upbeat', name: 'Viral Energy', mood: 'Energetic', bpm: 128, icon: '🔥' },
+  { id: 'chill', name: 'Chill Vibes', mood: 'Relaxed', bpm: 85, icon: '😌' },
+  { id: 'dramatic', name: 'Dramatic Rise', mood: 'Powerful', bpm: 100, icon: '🎬' },
+  { id: 'happy', name: 'Summer Feels', mood: 'Happy', bpm: 110, icon: '☀️' },
+  { id: 'inspiring', name: 'Rise Up', mood: 'Inspiring', bpm: 95, icon: '✨' },
+  { id: 'trendy', name: 'TikTok Beat', mood: 'Trendy', bpm: 140, icon: '📱' },
+]
+
 export function VideoCreator({ productImage, productName, productDescription, productPrice, onExport }: VideoCreatorProps) {
   // Project state
   const [scenes, setScenes] = useState<VideoScene[]>([
@@ -111,8 +122,11 @@ export function VideoCreator({ productImage, productName, productDescription, pr
   const [isPlayingAudio, setIsPlayingAudio] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
+  // Music state
+  const [selectedMusic, setSelectedMusic] = useState<string>('none')
+
   // UI state
-  const [activeTab, setActiveTab] = useState<'edit' | 'ai' | 'prompts' | 'upload'>('ai')
+  const [activeTab, setActiveTab] = useState<'edit' | 'ai' | 'prompts' | 'upload' | 'music'>('ai')
   const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null)
   const [showToneSelector, setShowToneSelector] = useState(false)
 
@@ -465,6 +479,7 @@ export function VideoCreator({ productImage, productName, productDescription, pr
             {[
               { id: 'ai', label: 'AI Script', icon: Brain },
               { id: 'edit', label: 'Edit', icon: Type },
+              { id: 'music', label: 'Music', icon: Music },
               { id: 'prompts', label: 'Prompts', icon: Wand2 },
               { id: 'upload', label: 'Upload', icon: Upload },
             ].map(tab => (
@@ -859,6 +874,66 @@ export function VideoCreator({ productImage, productName, productDescription, pr
                 </div>
               </div>
             )}
+
+            {/* Music Tab */}
+            {activeTab === 'music' && (
+              <div className="space-y-4">
+                <div className="p-4 bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 rounded-xl">
+                  <h4 className="font-medium text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2">
+                    <Music className="w-4 h-4 text-pink-500" />
+                    Background Music
+                  </h4>
+                  <p className="text-sm text-slate-500">
+                    Select a music track for your video background
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  {MUSIC_TRACKS.map(track => (
+                    <button
+                      key={track.id}
+                      onClick={() => setSelectedMusic(track.id)}
+                      className={`p-4 rounded-xl text-left transition-all ${
+                        selectedMusic === track.id
+                          ? 'bg-pink-100 dark:bg-pink-900/30 border-2 border-pink-500 shadow-md'
+                          : 'bg-slate-50 dark:bg-slate-700/50 border-2 border-transparent hover:border-slate-300'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{track.icon}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-slate-700 dark:text-slate-300 truncate">
+                            {track.name}
+                          </p>
+                          {track.mood && (
+                            <p className="text-xs text-slate-500">
+                              {track.mood} • {track.bpm} BPM
+                            </p>
+                          )}
+                        </div>
+                        {selectedMusic === track.id && (
+                          <Check className="w-5 h-5 text-pink-500" />
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                {selectedMusic !== 'none' && (
+                  <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl flex items-center gap-3">
+                    <Music className="w-5 h-5 text-green-600" />
+                    <span className="text-green-700 dark:text-green-400">
+                      Music selected: {MUSIC_TRACKS.find(t => t.id === selectedMusic)?.name}
+                    </span>
+                  </div>
+                )}
+
+                <p className="text-xs text-slate-500 text-center">
+                  Music will be added when you export using professional video editing software.
+                  The platform provides track recommendations for your video style.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -911,7 +986,11 @@ export function VideoCreator({ productImage, productName, productDescription, pr
               productImage,
               aspectRatio: '9:16',
               scenes,
-              music: undefined,
+              music: selectedMusic !== 'none' ? {
+                id: selectedMusic,
+                title: MUSIC_TRACKS.find(t => t.id === selectedMusic)?.name || '',
+                artist: 'DataBake Library'
+              } : undefined,
               totalDuration,
               status: scenes.every(s => s.videoUrl) ? 'ready' : 'editing',
               createdAt: new Date().toISOString(),
