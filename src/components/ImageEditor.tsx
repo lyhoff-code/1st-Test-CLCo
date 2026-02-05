@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Image as ImageIcon,
@@ -18,20 +18,18 @@ import {
   Upload,
   Palette,
   Wand2,
-  Sun,
-  Contrast,
-  Droplet,
   Eye,
   EyeOff,
   Lock,
   Unlock,
   ChevronUp,
   ChevronDown,
-  Minus,
-  Plus,
   Scissors,
   Sparkles,
-  Grid3X3
+  RefreshCw,
+  Check,
+  X,
+  AlertCircle
 } from 'lucide-react'
 import { IMAGE_EXPORT_PRESETS, ImageLayer, ShadowConfig, GradientBackground } from '@/types/content'
 
@@ -50,7 +48,8 @@ const BACKGROUND_COLORS = [
   '#FFFFFF', '#F8F9FA', '#E9ECEF', '#DEE2E6', '#CED4DA',
   '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7',
   '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
-  '#000000', '#1a1a2e', '#16213e', '#0f3460', '#533483'
+  '#000000', '#1a1a2e', '#16213e', '#0f3460', '#533483',
+  'transparent'
 ]
 
 const GRADIENT_PRESETS: GradientBackground[] = [
@@ -66,10 +65,11 @@ const GRADIENT_PRESETS: GradientBackground[] = [
 
 export function ImageEditor({ productImage, productName, onExport }: ImageEditorProps) {
   const canvasRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Canvas state
   const [canvasSize, setCanvasSize] = useState({ width: 1080, height: 1080 })
-  const [zoom, setZoom] = useState(0.5)
+  const [zoom, setZoom] = useState(0.4)
   const [background, setBackground] = useState<string | GradientBackground>('#FFFFFF')
 
   // Layers state
@@ -79,6 +79,18 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
   // Tool state
   const [activeTool, setActiveTool] = useState<'select' | 'text' | 'shape'>('select')
   const [activePanel, setActivePanel] = useState<'layers' | 'background' | 'effects' | 'export'>('layers')
+
+  // Background removal state
+  const [isRemovingBg, setIsRemovingBg] = useState(false)
+  const [bgRemovalProgress, setBgRemovalProgress] = useState(0)
+
+  // Export state
+  const [isExporting, setIsExporting] = useState(false)
+  const [exportSuccess, setExportSuccess] = useState(false)
+
+  // Dragging state
+  const [draggedLayer, setDraggedLayer] = useState<string | null>(null)
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
 
   // Selected layer
   const selectedLayer = layers.find(l => l.id === selectedLayerId)
@@ -102,6 +114,33 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
     setLayers(prev => [...prev, newLayer])
     setSelectedLayerId(newLayer.id)
   }, [productImage, canvasSize])
+
+  // Add custom image from file
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const src = event.target?.result as string
+      const newLayer: ImageLayer = {
+        id: `layer-${Date.now()}`,
+        type: 'image',
+        x: canvasSize.width / 2 - 150,
+        y: canvasSize.height / 2 - 150,
+        width: 300,
+        height: 300,
+        rotation: 0,
+        opacity: 1,
+        visible: true,
+        locked: false,
+        src
+      }
+      setLayers(prev => [...prev, newLayer])
+      setSelectedLayerId(newLayer.id)
+    }
+    reader.readAsDataURL(file)
+  }
 
   // Add text layer
   const addTextLayer = () => {
@@ -189,8 +228,58 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
     })
   }
 
+  // State for background removal tools modal
+  const [showBgToolsModal, setShowBgToolsModal] = useState(false)
+
+  // Free background removal tools
+  const FREE_BG_REMOVAL_TOOLS = [
+    { id: 'removebg', name: 'Remove.bg', url: 'https://www.remove.bg', freeCredits: '1 free HD/month', bestFor: 'Best quality, one-click' },
+    { id: 'photoroom', name: 'PhotoRoom Web', url: 'https://www.photoroom.com/background-remover', freeCredits: 'Unlimited (watermark)', bestFor: 'Quick, no signup' },
+    { id: 'adobe', name: 'Adobe Express', url: 'https://www.adobe.com/express/feature/image/remove-background', freeCredits: 'Free tier available', bestFor: 'Professional quality' },
+    { id: 'canva', name: 'Canva BG Remover', url: 'https://www.canva.com/features/background-remover/', freeCredits: 'Free (Pro for HD)', bestFor: 'If you use Canva' },
+    { id: 'pixlr', name: 'Pixlr BG Remover', url: 'https://pixlr.com/remove-background/', freeCredits: 'Unlimited', bestFor: 'Fast, no login' },
+  ]
+
+  // Download image for external processing
+  const downloadForBgRemoval = () => {
+    if (!selectedLayer || selectedLayer.type !== 'image' || !selectedLayer.src) return
+
+    const link = document.createElement('a')
+    link.href = selectedLayer.src
+    link.download = `image-for-bg-removal-${Date.now()}.png`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  // Open background removal tools modal
+  const removeBackground = () => {
+    if (!selectedLayer || selectedLayer.type !== 'image' || !selectedLayer.src) return
+    setShowBgToolsModal(true)
+  }
+
+  // Handle re-upload of processed image
+  const handleBgRemovedUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !selectedLayer) return
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      updateLayer(selectedLayer.id, { src: event.target?.result as string })
+      setShowBgToolsModal(false)
+    }
+    reader.readAsDataURL(file)
+    e.target.value = '' // Reset input
+  }
+
   // Get background style
   const getBackgroundStyle = () => {
+    if (background === 'transparent') {
+      return {
+        backgroundImage: 'repeating-conic-gradient(#ccc 0% 25%, transparent 0% 50%)',
+        backgroundSize: '20px 20px'
+      }
+    }
     if (typeof background === 'string') {
       return { backgroundColor: background }
     }
@@ -205,13 +294,109 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
     }
   }
 
-  // Export canvas
-  const handleExport = (preset: typeof IMAGE_EXPORT_PRESETS[0]) => {
-    // In a real implementation, this would use html2canvas or similar
-    if (onExport) {
-      onExport('data:image/png;base64,...', 'png')
+  // Export canvas as image
+  const handleExport = async (preset: typeof IMAGE_EXPORT_PRESETS[0]) => {
+    if (!canvasRef.current) return
+
+    setIsExporting(true)
+
+    try {
+      // Dynamic import html2canvas
+      const html2canvas = (await import('html2canvas')).default
+
+      // Temporarily set zoom to 1 for export
+      const originalZoom = zoom
+      setZoom(1)
+
+      // Wait for re-render
+      await new Promise(resolve => setTimeout(resolve, 100))
+
+      const canvas = await html2canvas(canvasRef.current, {
+        backgroundColor: background === 'transparent' ? null : undefined,
+        scale: preset.width / canvasSize.width,
+        useCORS: true,
+        allowTaint: true,
+        width: canvasSize.width,
+        height: canvasSize.height
+      })
+
+      // Restore zoom
+      setZoom(originalZoom)
+
+      // Convert to data URL
+      const dataUrl = canvas.toDataURL('image/png', 1.0)
+
+      // Download
+      const link = document.createElement('a')
+      link.download = `${productName || 'design'}-${preset.id}.png`
+      link.href = dataUrl
+      link.click()
+
+      if (onExport) {
+        onExport(dataUrl, 'png')
+      }
+
+      setExportSuccess(true)
+      setTimeout(() => setExportSuccess(false), 2000)
+    } catch (error) {
+      console.error('Export failed:', error)
+    } finally {
+      setIsExporting(false)
     }
   }
+
+  // Export all sizes
+  const exportAllSizes = async () => {
+    for (const preset of IMAGE_EXPORT_PRESETS) {
+      setCanvasSize({ width: preset.width, height: preset.height })
+      await new Promise(resolve => setTimeout(resolve, 200))
+      await handleExport(preset)
+      await new Promise(resolve => setTimeout(resolve, 500))
+    }
+  }
+
+  // Handle mouse down on layer (start drag)
+  const handleLayerMouseDown = (e: React.MouseEvent, layerId: string) => {
+    const layer = layers.find(l => l.id === layerId)
+    if (!layer || layer.locked) return
+
+    setSelectedLayerId(layerId)
+    setDraggedLayer(layerId)
+
+    const rect = (e.target as HTMLElement).getBoundingClientRect()
+    setDragOffset({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    })
+  }
+
+  // Handle mouse move (dragging)
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!draggedLayer || !canvasRef.current) return
+
+    const canvasRect = canvasRef.current.getBoundingClientRect()
+    const newX = (e.clientX - canvasRect.left - dragOffset.x) / zoom
+    const newY = (e.clientY - canvasRect.top - dragOffset.y) / zoom
+
+    updateLayer(draggedLayer, { x: newX, y: newY })
+  }, [draggedLayer, dragOffset, zoom])
+
+  // Handle mouse up (end drag)
+  const handleMouseUp = useCallback(() => {
+    setDraggedLayer(null)
+  }, [])
+
+  // Add/remove event listeners for dragging
+  useEffect(() => {
+    if (draggedLayer) {
+      window.addEventListener('mousemove', handleMouseMove)
+      window.addEventListener('mouseup', handleMouseUp)
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [draggedLayer, handleMouseMove, handleMouseUp])
 
   return (
     <div className="flex h-[calc(100vh-200px)] min-h-[600px] bg-slate-100 dark:bg-slate-900 rounded-2xl overflow-hidden">
@@ -224,7 +409,7 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
               ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600'
               : 'hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400'
           }`}
-          title="Select"
+          title="Select & Move"
         >
           <Move className="w-5 h-5" />
         </button>
@@ -232,12 +417,29 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
         <div className="w-8 h-px bg-slate-200 dark:bg-slate-700 my-2" />
 
         <button
-          onClick={addProductImage}
+          onClick={() => fileInputRef.current?.click()}
           className="p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400"
-          title="Add Product Image"
+          title="Upload Image"
         >
-          <ImageIcon className="w-5 h-5" />
+          <Upload className="w-5 h-5" />
         </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileUpload}
+          className="hidden"
+        />
+
+        {productImage && (
+          <button
+            onClick={addProductImage}
+            className="p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400"
+            title="Add Product Image"
+          >
+            <ImageIcon className="w-5 h-5" />
+          </button>
+        )}
 
         <button
           onClick={addTextLayer}
@@ -284,7 +486,7 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
               ? 'bg-pink-100 dark:bg-pink-900/50 text-pink-600'
               : 'hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400'
           }`}
-          title="Effects"
+          title="Effects & AI"
         >
           <Wand2 className="w-5 h-5" />
         </button>
@@ -325,7 +527,7 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
               <ZoomIn className="w-4 h-4" />
             </button>
             <button
-              onClick={() => setZoom(0.5)}
+              onClick={() => setZoom(0.4)}
               className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded"
             >
               <RotateCcw className="w-4 h-4" />
@@ -342,20 +544,12 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
               ...getBackgroundStyle()
             }}
           >
-            {/* Grid overlay */}
-            <div className="absolute inset-0 pointer-events-none opacity-10">
-              <div className="w-full h-full" style={{
-                backgroundImage: 'linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px)',
-                backgroundSize: `${50 * zoom}px ${50 * zoom}px`
-              }} />
-            </div>
-
             {/* Layers */}
             {layers.filter(l => l.visible).map(layer => (
               <div
                 key={layer.id}
-                onClick={() => !layer.locked && setSelectedLayerId(layer.id)}
-                className={`absolute cursor-pointer ${
+                onMouseDown={(e) => handleLayerMouseDown(e, layer.id)}
+                className={`absolute ${layer.locked ? 'cursor-not-allowed' : 'cursor-move'} ${
                   selectedLayerId === layer.id ? 'ring-2 ring-blue-500' : ''
                 }`}
                 style={{
@@ -364,7 +558,10 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
                   width: layer.width * zoom,
                   height: layer.height * zoom,
                   transform: `rotate(${layer.rotation}deg)`,
-                  opacity: layer.opacity
+                  opacity: layer.opacity,
+                  filter: layer.shadow?.enabled
+                    ? `drop-shadow(${layer.shadow.offsetX}px ${layer.shadow.offsetY}px ${layer.shadow.blur}px ${layer.shadow.color})`
+                    : undefined
                 }}
               >
                 {layer.type === 'image' && layer.src && (
@@ -403,16 +600,21 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
                 )}
 
                 {/* Selection handles */}
-                {selectedLayerId === layer.id && (
+                {selectedLayerId === layer.id && !layer.locked && (
                   <>
-                    <div className="absolute -top-1 -left-1 w-3 h-3 bg-white border-2 border-blue-500 rounded-full cursor-nw-resize" />
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-white border-2 border-blue-500 rounded-full cursor-ne-resize" />
-                    <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-white border-2 border-blue-500 rounded-full cursor-sw-resize" />
-                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-white border-2 border-blue-500 rounded-full cursor-se-resize" />
+                    <div className="absolute -top-1.5 -left-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-full" />
+                    <div className="absolute -top-1.5 -right-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-full" />
+                    <div className="absolute -bottom-1.5 -left-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-full" />
+                    <div className="absolute -bottom-1.5 -right-1.5 w-3 h-3 bg-white border-2 border-blue-500 rounded-full" />
                   </>
                 )}
               </div>
             ))}
+          </div>
+
+          {/* Canvas Size Indicator */}
+          <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs text-slate-500">
+            {canvasSize.width} x {canvasSize.height}
           </div>
         </div>
       </div>
@@ -555,9 +757,31 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
                 <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
                   <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Properties</h4>
 
+                  {/* Position & Size */}
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    <div>
+                      <label className="text-xs text-slate-500 mb-1 block">Width</label>
+                      <input
+                        type="number"
+                        value={Math.round(selectedLayer.width)}
+                        onChange={(e) => updateLayer(selectedLayer.id, { width: parseInt(e.target.value) || 100 })}
+                        className="w-full px-2 py-1 text-sm border border-slate-200 dark:border-slate-600 rounded bg-white dark:bg-slate-700"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-500 mb-1 block">Height</label>
+                      <input
+                        type="number"
+                        value={Math.round(selectedLayer.height)}
+                        onChange={(e) => updateLayer(selectedLayer.id, { height: parseInt(e.target.value) || 100 })}
+                        className="w-full px-2 py-1 text-sm border border-slate-200 dark:border-slate-600 rounded bg-white dark:bg-slate-700"
+                      />
+                    </div>
+                  </div>
+
                   {/* Opacity */}
                   <div className="mb-3">
-                    <label className="text-xs text-slate-500 mb-1 block">Opacity</label>
+                    <label className="text-xs text-slate-500 mb-1 block">Opacity: {Math.round(selectedLayer.opacity * 100)}%</label>
                     <input
                       type="range"
                       min="0"
@@ -565,6 +789,19 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
                       step="0.1"
                       value={selectedLayer.opacity}
                       onChange={(e) => updateLayer(selectedLayer.id, { opacity: parseFloat(e.target.value) })}
+                      className="w-full"
+                    />
+                  </div>
+
+                  {/* Rotation */}
+                  <div className="mb-3">
+                    <label className="text-xs text-slate-500 mb-1 block">Rotation: {selectedLayer.rotation}°</label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="360"
+                      value={selectedLayer.rotation}
+                      onChange={(e) => updateLayer(selectedLayer.id, { rotation: parseInt(e.target.value) })}
                       className="w-full"
                     />
                   </div>
@@ -662,7 +899,14 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
                           ? 'border-blue-500 scale-110'
                           : 'border-transparent hover:scale-105'
                       }`}
-                      style={{ backgroundColor: color }}
+                      style={{
+                        backgroundColor: color === 'transparent' ? undefined : color,
+                        backgroundImage: color === 'transparent'
+                          ? 'repeating-conic-gradient(#ccc 0% 25%, transparent 0% 50%)'
+                          : undefined,
+                        backgroundSize: color === 'transparent' ? '10px 10px' : undefined
+                      }}
+                      title={color === 'transparent' ? 'Transparent' : color}
                     />
                   ))}
                 </div>
@@ -691,18 +935,33 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
                 </div>
               </div>
 
-              {/* Remove Background */}
-              <button className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium flex items-center justify-center gap-2 hover:shadow-lg transition-all">
-                <Scissors className="w-4 h-4" />
-                Remove Background (AI)
-              </button>
+              {/* Canvas Size Presets */}
+              <div>
+                <h4 className="text-xs font-medium text-slate-500 mb-2">Canvas Size</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {IMAGE_EXPORT_PRESETS.slice(0, 6).map(preset => (
+                    <button
+                      key={preset.id}
+                      onClick={() => setCanvasSize({ width: preset.width, height: preset.height })}
+                      className={`p-2 rounded-lg text-left transition-all ${
+                        canvasSize.width === preset.width && canvasSize.height === preset.height
+                          ? 'bg-blue-100 dark:bg-blue-900/30 border border-blue-500'
+                          : 'bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100'
+                      }`}
+                    >
+                      <p className="text-xs font-medium truncate">{preset.name}</p>
+                      <p className="text-[10px] text-slate-400">{preset.ratio}</p>
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 
           {/* Effects Panel */}
           {activePanel === 'effects' && (
             <div className="space-y-4">
-              <h3 className="font-semibold text-slate-900 dark:text-white">Effects</h3>
+              <h3 className="font-semibold text-slate-900 dark:text-white">Effects & AI</h3>
 
               {!selectedLayer ? (
                 <div className="text-center py-8">
@@ -711,6 +970,44 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
                 </div>
               ) : (
                 <>
+                  {/* Remove Background - Only for images */}
+                  {selectedLayer.type === 'image' && (
+                    <div className="p-4 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-800">
+                      <h4 className="font-medium text-purple-900 dark:text-purple-100 mb-2 flex items-center gap-2">
+                        <Scissors className="w-4 h-4" />
+                        Remove Background
+                      </h4>
+                      <p className="text-xs text-purple-700 dark:text-purple-300 mb-3">
+                        AI-powered background removal (runs locally, 100% free)
+                      </p>
+                      <button
+                        onClick={removeBackground}
+                        disabled={isRemovingBg}
+                        className="w-full py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium flex items-center justify-center gap-2 hover:shadow-lg transition-all disabled:opacity-70"
+                      >
+                        {isRemovingBg ? (
+                          <>
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                            Processing... {bgRemovalProgress}%
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-4 h-4" />
+                            Remove Background
+                          </>
+                        )}
+                      </button>
+                      {isRemovingBg && (
+                        <div className="mt-2 w-full h-2 bg-purple-200 dark:bg-purple-900 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-purple-500 transition-all"
+                            style={{ width: `${bgRemovalProgress}%` }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {/* Shadow */}
                   <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50">
                     <div className="flex items-center justify-between mb-2">
@@ -734,7 +1031,7 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
                     {selectedLayer.shadow?.enabled && (
                       <div className="space-y-2 mt-3">
                         <div>
-                          <label className="text-xs text-slate-500">Blur</label>
+                          <label className="text-xs text-slate-500">Blur: {selectedLayer.shadow.blur}px</label>
                           <input
                             type="range"
                             min="0"
@@ -746,15 +1043,46 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
                             className="w-full"
                           />
                         </div>
+                        <div>
+                          <label className="text-xs text-slate-500">Offset X: {selectedLayer.shadow.offsetX}px</label>
+                          <input
+                            type="range"
+                            min="-30"
+                            max="30"
+                            value={selectedLayer.shadow.offsetX}
+                            onChange={(e) => updateLayer(selectedLayer.id, {
+                              shadow: { ...selectedLayer.shadow!, offsetX: parseInt(e.target.value) }
+                            })}
+                            className="w-full"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-slate-500">Offset Y: {selectedLayer.shadow.offsetY}px</label>
+                          <input
+                            type="range"
+                            min="-30"
+                            max="30"
+                            value={selectedLayer.shadow.offsetY}
+                            onChange={(e) => updateLayer(selectedLayer.id, {
+                              shadow: { ...selectedLayer.shadow!, offsetY: parseInt(e.target.value) }
+                            })}
+                            className="w-full"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-slate-500">Color</label>
+                          <input
+                            type="color"
+                            value={selectedLayer.shadow.color}
+                            onChange={(e) => updateLayer(selectedLayer.id, {
+                              shadow: { ...selectedLayer.shadow!, color: e.target.value }
+                            })}
+                            className="w-full h-8 rounded cursor-pointer"
+                          />
+                        </div>
                       </div>
                     )}
                   </div>
-
-                  {/* AI Enhance */}
-                  <button className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-500 text-white font-medium flex items-center justify-center gap-2 hover:shadow-lg transition-all">
-                    <Sparkles className="w-4 h-4" />
-                    AI Enhance
-                  </button>
                 </>
               )}
             </div>
@@ -765,15 +1093,20 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
             <div className="space-y-4">
               <h3 className="font-semibold text-slate-900 dark:text-white">Export</h3>
 
+              {exportSuccess && (
+                <div className="p-3 rounded-xl bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 flex items-center gap-2">
+                  <Check className="w-5 h-5 text-green-600" />
+                  <span className="text-sm text-green-700 dark:text-green-300">Exported successfully!</span>
+                </div>
+              )}
+
               <div className="space-y-2">
                 {IMAGE_EXPORT_PRESETS.map(preset => (
                   <button
                     key={preset.id}
-                    onClick={() => {
-                      setCanvasSize({ width: preset.width, height: preset.height })
-                      handleExport(preset)
-                    }}
-                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left"
+                    onClick={() => handleExport(preset)}
+                    disabled={isExporting}
+                    className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors text-left disabled:opacity-50"
                   >
                     <div className="flex items-center justify-between">
                       <div>
@@ -790,14 +1123,138 @@ export function ImageEditor({ productImage, productName, onExport }: ImageEditor
                 ))}
               </div>
 
-              <button className="w-full py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-all">
-                <Download className="w-5 h-5" />
-                Download All Sizes
+              <button
+                onClick={exportAllSizes}
+                disabled={isExporting}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-all disabled:opacity-50"
+              >
+                {isExporting ? (
+                  <>
+                    <RefreshCw className="w-5 h-5 animate-spin" />
+                    Exporting...
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-5 h-5" />
+                    Download All Sizes
+                  </>
+                )}
               </button>
+
+              <p className="text-xs text-slate-400 text-center">
+                Images are exported as PNG with transparency support
+              </p>
             </div>
           )}
         </div>
       </div>
+
+      {/* Background Removal Tools Modal */}
+      <AnimatePresence>
+        {showBgToolsModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowBgToolsModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-xl">
+                    <Wand2 className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-slate-900 dark:text-white">Remove Background</h3>
+                    <p className="text-sm text-slate-500">Use free tools to remove the background</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowBgToolsModal(false)}
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
+                >
+                  <X className="w-5 h-5 text-slate-500" />
+                </button>
+              </div>
+
+              {/* Step 1: Download */}
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                  <span className="font-medium text-slate-900 dark:text-white">Download your image</span>
+                </div>
+                <button
+                  onClick={downloadForBgRemoval}
+                  className="w-full p-4 bg-blue-50 dark:bg-blue-900/30 border-2 border-dashed border-blue-300 dark:border-blue-700 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors flex items-center justify-center gap-2"
+                >
+                  <Download className="w-5 h-5 text-blue-600" />
+                  <span className="text-blue-600 font-medium">Download Image</span>
+                </button>
+              </div>
+
+              {/* Step 2: Choose a tool */}
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                  <span className="font-medium text-slate-900 dark:text-white">Remove background with a free tool</span>
+                </div>
+                <div className="space-y-2">
+                  {FREE_BG_REMOVAL_TOOLS.map((tool) => (
+                    <a
+                      key={tool.id}
+                      href={tool.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-medium text-slate-900 dark:text-white">{tool.name}</div>
+                          <div className="text-xs text-slate-500">{tool.bestFor}</div>
+                        </div>
+                        <div className="text-xs text-green-600 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-full">
+                          {tool.freeCredits}
+                        </div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              {/* Step 3: Upload processed image */}
+              <div>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-medium">3</span>
+                  <span className="font-medium text-slate-900 dark:text-white">Upload the result</span>
+                </div>
+                <label className="block w-full p-4 bg-green-50 dark:bg-green-900/30 border-2 border-dashed border-green-300 dark:border-green-700 rounded-xl hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors cursor-pointer">
+                  <div className="flex items-center justify-center gap-2">
+                    <Upload className="w-5 h-5 text-green-600" />
+                    <span className="text-green-600 font-medium">Upload Processed Image</span>
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleBgRemovedUpload}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+
+              <p className="mt-4 text-xs text-slate-500 text-center">
+                All these tools are 100% free to use. Just upload your image, download the result, and upload it here.
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
