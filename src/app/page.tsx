@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -12,17 +12,16 @@ import {
   Package,
   Settings,
   ArrowRight,
-  Play,
   Home as HomeIcon,
   Layers,
   Film,
   Megaphone,
-  Plus,
-  Clock,
-  TrendingUp,
-  Star,
   ChevronLeft,
-  X
+  X,
+  Search,
+  RefreshCw,
+  Info,
+  Loader2
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/HeaderControls'
 import { UserMenu } from '@/components/UserMenu'
@@ -30,53 +29,84 @@ import { ImageEditor } from '@/components/ImageEditor'
 import { VideoCreator } from '@/components/VideoCreator'
 import { StoriesCreator } from '@/components/StoriesCreator'
 import { AdGenerator } from '@/components/AdGenerator'
+import { ShopifyProduct } from '@/types'
 
 // Content types / Modules
 type ContentModule = 'dashboard' | 'image-editor' | 'video-creator' | 'stories' | 'ads'
 
-// Product interface
-interface Product {
-  id: string
-  name: string
-  description: string
-  price: string
-  imageUrl: string
-  features?: string[]
-}
-
-// Mock products
-const MOCK_PRODUCTS: Product[] = [
+// Demo products for when Shopify is not connected
+const DEMO_PRODUCTS: ShopifyProduct[] = [
   {
-    id: '1',
-    name: 'Premium Wireless Headphones',
-    description: 'High-quality noise-cancelling headphones with 40-hour battery life',
-    price: '$199.99',
-    imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300',
-    features: ['Noise Cancelling', '40h Battery', 'Premium Sound']
+    id: 'demo-1',
+    title: 'Premium Wireless Headphones',
+    description: 'High-quality noise-cancelling headphones with 40-hour battery life. Crystal clear sound and comfortable fit for all-day wear.',
+    handle: 'wireless-headphones',
+    images: {
+      edges: [{
+        node: {
+          url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop',
+          altText: 'Wireless Headphones'
+        }
+      }]
+    },
+    priceRange: {
+      minVariantPrice: { amount: '199.99', currencyCode: 'USD' }
+    },
+    variants: { edges: [] }
   },
   {
-    id: '2',
-    name: 'Smart Fitness Watch',
-    description: 'Track your health and fitness with advanced sensors',
-    price: '$299.99',
-    imageUrl: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300',
-    features: ['Heart Rate', 'GPS', 'Water Resistant']
+    id: 'demo-2',
+    title: 'Smart Fitness Watch',
+    description: 'Track your health and fitness with advanced sensors. Heart rate, GPS, sleep tracking and 100+ workout modes.',
+    handle: 'fitness-watch',
+    images: {
+      edges: [{
+        node: {
+          url: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop',
+          altText: 'Smart Watch'
+        }
+      }]
+    },
+    priceRange: {
+      minVariantPrice: { amount: '299.99', currencyCode: 'USD' }
+    },
+    variants: { edges: [] }
   },
   {
-    id: '3',
-    name: 'Organic Skincare Set',
-    description: 'Natural skincare routine with premium ingredients',
-    price: '$89.99',
-    imageUrl: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=300',
-    features: ['100% Natural', 'Vegan', 'Eco-Friendly']
+    id: 'demo-3',
+    title: 'Organic Skincare Set',
+    description: 'Natural skincare routine with premium organic ingredients. Vegan, cruelty-free and eco-friendly packaging.',
+    handle: 'skincare-set',
+    images: {
+      edges: [{
+        node: {
+          url: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400&h=400&fit=crop',
+          altText: 'Skincare Set'
+        }
+      }]
+    },
+    priceRange: {
+      minVariantPrice: { amount: '89.99', currencyCode: 'USD' }
+    },
+    variants: { edges: [] }
   },
   {
-    id: '4',
-    name: 'Portable Bluetooth Speaker',
-    description: 'Waterproof speaker with 360° sound and 24-hour battery',
-    price: '$149.99',
-    imageUrl: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=300',
-    features: ['Waterproof', '360° Sound', '24h Battery']
+    id: 'demo-4',
+    title: 'Portable Bluetooth Speaker',
+    description: 'Waterproof speaker with 360° immersive sound. 24-hour battery life, perfect for outdoor adventures.',
+    handle: 'bluetooth-speaker',
+    images: {
+      edges: [{
+        node: {
+          url: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=400&fit=crop',
+          altText: 'Bluetooth Speaker'
+        }
+      }]
+    },
+    priceRange: {
+      minVariantPrice: { amount: '149.99', currencyCode: 'USD' }
+    },
+    variants: { edges: [] }
   }
 ]
 
@@ -94,11 +124,11 @@ const MODULES = [
   {
     id: 'video-creator',
     name: 'Video Creator',
-    description: 'Create videos scene by scene',
+    description: 'Create videos with AI scripts',
     icon: Video,
     color: 'from-purple-500 to-pink-500',
     bgColor: 'bg-purple-50 dark:bg-purple-900/20',
-    features: ['Scene Editor', 'Free Tool Prompts', 'Upload Videos']
+    features: ['AI Scripts', 'Voice & Music', 'Free Tool Prompts']
   },
   {
     id: 'stories',
@@ -127,11 +157,74 @@ const QUICK_STATS = [
   { label: 'Ads Created', value: '24', icon: Megaphone, color: 'text-orange-500' },
 ]
 
+// Helper to get product image URL
+const getProductImageUrl = (product: ShopifyProduct) => {
+  return product.images.edges[0]?.node.url || 'https://via.placeholder.com/300'
+}
+
+// Helper to get product price formatted
+const getProductPrice = (product: ShopifyProduct) => {
+  const price = product.priceRange.minVariantPrice
+  return `$${price.amount}`
+}
+
+// Helper to extract features from description
+const extractFeatures = (description: string): string[] => {
+  // Simple extraction - split by periods and take first 3 short phrases
+  const sentences = description.split(/[.!]/).filter(s => s.trim().length > 0)
+  return sentences.slice(0, 3).map(s => {
+    const words = s.trim().split(' ').slice(0, 4)
+    return words.join(' ')
+  })
+}
+
 export default function Home() {
+  // Products state
+  const [products, setProducts] = useState<ShopifyProduct[]>([])
+  const [loadingProducts, setLoadingProducts] = useState(true)
+  const [isDemo, setIsDemo] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+
   // Module state
   const [activeModule, setActiveModule] = useState<ContentModule>('dashboard')
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [selectedProduct, setSelectedProduct] = useState<ShopifyProduct | null>(null)
   const [showProductSelector, setShowProductSelector] = useState(false)
+  const [pendingModule, setPendingModule] = useState<ContentModule | null>(null)
+
+  // Fetch products from Shopify on mount
+  useEffect(() => {
+    fetchProducts()
+  }, [])
+
+  const fetchProducts = async () => {
+    setLoadingProducts(true)
+    try {
+      const response = await fetch('/api/shopify/products')
+      if (response.ok) {
+        const data = await response.json()
+        if (data.products && data.products.length > 0) {
+          setProducts(data.products)
+          setIsDemo(false)
+        } else {
+          setProducts(DEMO_PRODUCTS)
+          setIsDemo(true)
+        }
+      } else {
+        setProducts(DEMO_PRODUCTS)
+        setIsDemo(true)
+      }
+    } catch {
+      setProducts(DEMO_PRODUCTS)
+      setIsDemo(true)
+    } finally {
+      setLoadingProducts(false)
+    }
+  }
+
+  // Filter products by search
+  const filteredProducts = products.filter(product =>
+    product.title.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   // Handle module selection with product check
   const handleModuleClick = (moduleId: ContentModule) => {
@@ -140,20 +233,40 @@ export default function Home() {
       return
     }
     // Show product selector first
+    setPendingModule(moduleId)
     setShowProductSelector(true)
-    setActiveModule(moduleId)
   }
 
   // Handle product selection
-  const handleProductSelect = (product: Product) => {
+  const handleProductSelect = (product: ShopifyProduct) => {
     setSelectedProduct(product)
     setShowProductSelector(false)
+    if (pendingModule) {
+      setActiveModule(pendingModule)
+      setPendingModule(null)
+    }
+  }
+
+  // Continue without product
+  const continueWithoutProduct = () => {
+    setSelectedProduct(null)
+    setShowProductSelector(false)
+    if (pendingModule) {
+      setActiveModule(pendingModule)
+      setPendingModule(null)
+    }
   }
 
   // Go back to dashboard
   const goBack = () => {
     setActiveModule('dashboard')
     setSelectedProduct(null)
+  }
+
+  // Quick action - directly open module with product
+  const quickAction = (product: ShopifyProduct, moduleId: ContentModule) => {
+    setSelectedProduct(product)
+    setActiveModule(moduleId)
   }
 
   return (
@@ -196,7 +309,7 @@ export default function Home() {
                   {selectedProduct && (
                     <>
                       <span className="text-slate-400">/</span>
-                      <span className="text-sm text-slate-500">{selectedProduct.name}</span>
+                      <span className="text-sm text-slate-500">{selectedProduct.title}</span>
                     </>
                   )}
                 </div>
@@ -258,46 +371,92 @@ export default function Home() {
                   <p className="text-sm text-slate-500">Choose which product to work with</p>
                 </div>
                 <button
-                  onClick={() => setShowProductSelector(false)}
+                  onClick={() => {
+                    setShowProductSelector(false)
+                    setPendingModule(null)
+                  }}
                   className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
                 >
                   <X className="w-5 h-5 text-slate-500" />
                 </button>
               </div>
-              <div className="p-4 grid sm:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto">
-                {MOCK_PRODUCTS.map(product => (
-                  <button
-                    key={product.id}
-                    onClick={() => handleProductSelect(product)}
-                    className="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 text-left transition-all hover:shadow-md"
-                  >
-                    <img
-                      src={product.imageUrl}
-                      alt={product.name}
-                      className="w-full h-32 object-cover rounded-lg mb-3"
-                    />
-                    <h3 className="font-semibold text-slate-800 dark:text-white text-sm">
-                      {product.name}
-                    </h3>
-                    <p className="text-xs text-slate-500 mt-1 line-clamp-2">
-                      {product.description}
+
+              {/* Demo Mode Warning */}
+              {isDemo && (
+                <div className="mx-4 mt-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-start gap-3">
+                  <Info className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      <strong>Demo Mode:</strong> Connect your Shopify store in settings to see your real products.
                     </p>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="font-bold text-blue-600 dark:text-blue-400">
-                        {product.price}
-                      </span>
-                      <ArrowRight className="w-4 h-4 text-slate-400" />
-                    </div>
-                  </button>
-                ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Search */}
+              <div className="p-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                  />
+                </div>
               </div>
-              <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
+
+              {/* Products Grid */}
+              <div className="p-4 pt-0 grid sm:grid-cols-2 gap-4 max-h-[50vh] overflow-y-auto">
+                {loadingProducts ? (
+                  <div className="col-span-2 flex items-center justify-center py-12">
+                    <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                  </div>
+                ) : filteredProducts.length === 0 ? (
+                  <div className="col-span-2 text-center py-12 text-slate-500">
+                    No products found
+                  </div>
+                ) : (
+                  filteredProducts.map(product => (
+                    <button
+                      key={product.id}
+                      onClick={() => handleProductSelect(product)}
+                      className="p-4 rounded-xl bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 text-left transition-all hover:shadow-md border-2 border-transparent hover:border-blue-500"
+                    >
+                      <img
+                        src={getProductImageUrl(product)}
+                        alt={product.title}
+                        className="w-full h-32 object-cover rounded-lg mb-3"
+                      />
+                      <h3 className="font-semibold text-slate-800 dark:text-white text-sm line-clamp-1">
+                        {product.title}
+                      </h3>
+                      <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                        {product.description}
+                      </p>
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="font-bold text-blue-600 dark:text-blue-400">
+                          {getProductPrice(product)}
+                        </span>
+                        <ArrowRight className="w-4 h-4 text-slate-400" />
+                      </div>
+                    </button>
+                  ))
+                )}
+              </div>
+
+              <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex items-center justify-between">
                 <button
-                  onClick={() => {
-                    setSelectedProduct(null)
-                    setShowProductSelector(false)
-                  }}
-                  className="w-full py-2 text-sm text-slate-500 hover:text-slate-700"
+                  onClick={fetchProducts}
+                  className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Refresh
+                </button>
+                <button
+                  onClick={continueWithoutProduct}
+                  className="text-sm text-slate-500 hover:text-slate-700"
                 >
                   Continue without product
                 </button>
@@ -393,60 +552,78 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Recent Products */}
+              {/* Products Section */}
               <div>
-                <h3 className="font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                  <Package className="w-5 h-5 text-green-500" />
-                  Your Products
-                </h3>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {MOCK_PRODUCTS.map((product, idx) => (
-                    <motion.div
-                      key={product.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.05 }}
-                      className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all"
-                    >
-                      <div className="relative mb-3 overflow-hidden rounded-xl">
-                        <img
-                          src={product.imageUrl}
-                          alt={product.name}
-                          className="w-full h-32 object-cover"
-                        />
-                      </div>
-                      <h4 className="font-semibold text-slate-900 dark:text-white text-sm mb-1 line-clamp-1">
-                        {product.name}
-                      </h4>
-                      <p className="text-xs text-slate-500 line-clamp-2 mb-2">
-                        {product.description}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-blue-600 dark:text-blue-400 text-sm">
-                          {product.price}
-                        </span>
-                        <div className="flex gap-1">
-                          {MODULES.slice(0, 3).map(module => {
-                            const Icon = module.icon
-                            return (
-                              <button
-                                key={module.id}
-                                onClick={() => {
-                                  setSelectedProduct(product)
-                                  setActiveModule(module.id as ContentModule)
-                                }}
-                                className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-600"
-                                title={`Create ${module.name}`}
-                              >
-                                <Icon className="w-4 h-4" />
-                              </button>
-                            )
-                          })}
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                    <Package className="w-5 h-5 text-green-500" />
+                    Your Products
+                    {isDemo && (
+                      <span className="text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-full">
+                        Demo
+                      </span>
+                    )}
+                  </h3>
+                  <button
+                    onClick={fetchProducts}
+                    className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${loadingProducts ? 'animate-spin' : ''}`} />
+                    Refresh
+                  </button>
                 </div>
+
+                {loadingProducts ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                  </div>
+                ) : (
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {products.map((product, idx) => (
+                      <motion.div
+                        key={product.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.05 }}
+                        className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all"
+                      >
+                        <div className="relative mb-3 overflow-hidden rounded-xl">
+                          <img
+                            src={getProductImageUrl(product)}
+                            alt={product.title}
+                            className="w-full h-32 object-cover"
+                          />
+                        </div>
+                        <h4 className="font-semibold text-slate-900 dark:text-white text-sm mb-1 line-clamp-1">
+                          {product.title}
+                        </h4>
+                        <p className="text-xs text-slate-500 line-clamp-2 mb-2">
+                          {product.description}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-blue-600 dark:text-blue-400 text-sm">
+                            {getProductPrice(product)}
+                          </span>
+                          <div className="flex gap-1">
+                            {MODULES.slice(0, 3).map(module => {
+                              const Icon = module.icon
+                              return (
+                                <button
+                                  key={module.id}
+                                  onClick={() => quickAction(product, module.id as ContentModule)}
+                                  className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-600"
+                                  title={`Create ${module.name}`}
+                                >
+                                  <Icon className="w-4 h-4" />
+                                </button>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Workflow Summary */}
@@ -456,11 +633,11 @@ export default function Home() {
                 </h3>
                 <div className="grid md:grid-cols-5 gap-4">
                   {[
-                    { step: 1, title: 'Generate Image', desc: 'AI creates scene image' },
-                    { step: 2, title: 'Get Prompts', desc: 'Copy prompts for Grok/Pika' },
-                    { step: 3, title: 'Create Video', desc: 'Use free tools externally' },
-                    { step: 4, title: 'Upload Back', desc: 'Import video to platform' },
-                    { step: 5, title: 'Export', desc: 'Download final project' },
+                    { step: 1, title: 'Select Product', desc: 'From your Shopify store' },
+                    { step: 2, title: 'Generate Script', desc: 'AI writes your content' },
+                    { step: 3, title: 'Create Visuals', desc: 'Use free AI tools' },
+                    { step: 4, title: 'Add Voice & Music', desc: 'ElevenLabs narration' },
+                    { step: 5, title: 'Export', desc: 'Download final video' },
                   ].map((item, idx) => (
                     <div key={item.step} className="flex items-start gap-3">
                       <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
@@ -491,8 +668,8 @@ export default function Home() {
               exit={{ opacity: 0, y: -20 }}
             >
               <ImageEditor
-                productImage={selectedProduct?.imageUrl}
-                productName={selectedProduct?.name}
+                productImage={selectedProduct ? getProductImageUrl(selectedProduct) : undefined}
+                productName={selectedProduct?.title}
               />
             </motion.div>
           )}
@@ -506,8 +683,10 @@ export default function Home() {
               exit={{ opacity: 0, y: -20 }}
             >
               <VideoCreator
-                productImage={selectedProduct?.imageUrl}
-                productName={selectedProduct?.name}
+                productImage={selectedProduct ? getProductImageUrl(selectedProduct) : undefined}
+                productName={selectedProduct?.title}
+                productDescription={selectedProduct?.description}
+                productPrice={selectedProduct ? getProductPrice(selectedProduct) : undefined}
               />
             </motion.div>
           )}
@@ -521,8 +700,8 @@ export default function Home() {
               exit={{ opacity: 0, y: -20 }}
             >
               <StoriesCreator
-                productImage={selectedProduct?.imageUrl}
-                productName={selectedProduct?.name}
+                productImage={selectedProduct ? getProductImageUrl(selectedProduct) : undefined}
+                productName={selectedProduct?.title}
               />
             </motion.div>
           )}
@@ -536,10 +715,10 @@ export default function Home() {
               exit={{ opacity: 0, y: -20 }}
             >
               <AdGenerator
-                productImage={selectedProduct?.imageUrl}
-                productName={selectedProduct?.name}
-                productPrice={selectedProduct?.price}
-                productFeatures={selectedProduct?.features}
+                productImage={selectedProduct ? getProductImageUrl(selectedProduct) : undefined}
+                productName={selectedProduct?.title}
+                productPrice={selectedProduct ? getProductPrice(selectedProduct) : undefined}
+                productFeatures={selectedProduct ? extractFeatures(selectedProduct.description) : undefined}
               />
             </motion.div>
           )}

@@ -27,7 +27,13 @@ import {
   ExternalLink,
   Check,
   AlertCircle,
-  GripVertical
+  GripVertical,
+  Mic,
+  Volume2,
+  VolumeX,
+  Loader2,
+  Brain,
+  Settings
 } from 'lucide-react'
 import {
   VideoScene,
@@ -38,10 +44,13 @@ import {
   calculateTotalDuration,
   FREE_VIDEO_TOOLS
 } from '@/types/content'
+import { ToneType } from '@/types'
 
 interface VideoCreatorProps {
   productImage?: string
   productName?: string
+  productDescription?: string
+  productPrice?: string
   onExport?: (project: VideoProject) => void
 }
 
@@ -65,7 +74,21 @@ const CUT_TYPES = [
   { id: 'zoom', name: 'Zoom', description: 'Zoom transition' },
 ]
 
-export function VideoCreator({ productImage, productName, onExport }: VideoCreatorProps) {
+const TONE_OPTIONS: { id: ToneType; name: string; icon: string; description: string }[] = [
+  { id: 'divertido', name: 'Fun', icon: '🎉', description: 'Casual, entertaining' },
+  { id: 'profesional', name: 'Professional', icon: '💼', description: 'Serious, corporate' },
+  { id: 'educativo', name: 'Educational', icon: '📚', description: 'Informative, clear' },
+  { id: 'emocional', name: 'Emotional', icon: '💝', description: 'Touching, relatable' },
+  { id: 'urgente', name: 'Urgent', icon: '🔥', description: 'FOMO, scarcity' },
+]
+
+const CONTENT_TYPES = [
+  { id: 'reel', name: 'Reel', duration: 30, icon: '📱' },
+  { id: 'story', name: 'Story', duration: 15, icon: '⏱️' },
+  { id: 'storytelling', name: 'Storytelling', duration: 30, icon: '📖' },
+]
+
+export function VideoCreator({ productImage, productName, productDescription, productPrice, onExport }: VideoCreatorProps) {
   // Project state
   const [scenes, setScenes] = useState<VideoScene[]>([
     createEmptyVideoScene(0),
@@ -76,15 +99,152 @@ export function VideoCreator({ productImage, productName, onExport }: VideoCreat
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
 
+  // AI Generation state
+  const [selectedTone, setSelectedTone] = useState<ToneType>('profesional')
+  const [selectedContentType, setSelectedContentType] = useState('reel')
+  const [isGeneratingScript, setIsGeneratingScript] = useState(false)
+  const [isGeneratingVoice, setIsGeneratingVoice] = useState(false)
+  const [generationError, setGenerationError] = useState<string | null>(null)
+
+  // Audio state
+  const [audioUrl, setAudioUrl] = useState<string | null>(null)
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+
   // UI state
-  const [activeTab, setActiveTab] = useState<'edit' | 'prompts' | 'upload'>('edit')
+  const [activeTab, setActiveTab] = useState<'edit' | 'ai' | 'prompts' | 'upload'>('ai')
   const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null)
+  const [showToneSelector, setShowToneSelector] = useState(false)
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const videoInputRef = useRef<HTMLInputElement>(null)
 
   const selectedScene = scenes[selectedSceneIndex]
   const totalDuration = calculateTotalDuration(scenes)
+
+  // AI Script Generation
+  const generateScript = async () => {
+    if (!productName) {
+      setGenerationError('Please select a product first')
+      return
+    }
+
+    setIsGeneratingScript(true)
+    setGenerationError(null)
+
+    try {
+      const response = await fetch('/api/generate-script', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product: {
+            title: productName,
+            description: productDescription || '',
+            priceRange: {
+              minVariantPrice: {
+                amount: productPrice?.replace('$', '') || '0',
+                currencyCode: 'USD'
+              }
+            }
+          },
+          contentType: selectedContentType,
+          tone: selectedTone
+        })
+      })
+
+      if (!response.ok) throw new Error('Failed to generate script')
+
+      const data = await response.json()
+
+      // Update scenes with generated scripts
+      if (data.scenes && Array.isArray(data.scenes)) {
+        const newScenes = data.scenes.map((scene: { text: string; duration: number }, index: number) => ({
+          ...createEmptyVideoScene(index),
+          script: scene.text,
+          duration: Math.round(scene.duration) || 3,
+          videoPrompts: generateVideoPrompts(scene.text, 'zoom_in', scene.duration || 3)
+        }))
+        setScenes(newScenes)
+        setSelectedSceneIndex(0)
+      }
+    } catch (error) {
+      console.error('Error generating script:', error)
+      setGenerationError('Failed to generate script. Using demo content...')
+
+      // Demo fallback
+      const demoScenes = [
+        { text: `Discover ${productName} - the product you've been waiting for!`, duration: 5 },
+        { text: productDescription?.slice(0, 80) || 'Premium quality and incredible features.', duration: 8 },
+        { text: `Available now for only ${productPrice || '$99'}`, duration: 5 },
+        { text: 'Order today! Link in bio.', duration: 4 },
+      ]
+
+      const newScenes = demoScenes.map((scene, index) => ({
+        ...createEmptyVideoScene(index),
+        script: scene.text,
+        duration: scene.duration,
+        videoPrompts: generateVideoPrompts(scene.text, 'zoom_in', scene.duration)
+      }))
+      setScenes(newScenes)
+    } finally {
+      setIsGeneratingScript(false)
+    }
+  }
+
+  // Voice Generation
+  const generateVoice = async () => {
+    const fullScript = scenes.map(s => s.script).filter(Boolean).join(' ')
+    if (!fullScript) {
+      setGenerationError('Please generate a script first')
+      return
+    }
+
+    setIsGeneratingVoice(true)
+    setGenerationError(null)
+
+    try {
+      const response = await fetch('/api/generate-audio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: fullScript,
+          tone: selectedTone
+        })
+      })
+
+      if (!response.ok) throw new Error('Failed to generate audio')
+
+      const data = await response.json()
+      if (data.audioUrl) {
+        setAudioUrl(data.audioUrl)
+      }
+    } catch (error) {
+      console.error('Error generating voice:', error)
+      setGenerationError('Voice generation failed. Using browser TTS...')
+
+      // Browser TTS fallback
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(fullScript)
+        utterance.rate = 1.0
+        utterance.pitch = 1.0
+        speechSynthesis.speak(utterance)
+      }
+    } finally {
+      setIsGeneratingVoice(false)
+    }
+  }
+
+  // Play/Pause audio
+  const toggleAudio = () => {
+    if (!audioRef.current) return
+
+    if (isPlayingAudio) {
+      audioRef.current.pause()
+    } else {
+      audioRef.current.play()
+    }
+    setIsPlayingAudio(!isPlayingAudio)
+  }
 
   // Scene operations
   const addScene = () => {
@@ -117,9 +277,9 @@ export function VideoCreator({ productImage, productName, onExport }: VideoCreat
       if (i !== index) return scene
       const updated = { ...scene, ...updates }
       // Regenerate prompts if motion type or duration changes
-      if (updates.motionType || updates.duration) {
+      if (updates.motionType || updates.duration || updates.script) {
         updated.videoPrompts = generateVideoPrompts(
-          updated.script,
+          updates.script || scene.script,
           updates.motionType || scene.motionType,
           updates.duration || scene.duration
         )
@@ -175,18 +335,29 @@ export function VideoCreator({ productImage, productName, onExport }: VideoCreat
   return (
     <div className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden">
       {/* Header */}
-      <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
+      <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Video className="w-5 h-5 text-blue-500" />
+              <Video className="w-5 h-5 text-purple-500" />
               Video Creator
+              {productName && (
+                <span className="text-sm font-normal text-slate-500">- {productName}</span>
+              )}
             </h2>
             <p className="text-sm text-slate-500 dark:text-slate-400">
               {scenes.length} scenes - {totalDuration}s total
             </p>
           </div>
           <div className="flex items-center gap-2">
+            {audioUrl && (
+              <button
+                onClick={toggleAudio}
+                className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30 text-purple-600"
+              >
+                {isPlayingAudio ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+              </button>
+            )}
             <span className={`px-3 py-1 rounded-full text-xs font-medium ${
               scenes.every(s => s.status === 'video_ready')
                 ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
@@ -198,6 +369,16 @@ export function VideoCreator({ productImage, productName, onExport }: VideoCreat
         </div>
       </div>
 
+      {/* Hidden audio element */}
+      {audioUrl && (
+        <audio
+          ref={audioRef}
+          src={audioUrl}
+          onEnded={() => setIsPlayingAudio(false)}
+          className="hidden"
+        />
+      )}
+
       <div className="flex">
         {/* Scenes List (Left) */}
         <div className="w-64 border-r border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
@@ -205,7 +386,7 @@ export function VideoCreator({ productImage, productName, onExport }: VideoCreat
             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Scenes</span>
             <button
               onClick={addScene}
-              className="p-1.5 rounded-lg bg-blue-500 text-white hover:bg-blue-600"
+              className="p-1.5 rounded-lg bg-purple-500 text-white hover:bg-purple-600"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -225,7 +406,7 @@ export function VideoCreator({ productImage, productName, onExport }: VideoCreat
                   value={scene}
                   className={`p-3 rounded-xl cursor-pointer transition-all ${
                     selectedSceneIndex === index
-                      ? 'bg-white dark:bg-slate-800 shadow-md border-2 border-blue-500'
+                      ? 'bg-white dark:bg-slate-800 shadow-md border-2 border-purple-500'
                       : 'bg-white dark:bg-slate-800 hover:shadow border border-slate-200 dark:border-slate-700'
                   }`}
                   onClick={() => setSelectedSceneIndex(index)}
@@ -253,32 +434,22 @@ export function VideoCreator({ productImage, productName, onExport }: VideoCreat
                           <ImageIcon className="w-6 h-6 text-slate-400" />
                         </div>
                       )}
-                      {/* Status badge */}
-                      <div className={`absolute bottom-1 right-1 w-2 h-2 rounded-full ${
+                      <span className={`absolute bottom-1 right-1 w-2 h-2 rounded-full ${
                         status.color === 'green' ? 'bg-green-500' :
-                        status.color === 'blue' ? 'bg-blue-500' : 'bg-slate-400'
+                        status.color === 'blue' ? 'bg-blue-500' : 'bg-gray-400'
                       }`} />
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                          Scene {index + 1}
-                        </span>
-                        <span className="text-xs text-slate-400">{scene.duration}s</span>
-                      </div>
-                      <p className="text-xs text-slate-500 truncate mt-1">
-                        {scene.script || 'No script yet'}
+                      <p className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                        Scene {index + 1}
                       </p>
-                      <div className="flex items-center gap-1 mt-1">
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                          status.color === 'green' ? 'bg-green-100 text-green-700' :
-                          status.color === 'blue' ? 'bg-blue-100 text-blue-700' :
-                          'bg-slate-100 text-slate-500'
-                        }`}>
-                          {status.label}
-                        </span>
-                      </div>
+                      <p className="text-xs text-slate-500 truncate">
+                        {scene.script?.slice(0, 30) || 'No script yet'}...
+                      </p>
+                      <p className="text-xs text-slate-400 mt-1">
+                        {scene.duration}s
+                      </p>
                     </div>
                   </div>
                 </Reorder.Item>
@@ -287,22 +458,23 @@ export function VideoCreator({ productImage, productName, onExport }: VideoCreat
           </Reorder.Group>
         </div>
 
-        {/* Main Editor (Center) */}
-        <div className="flex-1 p-4">
+        {/* Main Content Area */}
+        <div className="flex-1">
           {/* Tabs */}
-          <div className="flex gap-2 mb-4">
+          <div className="flex border-b border-slate-200 dark:border-slate-700">
             {[
-              { id: 'edit', label: 'Edit Scene', icon: Wand2 },
-              { id: 'prompts', label: 'Video Prompts', icon: Zap },
-              { id: 'upload', label: 'Upload Video', icon: Upload },
+              { id: 'ai', label: 'AI Script', icon: Brain },
+              { id: 'edit', label: 'Edit', icon: Type },
+              { id: 'prompts', label: 'Prompts', icon: Wand2 },
+              { id: 'upload', label: 'Upload', icon: Upload },
             ].map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`flex-1 px-4 py-3 flex items-center justify-center gap-2 text-sm font-medium transition-colors ${
                   activeTab === tab.id
-                    ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700'
+                    ? 'text-purple-600 border-b-2 border-purple-600 bg-purple-50 dark:bg-purple-900/20'
+                    : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                 }`}
               >
                 <tab.icon className="w-4 h-4" />
@@ -312,478 +484,445 @@ export function VideoCreator({ productImage, productName, onExport }: VideoCreat
           </div>
 
           {/* Tab Content */}
-          <AnimatePresence mode="wait">
-            {/* Edit Tab */}
-            {activeTab === 'edit' && (
-              <motion.div
-                key="edit"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="space-y-4"
-              >
-                {/* Image Section */}
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Image Preview/Upload */}
-                  <div className="aspect-[9/16] max-h-[400px] rounded-xl bg-slate-100 dark:bg-slate-700 overflow-hidden relative">
-                    {selectedScene.imageUrl ? (
-                      <img
-                        src={selectedScene.imageUrl}
-                        alt=""
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center">
-                        <ImageIcon className="w-12 h-12 text-slate-400 mb-2" />
-                        <p className="text-sm text-slate-500">No image yet</p>
-                      </div>
-                    )}
-
-                    {/* Upload overlay */}
-                    <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+          <div className="p-4">
+            {/* AI Script Tab */}
+            {activeTab === 'ai' && (
+              <div className="space-y-6">
+                {/* Content Type Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Content Type
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {CONTENT_TYPES.map(type => (
                       <button
-                        onClick={() => fileInputRef.current?.click()}
-                        className="px-4 py-2 bg-white rounded-lg text-sm font-medium flex items-center gap-2"
+                        key={type.id}
+                        onClick={() => setSelectedContentType(type.id)}
+                        className={`p-3 rounded-xl text-center transition-all ${
+                          selectedContentType === type.id
+                            ? 'bg-purple-100 dark:bg-purple-900/30 border-2 border-purple-500'
+                            : 'bg-slate-50 dark:bg-slate-700 border-2 border-transparent hover:border-slate-300'
+                        }`}
                       >
-                        <Upload className="w-4 h-4" />
-                        Upload Image
+                        <span className="text-2xl">{type.icon}</span>
+                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{type.name}</p>
+                        <p className="text-xs text-slate-500">{type.duration}s</p>
                       </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tone Selection */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Tone / Style
+                  </label>
+                  <div className="grid grid-cols-5 gap-2">
+                    {TONE_OPTIONS.map(tone => (
+                      <button
+                        key={tone.id}
+                        onClick={() => setSelectedTone(tone.id)}
+                        className={`p-3 rounded-xl text-center transition-all ${
+                          selectedTone === tone.id
+                            ? 'bg-purple-100 dark:bg-purple-900/30 border-2 border-purple-500'
+                            : 'bg-slate-50 dark:bg-slate-700 border-2 border-transparent hover:border-slate-300'
+                        }`}
+                      >
+                        <span className="text-xl">{tone.icon}</span>
+                        <p className="text-xs font-medium text-slate-700 dark:text-slate-300 mt-1">{tone.name}</p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Error Message */}
+                {generationError && (
+                  <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl flex items-center gap-2 text-yellow-700 dark:text-yellow-400">
+                    <AlertCircle className="w-5 h-5" />
+                    <span className="text-sm">{generationError}</span>
+                  </div>
+                )}
+
+                {/* Generate Buttons */}
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    onClick={generateScript}
+                    disabled={isGeneratingScript || !productName}
+                    className={`p-4 rounded-xl flex items-center justify-center gap-3 font-medium transition-all ${
+                      isGeneratingScript || !productName
+                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:shadow-lg'
+                    }`}
+                  >
+                    {isGeneratingScript ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-5 h-5" />
+                        Generate Script with AI
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={generateVoice}
+                    disabled={isGeneratingVoice || !scenes.some(s => s.script)}
+                    className={`p-4 rounded-xl flex items-center justify-center gap-3 font-medium transition-all ${
+                      isGeneratingVoice || !scenes.some(s => s.script)
+                        ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white hover:shadow-lg'
+                    }`}
+                  >
+                    {isGeneratingVoice ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="w-5 h-5" />
+                        Generate Voice
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Generated Script Preview */}
+                {scenes.some(s => s.script) && (
+                  <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+                    <h4 className="font-medium text-slate-700 dark:text-slate-300 mb-3 flex items-center gap-2">
+                      <FileText className="w-4 h-4" />
+                      Generated Script
+                    </h4>
+                    <div className="space-y-2">
+                      {scenes.map((scene, idx) => (
+                        <div key={scene.id} className="flex gap-2">
+                          <span className="text-xs font-medium text-purple-500 w-16">Scene {idx + 1}:</span>
+                          <p className="text-sm text-slate-600 dark:text-slate-400 flex-1">{scene.script}</p>
+                        </div>
+                      ))}
                     </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Edit Tab */}
+            {activeTab === 'edit' && selectedScene && (
+              <div className="space-y-4">
+                {/* Scene Preview */}
+                <div className="aspect-video bg-slate-100 dark:bg-slate-700 rounded-xl overflow-hidden relative">
+                  {selectedScene.videoUrl ? (
+                    <video
+                      src={selectedScene.videoUrl}
+                      controls
+                      className="w-full h-full object-cover"
+                    />
+                  ) : selectedScene.imageUrl ? (
+                    <img
+                      src={selectedScene.imageUrl}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                  ) : productImage ? (
+                    <img
+                      src={productImage}
+                      alt=""
+                      className="w-full h-full object-cover opacity-50"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="text-center">
+                        <ImageIcon className="w-12 h-12 text-slate-400 mx-auto mb-2" />
+                        <p className="text-slate-500">Upload an image or video</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Script Editor */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Scene Script
+                  </label>
+                  <textarea
+                    value={selectedScene.script}
+                    onChange={(e) => updateScene(selectedSceneIndex, { script: e.target.value })}
+                    placeholder="Enter the script for this scene..."
+                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white resize-none focus:ring-2 focus:ring-purple-500 outline-none"
+                    rows={3}
+                  />
+                </div>
+
+                {/* Duration & Motion */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Duration (seconds)
+                    </label>
                     <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
+                      type="number"
+                      min={1}
+                      max={10}
+                      value={selectedScene.duration}
+                      onChange={(e) => updateScene(selectedSceneIndex, { duration: parseInt(e.target.value) || 3 })}
+                      className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none"
                     />
                   </div>
 
-                  {/* Scene Settings */}
-                  <div className="space-y-4">
-                    {/* Script */}
-                    <div>
-                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-                        Script / Text
-                      </label>
-                      <textarea
-                        value={selectedScene.script}
-                        onChange={(e) => updateScene(selectedSceneIndex, { script: e.target.value })}
-                        placeholder="Write the script for this scene..."
-                        className="w-full h-24 px-3 py-2 text-sm border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 resize-none"
-                      />
-                      <button className="mt-2 text-xs text-blue-500 flex items-center gap-1 hover:underline">
-                        <Sparkles className="w-3 h-3" />
-                        Generate with AI
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Cut Type
+                    </label>
+                    <select
+                      value={selectedScene.cutType}
+                      onChange={(e) => updateScene(selectedSceneIndex, { cutType: e.target.value as VideoScene['cutType'] })}
+                      className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-purple-500 outline-none"
+                    >
+                      {CUT_TYPES.map(cut => (
+                        <option key={cut.id} value={cut.id}>{cut.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Motion Type */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Motion Type
+                  </label>
+                  <div className="grid grid-cols-5 gap-2">
+                    {MOTION_TYPES.map(motion => (
+                      <button
+                        key={motion.id}
+                        onClick={() => updateScene(selectedSceneIndex, { motionType: motion.id })}
+                        className={`p-2 rounded-lg text-center text-xs transition-all ${
+                          selectedScene.motionType === motion.id
+                            ? 'bg-purple-100 dark:bg-purple-900/30 border-2 border-purple-500'
+                            : 'bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600'
+                        }`}
+                      >
+                        <span className="text-lg">{motion.icon}</span>
+                        <p className="mt-1 text-slate-600 dark:text-slate-400">{motion.name}</p>
                       </button>
-                    </div>
-
-                    {/* Duration */}
-                    <div>
-                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-                        Duration: {selectedScene.duration}s
-                      </label>
-                      <input
-                        type="range"
-                        min="1"
-                        max="10"
-                        step="0.5"
-                        value={selectedScene.duration}
-                        onChange={(e) => updateScene(selectedSceneIndex, { duration: parseFloat(e.target.value) })}
-                        className="w-full"
-                      />
-                      <div className="flex justify-between text-xs text-slate-400 mt-1">
-                        <span>1s</span>
-                        <span>5s</span>
-                        <span>10s</span>
-                      </div>
-                    </div>
-
-                    {/* Motion Type */}
-                    <div>
-                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-                        Motion Type
-                      </label>
-                      <div className="grid grid-cols-5 gap-2">
-                        {MOTION_TYPES.map(motion => (
-                          <button
-                            key={motion.id}
-                            onClick={() => updateScene(selectedSceneIndex, { motionType: motion.id })}
-                            className={`p-2 rounded-lg text-center transition-all ${
-                              selectedScene.motionType === motion.id
-                                ? 'bg-blue-100 dark:bg-blue-900/50 border-2 border-blue-500'
-                                : 'bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600'
-                            }`}
-                            title={motion.name}
-                          >
-                            <span className="text-lg">{motion.icon}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Cut Type */}
-                    <div>
-                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-                        Transition
-                      </label>
-                      <div className="grid grid-cols-4 gap-2">
-                        {CUT_TYPES.map(cut => (
-                          <button
-                            key={cut.id}
-                            onClick={() => updateScene(selectedSceneIndex, { cutType: cut.id as VideoScene['cutType'] })}
-                            className={`p-2 rounded-lg text-xs font-medium transition-all ${
-                              selectedScene.cutType === cut.id
-                                ? 'bg-blue-100 dark:bg-blue-900/50 border-2 border-blue-500 text-blue-600'
-                                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400'
-                            }`}
-                          >
-                            {cut.name}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
 
                 {/* Scene Actions */}
-                <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => duplicateScene(selectedSceneIndex)}
-                      className="px-3 py-1.5 rounded-lg text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 flex items-center gap-1"
-                    >
-                      <Copy className="w-4 h-4" />
-                      Duplicate
-                    </button>
-                    <button
-                      onClick={() => deleteScene(selectedSceneIndex)}
-                      disabled={scenes.length <= 1}
-                      className="px-3 py-1.5 rounded-lg text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-1 disabled:opacity-50"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Delete
-                    </button>
-                  </div>
+                <div className="flex gap-2">
                   <button
-                    onClick={() => setActiveTab('prompts')}
-                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white text-sm font-medium flex items-center gap-2"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex-1 p-3 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center gap-2 hover:bg-blue-100"
                   >
-                    Get Video Prompts
-                    <ChevronRight className="w-4 h-4" />
+                    <ImageIcon className="w-4 h-4" />
+                    Upload Image
+                  </button>
+                  <button
+                    onClick={() => duplicateScene(selectedSceneIndex)}
+                    className="p-3 rounded-xl bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100"
+                  >
+                    <Copy className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => deleteScene(selectedSceneIndex)}
+                    disabled={scenes.length <= 1}
+                    className="p-3 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-600 hover:bg-red-100 disabled:opacity-50"
+                  >
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
-              </motion.div>
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+              </div>
             )}
 
             {/* Prompts Tab */}
-            {activeTab === 'prompts' && (
-              <motion.div
-                key="prompts"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="space-y-4"
-              >
-                {!selectedScene.imageUrl ? (
-                  <div className="text-center py-12 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
-                    <AlertCircle className="w-12 h-12 text-yellow-500 mx-auto mb-3" />
-                    <p className="font-medium text-slate-700 dark:text-slate-300">
-                      Upload an image first
-                    </p>
-                    <p className="text-sm text-slate-500 mt-1">
-                      You need to add an image before generating video prompts
-                    </p>
-                    <button
-                      onClick={() => setActiveTab('edit')}
-                      className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg text-sm"
-                    >
-                      Go to Edit
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <div className="p-4 rounded-xl bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border border-purple-200 dark:border-purple-800">
-                      <h3 className="font-semibold text-purple-900 dark:text-purple-100 flex items-center gap-2">
-                        <Zap className="w-5 h-5" />
-                        Video Prompts for Scene {selectedSceneIndex + 1}
-                      </h3>
-                      <p className="text-sm text-purple-700 dark:text-purple-300 mt-1">
-                        Copy these prompts to generate videos in free tools
-                      </p>
-                    </div>
-
-                    <div className="grid gap-3">
-                      {FREE_VIDEO_TOOLS.map(tool => (
-                        <div
-                          key={tool.id}
-                          className="p-4 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600"
-                        >
-                          <div className="flex items-start justify-between mb-2">
-                            <div>
-                              <h4 className="font-medium text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                                {tool.name}
-                                <a
-                                  href={tool.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-blue-500 hover:text-blue-600"
-                                >
-                                  <ExternalLink className="w-3 h-3" />
-                                </a>
-                              </h4>
-                              <p className="text-xs text-slate-500">
-                                {tool.freeCredits} - {tool.bestFor}
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => copyPrompt(tool.id, selectedScene.videoPrompts[tool.id as keyof typeof selectedScene.videoPrompts])}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1 transition-all ${
-                                copiedPrompt === tool.id
-                                  ? 'bg-green-100 text-green-700'
-                                  : 'bg-slate-100 dark:bg-slate-600 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
-                              }`}
-                            >
-                              {copiedPrompt === tool.id ? (
-                                <>
-                                  <Check className="w-3 h-3" />
-                                  Copied!
-                                </>
-                              ) : (
-                                <>
-                                  <Copy className="w-3 h-3" />
-                                  Copy
-                                </>
-                              )}
-                            </button>
-                          </div>
-                          <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-sm text-slate-600 dark:text-slate-400 font-mono">
-                            {selectedScene.videoPrompts[tool.id as keyof typeof selectedScene.videoPrompts]}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="flex justify-between items-center pt-4">
-                      <button
-                        onClick={() => setActiveTab('edit')}
-                        className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 flex items-center gap-1"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                        Back to Edit
-                      </button>
-                      <button
-                        onClick={() => setActiveTab('upload')}
-                        className="px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-medium flex items-center gap-2"
-                      >
-                        Upload Generated Video
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </>
-                )}
-              </motion.div>
-            )}
-
-            {/* Upload Tab */}
-            {activeTab === 'upload' && (
-              <motion.div
-                key="upload"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="space-y-4"
-              >
-                <div className="p-4 rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800">
-                  <h3 className="font-semibold text-green-900 dark:text-green-100 flex items-center gap-2">
-                    <Upload className="w-5 h-5" />
-                    Upload Video for Scene {selectedSceneIndex + 1}
-                  </h3>
-                  <p className="text-sm text-green-700 dark:text-green-300 mt-1">
-                    Upload the video you created using the free tools
+            {activeTab === 'prompts' && selectedScene && (
+              <div className="space-y-4">
+                <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
+                  <h4 className="font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Scene {selectedSceneIndex + 1} Script
+                  </h4>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    {selectedScene.script || 'No script yet. Generate one in the AI Script tab.'}
                   </p>
                 </div>
 
-                {/* Current Status */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
-                    <div className="flex items-center gap-2 mb-2">
-                      <ImageIcon className="w-4 h-4 text-blue-500" />
-                      <span className="text-sm font-medium">Source Image</span>
-                    </div>
-                    {selectedScene.imageUrl ? (
-                      <img
-                        src={selectedScene.imageUrl}
-                        alt=""
-                        className="w-full aspect-video object-cover rounded-lg"
-                      />
-                    ) : (
-                      <div className="w-full aspect-video bg-slate-100 dark:bg-slate-600 rounded-lg flex items-center justify-center">
-                        <span className="text-sm text-slate-400">No image</span>
-                      </div>
-                    )}
-                  </div>
+                <h4 className="font-medium text-slate-700 dark:text-slate-300">
+                  Copy prompts for free video tools:
+                </h4>
 
-                  <div className="p-4 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Video className="w-4 h-4 text-green-500" />
-                      <span className="text-sm font-medium">Generated Video</span>
-                    </div>
-                    {selectedScene.videoUrl ? (
-                      <video
-                        src={selectedScene.videoUrl}
-                        controls
-                        className="w-full aspect-video object-cover rounded-lg"
-                      />
-                    ) : (
-                      <div
-                        onClick={() => videoInputRef.current?.click()}
-                        className="w-full aspect-video bg-slate-100 dark:bg-slate-600 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-500 transition-colors"
-                      >
-                        <Upload className="w-8 h-8 text-slate-400 mb-2" />
-                        <span className="text-sm text-slate-500">Click to upload video</span>
+                <div className="space-y-3">
+                  {FREE_VIDEO_TOOLS.map(tool => {
+                    const prompt = selectedScene.videoPrompts?.[tool.id as keyof typeof selectedScene.videoPrompts] ||
+                      `Create a ${selectedScene.duration}s video with ${selectedScene.motionType} effect: ${selectedScene.script}`
+                    return (
+                      <div key={tool.id} className="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-slate-700 dark:text-slate-300">
+                              {tool.name}
+                            </span>
+                            <span className="text-xs bg-green-100 dark:bg-green-900/30 text-green-600 px-2 py-0.5 rounded-full">
+                              {tool.freeCredits}
+                            </span>
+                          </div>
+                          <a
+                            href={tool.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-blue-500 hover:underline flex items-center gap-1"
+                          >
+                            Open <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </div>
+                        <p className="text-xs text-slate-500 mb-2">{tool.bestFor}</p>
+                        <div className="flex gap-2">
+                          <div className="flex-1 p-2 bg-white dark:bg-slate-800 rounded-lg text-xs text-slate-600 dark:text-slate-400 max-h-20 overflow-y-auto">
+                            {prompt}
+                          </div>
+                          <button
+                            onClick={() => copyPrompt(tool.id, prompt)}
+                            className={`p-2 rounded-lg transition-all ${
+                              copiedPrompt === tool.id
+                                ? 'bg-green-100 text-green-600'
+                                : 'bg-purple-100 text-purple-600 hover:bg-purple-200'
+                            }`}
+                          >
+                            {copiedPrompt === tool.id ? (
+                              <Check className="w-4 h-4" />
+                            ) : (
+                              <Copy className="w-4 h-4" />
+                            )}
+                          </button>
+                        </div>
                       </div>
-                    )}
-                    <input
-                      ref={videoInputRef}
-                      type="file"
-                      accept="video/*"
-                      onChange={handleVideoUpload}
-                      className="hidden"
-                    />
-                  </div>
+                    )
+                  })}
                 </div>
+              </div>
+            )}
 
-                {/* Upload Zone */}
-                {!selectedScene.videoUrl && (
-                  <div
+            {/* Upload Tab */}
+            {activeTab === 'upload' && selectedScene && (
+              <div className="space-y-4">
+                <div className="p-6 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl text-center">
+                  <Video className="w-12 h-12 text-slate-400 mx-auto mb-3" />
+                  <h4 className="font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Upload Video for Scene {selectedSceneIndex + 1}
+                  </h4>
+                  <p className="text-sm text-slate-500 mb-4">
+                    Upload the video you created with free tools
+                  </p>
+                  <button
                     onClick={() => videoInputRef.current?.click()}
-                    className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-8 text-center cursor-pointer hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all"
+                    className="px-6 py-3 bg-purple-500 text-white rounded-xl hover:bg-purple-600 transition-colors"
                   >
-                    <Upload className="w-12 h-12 text-slate-400 mx-auto mb-3" />
-                    <p className="font-medium text-slate-700 dark:text-slate-300">
-                      Drop your video here or click to upload
-                    </p>
-                    <p className="text-sm text-slate-500 mt-1">
-                      MP4, MOV, or WebM
-                    </p>
-                  </div>
-                )}
+                    Choose Video File
+                  </button>
+                  <input
+                    ref={videoInputRef}
+                    type="file"
+                    accept="video/*"
+                    onChange={handleVideoUpload}
+                    className="hidden"
+                  />
+                </div>
 
                 {selectedScene.videoUrl && (
-                  <div className="flex items-center justify-center gap-3">
-                    <button
-                      onClick={() => updateScene(selectedSceneIndex, { videoUrl: null, videoFile: undefined, status: 'image_ready' })}
-                      className="px-4 py-2 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg flex items-center gap-1"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Remove Video
-                    </button>
-                    <button
-                      onClick={() => videoInputRef.current?.click()}
-                      className="px-4 py-2 text-sm text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg flex items-center gap-1"
-                    >
-                      <RefreshCw className="w-4 h-4" />
-                      Replace Video
-                    </button>
+                  <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl flex items-center gap-3">
+                    <Check className="w-5 h-5 text-green-600" />
+                    <span className="text-green-700 dark:text-green-400">Video uploaded successfully!</span>
                   </div>
                 )}
 
-                {/* Navigation */}
-                <div className="flex justify-between items-center pt-4 border-t border-slate-200 dark:border-slate-700">
-                  <button
-                    onClick={() => setActiveTab('prompts')}
-                    className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 flex items-center gap-1"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    Back to Prompts
-                  </button>
-                  {selectedSceneIndex < scenes.length - 1 ? (
-                    <button
-                      onClick={() => {
-                        setSelectedSceneIndex(selectedSceneIndex + 1)
-                        setActiveTab('edit')
-                      }}
-                      className="px-4 py-2 rounded-lg bg-blue-500 text-white text-sm font-medium flex items-center gap-2"
-                    >
-                      Next Scene
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => onExport?.({
-                        id: `project-${Date.now()}`,
-                        name: productName || 'Video Project',
-                        type: 'video',
-                        productName,
-                        productImage,
-                        aspectRatio: '9:16',
-                        scenes,
-                        totalDuration,
-                        status: 'ready',
-                        createdAt: new Date().toISOString(),
-                        updatedAt: new Date().toISOString()
-                      })}
-                      className="px-4 py-2 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 text-white text-sm font-medium flex items-center gap-2"
-                    >
-                      <Download className="w-4 h-4" />
-                      Export Project
-                    </button>
-                  )}
+                {/* Workflow reminder */}
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+                  <h4 className="font-medium text-blue-700 dark:text-blue-400 mb-2">Workflow:</h4>
+                  <ol className="text-sm text-blue-600 dark:text-blue-300 space-y-1 list-decimal list-inside">
+                    <li>Generate script in AI Script tab</li>
+                    <li>Copy prompts from Prompts tab</li>
+                    <li>Create video in free tools (Grok, Pika, etc.)</li>
+                    <li>Upload the video here</li>
+                    <li>Export your project</li>
+                  </ol>
                 </div>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
+          </div>
         </div>
       </div>
 
-      {/* Timeline */}
+      {/* Footer / Timeline */}
       <div className="p-4 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
-        <div className="flex items-center gap-2 mb-2">
-          <button
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="p-2 rounded-lg bg-blue-500 text-white"
-          >
-            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-          </button>
-          <span className="text-sm text-slate-600 dark:text-slate-400 font-mono">
-            00:00 / {String(Math.floor(totalDuration / 60)).padStart(2, '0')}:{String(totalDuration % 60).padStart(2, '0')}
-          </span>
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Timeline</span>
+          <span className="text-sm text-slate-500">{totalDuration}s total</span>
         </div>
 
-        {/* Timeline Bar */}
-        <div className="h-16 bg-slate-200 dark:bg-slate-700 rounded-lg overflow-hidden flex">
+        {/* Timeline visualization */}
+        <div className="flex gap-1 h-12 rounded-lg overflow-hidden">
           {scenes.map((scene, index) => {
-            const widthPercent = (scene.duration / totalDuration) * 100
+            const width = (scene.duration / totalDuration) * 100
             const status = getSceneStatus(scene)
             return (
-              <div
+              <button
                 key={scene.id}
                 onClick={() => setSelectedSceneIndex(index)}
-                className={`h-full relative cursor-pointer transition-all ${
-                  selectedSceneIndex === index ? 'ring-2 ring-blue-500' : ''
+                className={`relative transition-all ${
+                  selectedSceneIndex === index ? 'ring-2 ring-purple-500' : ''
                 }`}
-                style={{ width: `${widthPercent}%` }}
+                style={{ width: `${width}%` }}
               >
-                <div className={`h-full ${
-                  status.color === 'green' ? 'bg-green-500' :
-                  status.color === 'blue' ? 'bg-blue-500' : 'bg-slate-400'
+                <div className={`h-full rounded ${
+                  status.color === 'green' ? 'bg-green-200 dark:bg-green-900/50' :
+                  status.color === 'blue' ? 'bg-blue-200 dark:bg-blue-900/50' :
+                  'bg-slate-200 dark:bg-slate-700'
                 }`}>
-                  {scene.imageUrl && (
-                    <img
-                      src={scene.imageUrl}
-                      alt=""
-                      className="w-full h-full object-cover opacity-80"
-                    />
-                  )}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                      {scene.duration}s
+                    </span>
+                  </div>
                 </div>
-                <div className="absolute inset-0 flex items-center justify-center bg-black/30">
-                  <span className="text-xs text-white font-medium">
-                    {scene.duration}s
-                  </span>
-                </div>
-              </div>
+              </button>
             )
           })}
+        </div>
+
+        {/* Export button */}
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={() => onExport?.({
+              id: `project-${Date.now()}`,
+              name: productName || 'Video Project',
+              type: selectedContentType === 'storytelling' ? 'video' : selectedContentType as 'reel' | 'story' | 'video',
+              productName,
+              productImage,
+              aspectRatio: '9:16',
+              scenes,
+              music: undefined,
+              totalDuration,
+              status: scenes.every(s => s.videoUrl) ? 'ready' : 'editing',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            })}
+            disabled={!scenes.some(s => s.videoUrl || s.script)}
+            className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            <Download className="w-5 h-5" />
+            Export Project
+          </button>
         </div>
       </div>
     </div>
