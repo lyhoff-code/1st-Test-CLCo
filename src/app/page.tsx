@@ -23,7 +23,12 @@ import {
   Info,
   Loader2,
   Download,
-  FileText
+  FileText,
+  Workflow,
+  LayoutTemplate,
+  MessageSquareText,
+  Scissors,
+  Send
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/HeaderControls'
 import { UserMenu } from '@/components/UserMenu'
@@ -663,6 +668,103 @@ export default function Home() {
                 </p>
               </div>
 
+              {/* Content Pipeline — Main CTA */}
+              <Link href="/pipeline">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-databake-turquoise/20 via-white to-databake-pink/20 dark:from-databake-turquoise/10 dark:via-slate-800 dark:to-databake-pink/10 border-2 border-databake-turquoise/30 dark:border-databake-turquoise/20 hover:shadow-glow-turquoise transition-all cursor-pointer group"
+                >
+                  <div className="flex items-center gap-5">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-databake-turquoise to-databake-pink flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                      <Workflow className="w-8 h-8 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-1">
+                        Content Pipeline
+                      </h3>
+                      <p className="text-slate-600 dark:text-slate-400">
+                        Create daily video content fast — Product → Template → AI Prompts → Assets → Publish
+                      </p>
+                    </div>
+                    <ArrowRight className="w-6 h-6 text-databake-turquoise-dark group-hover:translate-x-2 transition-transform" />
+                  </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {['AI Prompts per Cut', 'Grok Imagine Integration', 'ElevenLabs Audio', 'One-Click Publish'].map(tag => (
+                      <span key={tag} className="px-3 py-1 rounded-full bg-white/80 dark:bg-slate-700/80 text-xs font-medium text-slate-600 dark:text-slate-300">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
+              </Link>
+
+              {/* Pipeline Tools Grid */}
+              <div className="mb-8">
+                <h3 className="font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                  <Layers className="w-5 h-5 text-databake-turquoise-dark" />
+                  Pipeline Tools
+                </h3>
+                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <Link href="/pipeline">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0 }}
+                      className="p-5 rounded-2xl bg-databake-turquoise/10 dark:bg-databake-turquoise/5 border border-databake-turquoise/20 dark:border-databake-turquoise/10 hover:shadow-lg hover:-translate-y-1 transition-all"
+                    >
+                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-databake-turquoise to-databake-turquoise-dark flex items-center justify-center mb-3 shadow-md">
+                        <LayoutTemplate className="w-5 h-5 text-white" />
+                      </div>
+                      <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1">My Templates</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">CapCut & Canva favorites</p>
+                    </motion.div>
+                  </Link>
+                  <Link href="/pipeline">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.05 }}
+                      className="p-5 rounded-2xl bg-databake-pink/10 dark:bg-databake-pink/5 border border-databake-pink/20 dark:border-databake-pink/10 hover:shadow-lg hover:-translate-y-1 transition-all"
+                    >
+                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-databake-pink to-databake-pink-dark flex items-center justify-center mb-3 shadow-md">
+                        <MessageSquareText className="w-5 h-5 text-white" />
+                      </div>
+                      <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1">Captions</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Fixed captions per product</p>
+                    </motion.div>
+                  </Link>
+                  <Link href="/pipeline">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 }}
+                      className="p-5 rounded-2xl bg-purple-50 dark:bg-purple-900/10 border border-purple-200/50 dark:border-purple-800/20 hover:shadow-lg hover:-translate-y-1 transition-all"
+                    >
+                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center mb-3 shadow-md">
+                        <Scissors className="w-5 h-5 text-white" />
+                      </div>
+                      <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1">Video Splitter</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Split clips into parts</p>
+                    </motion.div>
+                  </Link>
+                  <Link href="/pipeline">
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.15 }}
+                      className="p-5 rounded-2xl bg-green-50 dark:bg-green-900/10 border border-green-200/50 dark:border-green-800/20 hover:shadow-lg hover:-translate-y-1 transition-all"
+                    >
+                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center mb-3 shadow-md">
+                        <Send className="w-5 h-5 text-white" />
+                      </div>
+                      <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1">Publisher</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Post to all networks</p>
+                    </motion.div>
+                  </Link>
+                </div>
+              </div>
+
               {/* Quick Stats */}
               <div className="grid grid-cols-3 gap-4 mb-8">
                 {QUICK_STATS.map(stat => (
@@ -803,20 +905,21 @@ export default function Home() {
               </div>
 
               {/* Workflow Summary */}
-              <div className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200 dark:border-blue-800">
+              <div className="mt-8 p-6 rounded-2xl bg-gradient-to-r from-databake-turquoise/10 to-databake-pink/10 dark:from-databake-turquoise/5 dark:to-databake-pink/5 border border-databake-turquoise/20 dark:border-databake-turquoise/10">
                 <h3 className="font-bold text-slate-900 dark:text-white mb-3">
-                  Video Creation Workflow
+                  Daily Content Workflow
                 </h3>
-                <div className="grid md:grid-cols-5 gap-4">
+                <div className="grid md:grid-cols-6 gap-4">
                   {[
-                    { step: 1, title: 'Select Product', desc: 'From your Shopify store' },
-                    { step: 2, title: 'Generate Script', desc: 'AI writes your content' },
-                    { step: 3, title: 'Create Visuals', desc: 'Use free AI tools' },
-                    { step: 4, title: 'Add Voice & Music', desc: 'ElevenLabs narration' },
-                    { step: 5, title: 'Export', desc: 'Download final video' },
+                    { step: 1, title: 'Product', desc: 'Select your product' },
+                    { step: 2, title: 'Template', desc: 'Pick from favorites' },
+                    { step: 3, title: 'AI Prompts', desc: 'Auto-generated per cut' },
+                    { step: 4, title: 'Create Assets', desc: 'Grok + ElevenLabs' },
+                    { step: 5, title: 'Edit', desc: 'CapCut / Canva' },
+                    { step: 6, title: 'Publish', desc: 'All networks, 1 click' },
                   ].map((item, idx) => (
                     <div key={item.step} className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-databake-turquoise to-databake-pink text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
                         {item.step}
                       </div>
                       <div>
@@ -825,8 +928,8 @@ export default function Home() {
                         </p>
                         <p className="text-xs text-slate-500">{item.desc}</p>
                       </div>
-                      {idx < 4 && (
-                        <ArrowRight className="w-4 h-4 text-slate-300 dark:text-slate-600 hidden md:block ml-auto" />
+                      {idx < 5 && (
+                        <ArrowRight className="w-4 h-4 text-databake-turquoise dark:text-databake-turquoise/50 hidden md:block ml-auto" />
                       )}
                     </div>
                   ))}

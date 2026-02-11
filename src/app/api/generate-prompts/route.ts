@@ -1,0 +1,110 @@
+import { NextRequest, NextResponse } from 'next/server'
+import OpenAI from 'openai'
+
+function getOpenAIClient() {
+  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY || '' })
+}
+
+interface GeneratePromptsRequest {
+  productName: string
+  productDescription: string
+  totalCuts: number
+  videoStructure: string
+  cutNames: string[]
+  hasVoice: boolean
+  language?: string
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body: GeneratePromptsRequest = await request.json()
+    const { productName, productDescription, totalCuts, videoStructure, cutNames, hasVoice, language = 'es' } = body
+
+    if (!productName || !totalCuts || !videoStructure) {
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      // Demo mode: generate sample prompts
+      const demoPrompts = cutNames.map((name, i) => ({
+        cutIndex: i,
+        cutName: name,
+        imagePrompt: `Professional product photo of ${productName}, ${name.toLowerCase()} scene, studio lighting, clean background, high quality, 4K`,
+        animationPrompt: `Smooth slow zoom in with subtle particle effects, cinematic motion, 4 seconds, seamless loop`,
+        speechText: hasVoice ? `${name}: This is where you showcase ${productName} in a compelling way.` : '',
+        hasVoice,
+      }))
+      return NextResponse.json({ prompts: demoPrompts, aiSuggestedStructure: videoStructure })
+    }
+
+    const systemPrompt = `You are an expert video content creator for e-commerce products. You generate precise prompts for AI image generation (like Grok Imagine or Midjourney), animation prompts, and voiceover scripts.
+
+Your output must be JSON only, no markdown, no explanations.
+
+Rules for image prompts:
+- Be very specific and descriptive
+- Include lighting, composition, mood, camera angle
+- Optimized for AI image generators (Grok Imagine, DALL-E, Midjourney style)
+- Always mention the product naturally in the scene
+
+Rules for animation prompts:
+- Describe camera movement (zoom in, pan, tilt, etc.)
+- Mention speed (slow, medium, fast)
+- Include effects (particles, light rays, blur transitions)
+- Keep it to ~4-8 seconds of animation
+
+Rules for speech text:
+- ${language === 'es' ? 'Write in Spanish' : 'Write in English'}
+- Short, punchy, engaging
+- Match the video structure style
+- Each cut speech should be 2-4 seconds when spoken
+- If hasVoice is false, return empty string for speechText`
+
+    const userPrompt = `Product: ${productName}
+Description: ${productDescription}
+Video structure type: ${videoStructure}
+Total cuts: ${totalCuts}
+Cut names: ${cutNames.join(', ')}
+Has voice: ${hasVoice}
+
+Generate prompts for each cut. Return JSON array:
+[
+  {
+    "cutIndex": 0,
+    "cutName": "Cut Name",
+    "imagePrompt": "detailed image generation prompt",
+    "animationPrompt": "detailed animation prompt",
+    "speechText": "voiceover text for this cut",
+    "hasVoice": true/false
+  }
+]
+
+${videoStructure === 'other' ? 'First analyze the product and suggest the best video structure type, then generate the prompts accordingly. Include a field "aiSuggestedStructure" with your recommendation.' : ''}`
+
+    const openai = getOpenAIClient()
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userPrompt },
+      ],
+      temperature: 0.8,
+      max_tokens: 3000,
+      response_format: { type: 'json_object' },
+    })
+
+    const content = completion.choices[0]?.message?.content
+    if (!content) {
+      return NextResponse.json({ error: 'No response from AI' }, { status: 500 })
+    }
+
+    const parsed = JSON.parse(content)
+    const prompts = parsed.prompts || parsed
+    const aiSuggestedStructure = parsed.aiSuggestedStructure || videoStructure
+
+    return NextResponse.json({ prompts: Array.isArray(prompts) ? prompts : [prompts], aiSuggestedStructure })
+  } catch (error) {
+    console.error('Error generating prompts:', error)
+    return NextResponse.json({ error: 'Failed to generate prompts' }, { status: 500 })
+  }
+}
