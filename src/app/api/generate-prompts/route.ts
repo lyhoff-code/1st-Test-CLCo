@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import OpenAI from 'openai'
-
-function getOpenAIClient() {
-  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY || '' })
-}
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
 interface GeneratePromptsRequest {
   productName: string
@@ -24,7 +20,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
-    if (!process.env.OPENAI_API_KEY) {
+    if (!process.env.GEMINI_API_KEY) {
       // Demo mode: generate sample prompts
       const demoPrompts = cutNames.map((name, i) => ({
         cutIndex: i,
@@ -37,9 +33,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ prompts: demoPrompts, aiSuggestedStructure: videoStructure })
     }
 
-    const systemPrompt = `You are an expert video content creator for e-commerce products. You generate precise prompts for AI image generation (like Grok Imagine or Midjourney), animation prompts, and voiceover scripts.
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
 
-Your output must be JSON only, no markdown, no explanations.
+    const prompt = `You are an expert video content creator for e-commerce products. You generate precise prompts for AI image generation (like Grok Imagine or Midjourney), animation prompts, and voiceover scripts.
+
+Your output must be ONLY valid JSON, no markdown, no code blocks, no explanations.
 
 Rules for image prompts:
 - Be very specific and descriptive
@@ -58,47 +57,42 @@ Rules for speech text:
 - Short, punchy, engaging
 - Match the video structure style
 - Each cut speech should be 2-4 seconds when spoken
-- If hasVoice is false, return empty string for speechText`
+- If hasVoice is false, return empty string for speechText
 
-    const userPrompt = `Product: ${productName}
+Product: ${productName}
 Description: ${productDescription}
 Video structure type: ${videoStructure}
 Total cuts: ${totalCuts}
 Cut names: ${cutNames.join(', ')}
 Has voice: ${hasVoice}
 
-Generate prompts for each cut. Return JSON array:
-[
-  {
-    "cutIndex": 0,
-    "cutName": "Cut Name",
-    "imagePrompt": "detailed image generation prompt",
-    "animationPrompt": "detailed animation prompt",
-    "speechText": "voiceover text for this cut",
-    "hasVoice": true/false
-  }
-]
+Generate prompts for each cut. Return ONLY a JSON object with this exact structure:
+{
+  "prompts": [
+    {
+      "cutIndex": 0,
+      "cutName": "Cut Name",
+      "imagePrompt": "detailed image generation prompt",
+      "animationPrompt": "detailed animation prompt",
+      "speechText": "voiceover text for this cut",
+      "hasVoice": true
+    }
+  ]${videoStructure === 'other' ? ',\n  "aiSuggestedStructure": "suggested_type"' : ''}
+}
 
-${videoStructure === 'other' ? 'First analyze the product and suggest the best video structure type, then generate the prompts accordingly. Include a field "aiSuggestedStructure" with your recommendation.' : ''}`
+${videoStructure === 'other' ? 'First analyze the product and suggest the best video structure type, then generate the prompts accordingly.' : ''}`
 
-    const openai = getOpenAIClient()
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-      ],
-      temperature: 0.8,
-      max_tokens: 3000,
-      response_format: { type: 'json_object' },
-    })
+    const result = await model.generateContent(prompt)
+    const response = result.response
+    const text = response.text()
 
-    const content = completion.choices[0]?.message?.content
-    if (!content) {
+    if (!text) {
       return NextResponse.json({ error: 'No response from AI' }, { status: 500 })
     }
 
-    const parsed = JSON.parse(content)
+    // Clean response - remove markdown code blocks if present
+    const cleanedText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+    const parsed = JSON.parse(cleanedText)
     const prompts = parsed.prompts || parsed
     const aiSuggestedStructure = parsed.aiSuggestedStructure || videoStructure
 
